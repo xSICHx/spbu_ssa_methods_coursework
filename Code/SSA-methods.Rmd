@@ -356,13 +356,13 @@ mse(rw$s1, y1)
 mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)
 ```
 
-### SSA как фильтры
+### SSA/GSSA как фильтры
 
 ```{r}
 get_middle_point_filters <- function(ts, L, alpha = 0){
   N <- length(ts)
   tmp <- 1:(L)
-  w <- sqrt(sin(pi*tmp/(L+1))^2)**alpha
+  w <- sqrt(sin(pi*tmp/(L+1))^2)^alpha
   X <- diag(w) %*% hankel(ts, L)
   K <- dim(X)[2] 
   X_t <- t(X)
@@ -375,6 +375,9 @@ get_middle_point_filters <- function(ts, L, alpha = 0){
   U <- tmp$vectors[, 1:d]
   
   weight <- sum(w)
+  # print(lambda)
+  # weight <- L
+  # print(weight)
   
   get_filter_i <- function(i){
     filt <- c()
@@ -383,9 +386,9 @@ get_middle_point_filters <- function(ts, L, alpha = 0){
     get_sum_j <- function(j){
       sm <- 0
       for ( k in 1:(L-abs(j)) ){
-        sm <- sm + u[k]*u[k+abs(j)]/weight
+        sm <- sm + u[k]*u[k+abs(j)]*w[k]
       }
-      sm
+      sm / weight
     }
     
     lapply( (-(L-1)):(L-1), get_sum_j ) |> unlist()
@@ -396,6 +399,35 @@ get_middle_point_filters <- function(ts, L, alpha = 0){
   
 }
 
+```
+
+#### Проверка на свопадение middle filter и GSSA
+
+```{r}
+library(stats)
+
+
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/3 * x)/2
+y <- y1 + y2 
+alpha <- 10
+
+
+freq <- seq(0, pi, 0.001)
+omega <- freq/2/pi
+
+filters <- get_middle_point_filters(y, L, alpha = alpha)
+filt <- filters[[1]] + filters[[2]] 
+
+r_gssa <- gssa(y, L, alpha = alpha)
+
+
+(r_gssa$ts[[1]] + r_gssa$ts[[2]])  |> plot(type = "l")
+# y2 |> lines()
+filter(y, filter = filt, method = "convolution", sides = 2) |> lines(col = "red")
 ```
 
 #### sin попадающий в решетку
