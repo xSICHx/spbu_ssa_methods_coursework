@@ -1,0 +1,19 @@
+This is 8-bit Big BibTeX version 0.99d-x4.02 ( 24.4)
+Implementation:  Microsoft(R) C/C++ for Win32
+Release version: 4.02 (16 dec 2023)
+
+The 8-bit codepage and sorting file: 88591lat.csf
+The top-level auxiliary file: CiSSA.aux
+The style file: plain.bst
+Reallocated glb_str_ptr (elt_size=4) to 10 items from 0.
+Reallocated global_strs (elt_size=1001) to 10 items from 0.
+Reallocated glb_str_end (elt_size=4) to 10 items from 0.
+Database file #1: ref.bib
+
+Here's how much of BibTeX's memory you used:
+ Cites:                 4 out of 750
+ Fields:               79 out of 5000
+ Hash table:         4835 out of 5000
+ Strings:             523 out of 4000
+ Free string pool:   4667 out of 65000
+ Wizard functions:   2118 out of 3000

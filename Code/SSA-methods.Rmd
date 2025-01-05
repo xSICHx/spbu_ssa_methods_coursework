@@ -254,15 +254,107 @@ mse_table <- data.frame(
                            r_gssa$ts[[4]], y1 + y2))
 )
 
-mse_table
+mse_table |> print()
+
+freq <- seq(0, pi, 0.001)
+omega <- freq/2/pi
+
+filters <- get_middle_point_filters(y1, L, alpha = 0)
+filt <- filters[[1]] + filters[[2]]
+
+plot(afc(filt, freq) ~ omega, type = "l")
+abline(v = 1/12, col = "red")
+
+filters <- get_middle_point_filters(y1, L, alpha = alpha)
+filt <- filters[[1]] + filters[[2]]
+
+lines(afc(filt, freq) ~ omega, col ="blue")
+```
+
+```{r}
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+w1 <- 1/12 + 4.3/(12*12)
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi*w1 * x)/2
+y <- y1 + y2
+alpha <- 1/2
+filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
+
+  
+s <- ssa(y, L)
+r <- reconstruct(s, groups = list(
+  s1 = 1:2,
+  s2 = 3:4
+))
+
+sw <- ssa(y, L, col.oblique = filt, row.oblique = rep(1, n-L+1))
+rw <- reconstruct(sw, groups = list(
+  s1 = 1:2,
+  s2 = 3:4
+))
+
+mse <- function(f_true, f_reconstructed){
+   mean((f_true - f_reconstructed)^2) 
+}
+
+
+r_gssa <- gssa(y, L, alpha = alpha)
+
+# mse(rw$e, r_gssa$ts[[1]])
+# mse(r$s1, y1)
+# mse(rw$s1, y1)
+# mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)
+
+
+# Create a data frame to store MSE values
+mse_table <- data.frame(
+  Method = c("r", "rw", "r_gssa"),
+  MSE_y1 = c(mse(r$s1, y1),
+             mse(rw$s1, y1),
+             mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)),
+  MSE_y2 = c(mse(r$s2, y2),
+             mse(rw$s2, y2),
+             mse(r_gssa$ts[[3]] + r_gssa$ts[[4]], y2)),
+  MSE_y = c(mse(r$s1 + r$s2, y1 + y2),
+                     mse(rw$s1 + rw$s2, y1 + y2),
+                     mse(r_gssa$ts[[1]] +
+                           r_gssa$ts[[2]] +
+                           r_gssa$ts[[3]] +
+                           r_gssa$ts[[4]], y1 + y2))
+)
+
+mse_table |> print()
+
+freq <- seq(0, pi, 0.001)
+omega <- freq/2/pi
+
+filters <- get_middle_point_filters(y1, L, alpha = 0)
+filt <- filters[[1]] + filters[[2]]
+
+# print(afc(filt, freq), digits = 1)
+
+plot(afc(filt, freq) ~ omega, type = "l")
+abline(v = 1/12, col = "red")
+
+
+abline(v = 1/12 + 4.3/(12*12))
+
+filters <- get_middle_point_filters(y1, L, alpha = alpha)
+filt <- filters[[1]] + filters[[2]]
+
+lines(afc(filt, freq) ~ omega, col ="blue")
+
 ```
 
 #### sin + cos + плохое L
 
 ```{r}
-n <- 96*2-1
+# n <- 96*2-1
+n <- 48*2-1
 x <- 0:(n-1)
-L <- 50
+L <- 25
 y1 <- sin(2*pi/12 * x)
 y2 <- cos(2*pi/3 * x)/2
 y <- y1 + y2
@@ -332,7 +424,7 @@ filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
 
 # Define parameters
 n_experiment <- 100
-sigma <- 0.0001
+sigma <- 0.1
 
 # Initialize vectors to store MSE values
 mse_r_y1 <- numeric(n_experiment)
@@ -440,7 +532,7 @@ filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
 
 # Define parameters
 n_experiment <- 100
-sigma <- 0.0001
+sigma <- 0.1
 
 # Initialize vectors to store MSE values
 mse_r_y1 <- numeric(n_experiment)
@@ -544,13 +636,13 @@ L <- 50
 y1 <- sin(2*pi/12 * x)
 y2 <- cos(2*pi/3 * x)/2
 y <- y1 + y2
-alpha <- 1
+alpha <- 1/2
 filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
 
 
 # Define parameters
 n_experiment <- 100
-sigma <- 0.01
+sigma <- 0.000001
 
 # Initialize vectors to store MSE values
 mse_r_y1 <- numeric(n_experiment)
@@ -713,7 +805,6 @@ y2 <- cos(2*pi/3 * x)/2
 y3 <- exp(x/100) + 1
 y <- y1 + y2 + y3
 
-
 freq <- seq(0, pi, 0.001)
 omega <- freq/2/pi
 
@@ -723,7 +814,7 @@ filt <- filters[[1]] + filters[[2]]
 plot(afc(filt, freq) ~ omega, type = "l")
 abline(v = 1/12, col = "red")
 
-filters <- get_middle_point_filters(y1, L, alpha = 1)
+filters <- get_middle_point_filters(y1, L, alpha = 1/2)
 filt <- filters[[1]] + filters[[2]]
 
 lines(afc(filt, freq) ~ omega, col ="blue")

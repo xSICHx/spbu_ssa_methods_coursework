@@ -1,0 +1,13 @@
+\beamer@slide {eq:u}{5}
+\beamer@slide {eq:circ_mat}{15}
+\beamer@slide {eq:fourier}{19}
+\beamer@slide {comm:proector}{19}
+\beamer@slide {th:equiv}{23}
+\beamer@slide {tab:advantages}{27}
+\beamer@slide {tab:errs_fourier_cissa_sin_cos}{29}
+\beamer@slide {tab:errs_fourier_cissa_sin_cos_noised}{31}
+\beamer@slide {tab:errs_fourier_cissa_trend}{33}
+\beamer@slide {tab:errs_fourier_cissa_trend_noised}{35}
+\beamer@slide {fig:IP_trend}{41}
+\beamer@slide {fig:IP_cycle}{43}
+\beamer@slide {fig:IP_sesonal}{45}
