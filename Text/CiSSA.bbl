@@ -17,10 +17,23 @@ Nina Golyandina, Vladimir Nekrutkin, and Anatoly Zhigljavsky.
 \newblock {\em Analysis of Time Series Structure: SSA and Related Techniques}.
 \newblock Chapman and Hall/CRC, 2001.
 
+\bibitem{golyandina2020singular}
+Nina Golyandina and Anatoly Zhigljavsky.
+\newblock {\em Singular Spectrum Analysis for Time Series}.
+\newblock SpringerBriefs in Statistics. Springer Berlin Heidelberg, 2 edition,
+  2020.
+
+\bibitem{gu2024generalized}
+Jialiang Gu, Kevin Hung, Bingo Wing-Kuen Ling, Daniel Hung-Kay Chow, Yang Zhou,
+  Yaru Fu, and Sio~Hang Pun.
+\newblock Generalized singular spectrum analysis for the decomposition and
+  analysis of non-stationary signals.
+\newblock {\em Journal of the Franklin Institute}, Accepted/In Press, 2024.
+
 \bibitem{spbu_cissa_coursework_github}
 Nikolay Pogrebnikov.
-\newblock {SPbSU} {CISSA} coursework: Time series analysis.
-\newblock \url{https://github.com/xSICHx/spbu_cissa_coursework}, 2024.
-\newblock Accessed: 2024-10-23.
+\newblock {SPbSU} {SSA} coursework: Time series analysis.
+\newblock
+  \url{https://github.com/xSICHx/spbu_ssa_methods_coursework/tree/main}, 2024.
 
 \end{thebibliography}
