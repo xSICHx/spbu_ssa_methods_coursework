@@ -291,7 +291,7 @@ $\TS_{i,j}\,=\,(x_{i-1},\cdot\cdot\cdot,x_{j-1}),\;\;1\,\leq\,i\,\leq\,j\,<\,N.$
 АЧХ фильтра  — это график или функция, которая показывает, как фильтр изменяет амплитуды (силу) разных частот входного сигнала.
 
 Теперь рассмотрим алгоритм $\SSA$ с точки зрения линейных фильтров \cite{golyandina2020singular}.
-Пусть $\TS = (x_1, \dots, x_{N})$ --- временной ряд длины $N$, $K = N - L + 1, \quad L^{*} = \min(L, K)$. Пусть L будет длиной окна, а $(\sqrt{\lambda},\,U,\,V)$ — одной из собственных троек. Определим диагональную матрицу $N \times N$:
+Пусть $\TS = (x_1, \dots, x_{N})$ --- временной ряд длины $N$, $K = N - L + 1, \quad L^{*} = \min(L, K)$. Пусть $L$ будет длиной окна, а $(\sqrt{\lambda},\,U,\,V)$ — одной из собственных троек. Определим диагональную матрицу $N \times N$:
 $$
 \mathbf{D} = \text{diag}(1, 2, 3, \ldots, L^{*}-1, L^{*}, L^{*}, \ldots, L^{*}, L^{*}-1, \ldots, 2, 1)
 $$
@@ -312,7 +312,7 @@ $$
 	Компонента временного ряда $\widetilde \TS$, восстановленная с использованием собственной тройки $(\sqrt{\lambda},\,U,\,V)$, имеет вид:
 	\[
 	\widetilde{\TS}^{{\rm T}} = \mathbf{D}^{-1}\mathbf{W}^{{\rm T}}\mathbf{W}\TS^{\rm T}.
-	\].
+	\]
 \end{theorem}
 \begin{proof}
 	Доказательство можно найти в \cite{golyandina2020singular} (неплохо бы расписать).
@@ -624,6 +624,69 @@ $L$ --- некоторое целое число (длина окна), $1 < L < N$. Строится $L$-траекторна
 Применяя данную операцию к матрицам $\mathbf{X^{(\alpha)}_{I_1}}, \dots, \mathbf{X^{(\alpha)}_{I_m}}$, получаются $m$ новых рядов: $\TS^{(\alpha)}_1, \dots, \TS^{(\alpha)}_m$. При этом, $\TS^{(\alpha)}_1 + \dots + \TS^{(\alpha)}_m = \TS^{(\alpha)}$.
 
 \subsection{Свойства GSSA}
+\subsubsection{Ранг ряда}
+Зафиксируем ряд $\TS = (x_1, \dots, x_{N})$ длины $N > 3$ и длину окна $L$. 
+
+Рассмотрим базовый $\SSA$. В процессе процедуры вложения получаем последовательность векторов вложения:
+\begin{equation*}
+	\mathrm{X}_i^{(L)} = \mathrm{X}_i = (x_{i-1}, \dots, x_{i+L-2}), \quad i = 1, \dots, K,
+\end{equation*}
+$\mathcal{L}^{(L)} = \mathcal{L}^{(L)}(\TS) \stackrel{{\rm def}}{{=}} \operatorname{span}(\mathrm X_{1}, \ldots, \mathrm X_{K})$ --- траекторное пространство ряда $\TS$. 
+При этом, если $\dim \mathcal{L}^{(L)}= \operatorname{rank} \mathbf X = d$, то будем говорить, что ряд $\TS$ имеет $L$-ранг $d$ и записывать это как $\operatorname{rank}_L = d$.
+
+Теперь рассмотрим $\GSSA$ и поймем, что для того же ряда $\operatorname{rank} \mathbf{X}^{(\alpha)} = \operatorname{rank} \mathbf{X}$, а значит, что для $\GSSA$ также применимы понятия $L$-ранга ряда. Из вида \eqref{eq:X_alpha} $\mathbf{X}^{(\alpha)}$ можно получить, что $\mathbf{X}^{(\alpha)} = \operatorname{diag}\left(w_1, w_2, \dots, w_L \right) \mathbf{X} = \operatorname{diag}\left({\boldsymbol{w}}^{(a)}\right) \mathbf{X}$. Поскольку матрица $\operatorname{diag}\left({\boldsymbol{w}}^{(a)}\right)$ имеет ранг равный $L$, она диагональна, то и $\operatorname{rank} \mathbf{X}^{(\alpha)} = \operatorname{rank} \operatorname{diag}\left({\boldsymbol{w}}^{(a)}\right)\mathbf{X} = \operatorname{rank} \mathbf{X}$.
+
+\subsubsection{GSSA как линейный фильтр}
+Аналогично $\SSA$, метод $\GSSA$ можно переписать с помощью линейных фильтров.
+Пусть $\TS = (x_1, \dots, x_{N})$ --- временной ряд длины $N$, $K = N - L + 1, \quad L^{*} = \min(L, K)$. Пусть $L$ будет длиной окна, а $(\sqrt{\lambda^{(\alpha)}},\,U^{(\alpha)},\,V^{(\alpha)})$ — одной из собственных троек. Определим диагональную матрицу $N \times N$:
+$$
+\mathbf{D}^{(\alpha)} = \text{diag}(w_1, w_1 + w_2, \ldots,
+ \sum \limits_{i = 1}^{L^*-1}w_i,
+  \sum \limits_{i = 1}^{L^*}w_i, \sum \limits_{i = 1}^{L^*}w_i, \ldots, \sum \limits_{i = 1}^{L^*}w_i,
+   \sum \limits_{i = 2}^{L^*}w_i, \ldots, w_{L^*-1}+ w_{L^*}, w_{L^*})
+$$
+и две матрицы  $K \times N$:
+\[
+\mathbf{W}^{(\alpha)} = \begin{pmatrix}
+	u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 & 0 \\
+	0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 \\
+	\vdots & 0 & \ddots & \ddots & \ddots & \cdots & \ddots & 0 & \cdots & 0 \\
+	0 & \cdots & 0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 & \vdots \\
+	0 & 0 & \cdots & 0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 \\
+	0 & 0 & 0 & \cdots & 0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)}
+\end{pmatrix},
+\]
+\[
+\mathbf{W}_{\boldsymbol{w}}^{(\alpha)} = \begin{pmatrix}
+	w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 & 0 \\
+	0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 \\
+	\vdots & 0 & \ddots & \ddots & \ddots & \cdots & \ddots & 0 & \cdots & 0 \\
+	0 & \cdots & 0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 & \vdots \\
+	0 & 0 & \cdots & 0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 \\
+	0 & 0 & 0 & \cdots & 0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)}
+\end{pmatrix}.
+\]
+Здесь $U = (u_1, \dots, u_L)$ --- собственный вектор матрицы $\mathbf{S}$.
+\begin{theorem}
+	\label{th:filter_GSSA}
+	Компонента временного ряда $\widetilde \TS$, восстановленная с использованием собственной тройки $(\sqrt{\lambda^{(\alpha)}},\,U^{(\alpha)},\,V^{(\alpha)})$, имеет вид:
+	\[
+	\widetilde{\TS}^{{\rm T}} = {\mathbf{D}^{(\alpha)}}^{-1}
+	{\mathbf{W}^{(\alpha)}}^{{\rm T}}
+	\mathbf{W}_{\boldsymbol{w}}^{(\alpha)}
+	\TS^{\rm T}.
+	\]
+\end{theorem}
+\begin{proof}
+	Доказательство аналогично $\ref{th:filter_SSA}$.
+\end{proof}
+
+Таким образом, для восстановления методом $\GSSA$ средних точек (индексы от $L$ до $K$) имеем следующий фильтр:
+\begin{equation}
+	{\widetilde{x}}_{s} = \sum_{j=-(L-1)}^{L-1} \left( \sum_{k=1}^{L-|j|} u_{k}^{(\alpha)} u_{k+|j|}^{(\alpha)} w_k / \sum\limits_{i = 1}^{L}w_i \right) x_{s-j}, \quad L \leq s \leq K.
+\end{equation}
+Похожим образом можно переписать $\GSSA$ через линейные фильтры для точек в начале и конце.
+
 
 \newpage
 
