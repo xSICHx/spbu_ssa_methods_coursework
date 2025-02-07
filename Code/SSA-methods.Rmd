@@ -866,7 +866,7 @@ Reduce("+", filters)|> lines(col = "blue")
 ```         
 ```
 
-#### Проверка на свопадение middle filter и GSSA
+#### Проверка на совпадение middle filter и GSSA
 
 ```{r}
 library(stats)
@@ -893,6 +893,56 @@ r_gssa <- gssa(y, L, alpha = alpha)
 (r_gssa$ts[[1]] + r_gssa$ts[[2]])  |> plot(type = "l")
 # y2 |> lines()
 filter(y, filter = filt, method = "convolution", sides = 2) |> lines(col = "red")
+```
+
+#### Сравнение ачх SSA и GSSA для одиночного sin
+
+```{r}
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+y1 <- sin(2*pi/12 * x)
+y <- y1
+
+library(ggplot2)
+
+alphas <- c(0, 1/2, 1, 2)
+freq <- seq(0, pi, 0.001)
+omega <- freq / (2 * pi)
+
+# Определяем цвета (черный для 0, остальные разные)
+colors <- c("black", "blue", "green", "purple", "orange")
+
+# Создаем пустой график
+plot(NULL, xlim = c(0, 0.2), ylim = c(0, 1), xlab = "Частота", 
+     ylab = "АЧХ", main = "Фильтры для различных α")
+
+alpha <- alphas[1]
+filters <- get_middle_point_filters(y1, L, alpha = alpha)
+filt <- filters[[1]] + filters[[2]]
+
+lines(omega, afc(filt, freq), col = colors[1], lwd = 2)
+
+# Рисуем графики для каждого alpha
+for (i in seq_along(alphas)) {
+  alpha <- alphas[i]
+  filters <- get_middle_point_filters(y1, L, alpha = alpha)
+  filt <- filters[[1]] + filters[[2]]
+  
+  lines(omega, afc(filt, freq), col = colors[i], lwd = 2)
+}
+
+# Добавляем вертикальную линию
+abline(v = 1/12, col = "red", lty = 2)
+# Добавляем подпись на оси X
+axis(1, at = 1/12, labels = "1/12")
+
+# Добавляем легенду с LaTeX-обозначением α
+legend("topright", legend = sapply(alphas, function(a) bquote(alpha == .(a))),
+       col = colors, lwd = 2)
+
+abline(v = 2/50, col = "red", lty = 2)
+
 ```
 
 #### sin попадающий в решетку
