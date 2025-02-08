@@ -200,7 +200,7 @@ $V_i = \mathbf{X}^{\mathrm{T}} U_i / \sqrt{\lambda_i}$.
 		\caption{Точная разделимость}
 		\label{tab:1}
 		\scalebox{1}{
-			\begin{tabular}{cccccc}
+			\begin{tabular}{c|ccccc}
 				\hline
 				& const & cos & exp & exp cos & ak+b \\ \hline
 				const   & -     & +   & -   & -       & -    \\
@@ -246,7 +246,7 @@ $\TS_{i,j}\,=\,(x_{i-1},\cdot\cdot\cdot,x_{j-1}),\;\;1\,\leq\,i\,\leq\,j\,<\,N.$
 		\caption{Асимптотическая разделимость}
 		\label{tab:2}
 		\scalebox{1}{
-			\begin{tabular}{cccccc}
+			\begin{tabular}{c|ccccc}
 				\hline
 				& const & cos & exp & exp cos & ak+b \\ \hline
 				const   & -     & +   & +   & +       & -    \\
@@ -718,11 +718,61 @@ $$
 \end{figure}
 На рисунке \ref{fig:various_alphas} показано, как фильтры ведут себя для различных значений параметра \(\alpha\). Для всех рассмотренных значений \(\alpha\) фильтры подавляют частоты, значительно отличающиеся от частоты синуса $ \omega = \frac{1}{12}$. При малых значениях \(\alpha\), таких как \(\alpha = 0\), наблюдается волнообразное поведение фильтра, что указывает на частичное захватывание соседних частот, хотя и не близких к частоте синуса. С увеличением \(\alpha\) это волнообразное поведение уменьшается, и фильтр начинает захватывает больше частот, максимально близких к \(\frac{1}{12}\). 
 
-Таким образом, метод $\GSSA$ должен лучше работать в случае, когда в временном ряде содержится пара периодических функций, частота одной из которых попадает в "вершину волны" АЧХ фильтра для другой функции. Приведем примеры:
-\begin{enumerate}
-	\item пример, когда попадается в холм
-	\item пример, когда за счет большего $\alpha$ захватывается больше шума.
-\end{enumerate}
+Таким образом, метод $\GSSA$ должен лучше работать в случае, когда в временном ряде содержится пара периодических функций, частота одной из которых попадает в "вершину волны" АЧХ фильтра для другой функции. Например, добавим к $\TS_{\sin} = \sin\left(\frac{2\pi}{12}x\right)$ косинус с частотой $\frac{1}{19}$. Тогда $\TS = \TS_{\sin} + \TS_{\cos} = \sin\left(\frac{2\pi}{12}x\right) + \frac{1}{2}\cos\left(\frac{2\pi}{19}x\right)$, и можем рассмотреть АЧХ, отвечающие за синус, при базовом $\SSA$ ($\alpha = 0$) и $\GSSA$ при $\alpha = \frac{1}{2}$. При этом, $N = 96 \cdot 2 - 1$, $L = 48$.
+ 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{img/various_alphas_sin_cos.png}
+	\caption{АЧХ фильтров, отвечающих за $\TS_{\sin} = \sin\left(\frac{2\pi}{12}x\right)$, при разных $\alpha$}
+	\label{fig:various_alphas_sin_cos}
+\end{figure}
+
+По рисунку \ref{fig:various_alphas_sin_cos} заметно, что фильтр для синуса в базовом $\SSA$ также частично захватит периодику с частотой $\frac{1}{19}$, в то время, как $\GSSA$ не будет испытывать таких проблем. Сравним результаты по среднеквадратичной ошибке:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{c|ccc}
+		\hline
+		Метод/Ошибка & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$ \\ 
+		\hline
+		SSA   & 5.15e-03 & 5.15e-03 & 6.01e-30\\ 
+		GSSA, $\alpha = \frac{1}{2}$  & 3.68e-04 & 3.68e-04 & 9.53e-30 \\ 
+		\hline
+	\end{tabular}
+	\caption{MSE разложений ряда $\TS = \TS_{\sin} + \TS_{\cos}$ для $\SSA$ и $\GSSA$ с $\alpha = \frac{1}{2}$}
+	\label{tab:mse_ssa_gssa}
+\end{table}
+
+Как видно из таблицы \ref{tab:mse_ssa_gssa}, $\GSSA$ справился с разделением на порядок лучше $\SSA$.
+
+Однако, у $\GSSA$ есть другая проблема. Если добавить к ряду шум, то оба алгоритма будут воспринимать этот шум как что-то близкое к частотам периодик, содержащихся в исходном ряде. А поскольку $\GSSA$ захватывает больше частот, максимально близких к периодикам, то и больше шума попадет в компоненты, отвечающие за периодики.
+
+Добавим к $\TS$ шумовую компоненту: $\TS = \TS_{\sin} + \TS_{\cos} + \TS_{\mathrm{noise}} =
+ \sin\left(\frac{2\pi}{12}x\right) +
+  \frac{1}{2}\cos\left(\frac{2\pi}{19}x\right)+
+   \varepsilon_n$, 
+   где $\varepsilon_n \sim \mathrm N(0, 0.1)$, $N = 96 \cdot 2 - 1$, $L = 48$. 
+   Проводилось $100$ тестов, в таблице \ref{tab:errs_ssa_gssa} указаны средние значения ошибки для одних и тех же реализаций шума.
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{c|ccc}
+		\hline
+		Метод & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$ \\ 
+		\hline
+		SSA      & 5.68e-03 & 5.44e-03 & 7.48e-04  \\ 
+		GSSA, $\alpha = \frac{1}{2}$ & 1.21e-03 & 1.25e-03 & 1.04e-03 \\
+		\hline
+	\end{tabular}
+	\caption{MSE разложений ряда $\TS = \TS_{\sin} + \TS_{\cos} + \TS_{\mathrm{noise}}$ для $\SSA$ и $\GSSA$ с $\alpha = \frac{1}{2}$}
+	\label{tab:errs_ssa_gssa}
+\end{table}
+
+По таблице \ref{tab:errs_ssa_gssa} видно, что $\GSSA$ все же справился лучше $\SSA$, однако порядок ошибки теперь одинаковый для рассмотрения косинуса или синуса. Но при этом, отделение сигнала от шума получилось лучше у $\SSA$.
+Также был проведен парный t-критерий для зависимых выборок с целью проверки гипотезы о равенстве средних значений ошибки для каждой компоненты. В качестве нулевой гипотезы ($H_0$) предполагалось, что средние значения двух сравниваемых выборок равны. Критический уровень значимости был установлен на уровне $\alpha_{\mathrm{hypothesis}} = 0.05$.
+Результаты анализа показали, что во всех случаях $p$-значение оказалось меньше 0.05, что позволяет отвергнуть нулевую гипотезу.
+
 
 \subsection{Преимущества и недостатки методов SSA, Фурье и CiSSA}
 В данной секции проводится сравнение различных методов: базовый $\SSA$,  $\SSA$ с использованием EOSSA для улучшения разделимости, разложения Фурье и Фурье с расширением ряда, базового $\CISSA$ и $\CISSA$ с расширением ряда. Для наглядного отображения преимуществ каждого из этих методов составлена таблица \ref{tab:advantages}, где строки соответствуют методам, а столбцы --- условиям (особым видам компонент ряда). На пересечении строк и столбцов указан знак, показывающий, достигается ли разделение компоненты: плюс (+) обозначает точное выполнение, знак стремления указывает на асимптотическое выполнение, а минус (–) --- на отсутствие разделимости. Для разложения Фурье подразумевается, что $L = N$. 
@@ -740,18 +790,18 @@ $$
 \begin{table}[H]
 	\centering
 	\begin{center}
-	\begin{tabular}{ccccccccc}
+	\begin{tabular}{c|cccccccc}
 		\hline
-		Метод/Условие  &|& $\cos$,                 & $\cos$,                    & $\cos$,                     & $\TS_{\mathrm{np1}}$   & $\TS_{\mathrm{np}}$ & group\\ 
-		               &|& $Lw = k \in \mathbb N$, & $Lw = k \in \mathbb N$,    & $Lw = k \not\in \mathbb N$, &             \\
-		               &|& $Kw = k \in \mathbb N$  & $Kw = k \not\in \mathbb N$ & $Kw = k \not\in \mathbb N$  &             \\ 
+		Метод/Условие  & $\cos$,                 & $\cos$,                    & $\cos$,                     & $\TS_{\mathrm{np1}}$   & $\TS_{\mathrm{np}}$ & group\\ 
+		               & $Lw = k \in \mathbb N$, & $Lw = k \in \mathbb N$,    & $Lw = k \not\in \mathbb N$, &             \\
+		               & $Kw = k \in \mathbb N$  & $Kw = k \not\in \mathbb N$ & $Kw = k \not\in \mathbb N$  &             \\ 
 		\hline
-		SSA            &|& $+$                     & $\to$                      & $\to$                       & $\to$ & $\to$ & $-$ \\
-		SSA EOSSA      &|& $+$                     & $\to$                      & $\to$                       & $\to$ & $\to$ & $+$ \\
-		Fourier        &|& $+$                     & $+$                        & $\to$                       & $-$   & $-$ & $+$ \\
-		Fourier extended        &|& $+$                     & $+$                        & $\to$                       & $-$   & $-$ & $+$ \\
-		CiSSA          &|& $+$                     & $+$                        & $\to$                       & $-$   & $-$ & $+$ \\
-		CiSSA extended &|& $+$                     & $+$                        & $\to$                       & $\to$ & $-$ & $+$ \\
+		SSA            & $+$                     & $\to$                      & $\to$                       & $\to$ & $\to$ & $-$ \\
+		SSA EOSSA      & $+$                     & $\to$                      & $\to$                       & $\to$ & $\to$ & $+$ \\
+		Fourier        & $+$                     & $+$                        & $\to$                       & $-$   & $-$ & $+$ \\
+		Fourier extended        & $+$                     & $+$                        & $\to$                       & $-$   & $-$ & $+$ \\
+		CiSSA          & $+$                     & $+$                        & $\to$                       & $-$   & $-$ & $+$ \\
+		CiSSA extended & $+$                     & $+$                        & $\to$                       & $\to$ & $-$ & $+$ \\
 		\hline
 	\end{tabular}
 	\end{center}
@@ -766,7 +816,7 @@ $$
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{llllllll}
+	\begin{tabular}{l|lllllll}
 		\hline
 		Метод/Компонента & $\TS_{\sin}$ & $\TS_{\cos}$ \\ 
 		\hline
@@ -787,7 +837,7 @@ $$
 Теперь добавим к этому ряду шум: $\TS = \TS_{\sin} + \TS_{\cos} + \TS_{\mathrm{noise}} = \sin{\frac{2\pi}{12}x} + \frac{1}{2}\cos{\frac{2\pi}{3}x} + \varepsilon_n$, где $\varepsilon_n \sim \mathrm N(0, 0.1)$, $L = 96$, $N = 96 \cdot 2$ для разложения Фурье и $N = 96 \cdot 2 - 1$ для остальных. Результаты должны ухудшиться. Проводилось $100$ тестов, в таблице \ref{tab:errs_fourier_cissa_sin_cos_noised} указаны средние значения ошибки для одних и тех же реализаций шума.
 \begin{table}[H]
 	\centering
-	\begin{tabular}{llllllll}
+	\begin{tabular}{l|lllllll}
 		\hline
 		Метод/Компонента & $\TS_{\sin}$ & $\TS_{\cos}$ \\ 
 		\hline
@@ -811,7 +861,7 @@ $$
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{llllllll}
+	\begin{tabular}{l|lllllll}
 		\hline
 		Метод/Компонента & $\TS_{c} + \TS_e$ & $\TS_{\sin}$ & $\TS_{\cos}$ \\ 
 		\hline
@@ -833,7 +883,7 @@ $$
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{llllllll}
+	\begin{tabular}{l|lllllll}
 		\hline
 		Метод/Компонента & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS_{c} + \TS_e$\\ 
 		\hline
@@ -870,7 +920,7 @@ $$
 Возьмем временной ряд, с разложением которого оба алгоритма должны справиться: $\TS = \TS_{C} + \TS_{cos} = 1 + \cos(\frac{2\pi}{12}x)$, $L = 96 \mid 12$, $N = 96 \cdot 2-1$, $K = 96 \mid 12$. Будем считать MSE между настоящими компонентами ряда и вычисленными.
 \begin{table}[H]
 	\centering
-	\begin{tabular}{llllllll}
+	\begin{tabular}{l|lllllll}
 		\hline
 		Метод/Компонента & $\TS_{C}$ & $\TS_{\cos} $\\ 
 		\hline
@@ -887,7 +937,7 @@ $$
 Теперь возьмем временной ряд, при котором $\SSA$ должен отработать хуже $\CISSA$: $\TS = \TS_{C} + \TS_{\cos} = 1 + cos(\frac{2\pi}{12}x)$, $L = 96 \mid 12$, $N = 96 \cdot 2+5$, $K = 102 \nmid 12$. Поскольку $K$ не делится на частоту косинуса, условия точной разделимости в $\SSA$ не выполняются. Будем считать MSE между настоящими компонентами ряда и вычисленными.
 \begin{table}[H]
 	\centering
-	\begin{tabular}{llllllll}
+	\begin{tabular}{l|lllllll}
 		\hline
 		Метод/Компонента & $\TS_{C}$ & $\TS_{\cos} $\\ 
 		\hline
@@ -936,12 +986,12 @@ $$
 % Wed Jun 12 06:57:37 2024
 \begin{table}[H]
 	\centering
-	\begin{tabular}{llllllll}
+	\begin{tabular}{l|lll|llll}
 		\hline
-		Метод/Компонента &|& $\TS_e$ & $\TS_c$ & $\TS_c + \TS_e$ &|& $\TS_{\sin}$ & $\TS_{\cos}$ \\ 
+		Метод/Компонента & $\TS_e$ & $\TS_c$ & $\TS_c + \TS_e$ & $\TS_{\sin}$ & $\TS_{\cos}$ \\ 
 		\hline
-		SSA & |&2.2e-25 & 2.2e-25 & 4.2e-28 &|&3.8e-29 & 1.6e-29 \\ 
-		CiSSA &| &none & none & 3.5e-02 & |&1.4e-04 & 1.9e-03 \\ 
+		SSA & 2.2e-25 & 2.2e-25 & 4.2e-28 &3.8e-29 & 1.6e-29 \\ 
+		CiSSA &none & none & 3.5e-02 & 1.4e-04 & 1.9e-03 \\ 
 		\hline
 	\end{tabular}
 	\caption{MSE разложений ряда $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin}$ методов $\SSA$ и \CISSA} 
@@ -953,12 +1003,12 @@ $$
 Или же, если заменить $\TS_{e}$ на $\TS_{e \cdot \cos}$, то есть теперь ряд $\TS = \TS_c + \TS_{e \cdot \cos} + \TS_{\cos} + \TS_{\sin} = 1 + e^{\frac{x}{100}} \cos(\frac{2\pi}{48} x) + \cos(\frac{2\pi}{12} x) + \sin(\frac{2\pi}{24} x)$, то получится следующая таблица ошибок:
 \begin{table}[H]
 	\centering
-	\begin{tabular}{llllllll}
+	\begin{tabular}{l|lllllll}
 		\hline
-		Метод/Компонента &|& $\TS_{e \cdot \cos}$ & $\TS_{\sin}$ & $\TS_{\cos}$ \\ 
+		Метод/Компонента & $\TS_{e \cdot \cos}$ & $\TS_{\sin}$ & $\TS_{\cos}$ \\ 
 		\hline
-		SSA & |&4.7e-29 & 1.1e-29 & 8.4e-30 \\ 
-		CiSSA &| &3.2e-02 & 2.6e-04 & 5.8e-03 \\ 
+		SSA & 4.7e-29 & 1.1e-29 & 8.4e-30 \\ 
+		CiSSA  &3.2e-02 & 2.6e-04 & 5.8e-03 \\ 
 		\hline
 	\end{tabular}
 	\caption{MSE разложений ряда $\TS = \TS_c + \TS_{e \cdot \cos} + \TS_{\cos} + \TS_{\sin}$ методов $\SSA$ и \CISSA} 
@@ -972,13 +1022,13 @@ $$
 Рассматривая ряд из предыдущего пункта, добавим к нему гауссовский  шум с стандартным отклонением $0.1$: $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin} +\TS_{\mathrm{noise}} = 1 + e^{\frac{x}{100}} + \cos(\frac{2\pi}{12} x) + \sin(\frac{2\pi}{24} x) + \mathrm N(0, 0.1)$, $N = 96 \cdot 2 - 1, \, L = 96$. Сделав такой тест $10000$ раз, получим следующий результат по ошибке $\mathrm{MSE}$ между настоящим сигналом и его оценкой:
 \begin{table}[H]
 	\centering
-	\begin{tabular}{llllllll}
+	\begin{tabular}{l|lllllll}
 		\hline
-		Метод/Статистики &|& min & median & mean & max & sd\\ 
+		Метод/Статистики & min & median & mean & max & sd\\ 
 		\hline
 		
-		SSA &|& 5.8e-04 & 2.0e-03 & 2.1e-03 & 4.9e-03 & 6.2e-04\\ 
-		CiSSA &|& 2.5e-02 & 3.4e-02 & 3.4e-02 & 4.9e-02 & 3.7e-03\\ 
+		SSA & 5.8e-04 & 2.0e-03 & 2.1e-03 & 4.9e-03 & 6.2e-04\\ 
+		CiSSA & 2.5e-02 & 3.4e-02 & 3.4e-02 & 4.9e-02 & 3.7e-03\\ 
 		\hline
 	\end{tabular}
 	\caption{Данные по распределению ошибки восстановления сигнала разложений методов $\SSA$ и \CISSA} 

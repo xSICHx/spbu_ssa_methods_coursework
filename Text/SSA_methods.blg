@@ -3,7 +3,7 @@ Implementation:  Microsoft(R) C/C++ for Win32
 Release version: 4.02 (16 dec 2023)
 
 The 8-bit codepage and sorting file: 88591lat.csf
-The top-level auxiliary file: CiSSA.aux
+The top-level auxiliary file: SSA_methods.aux
 The style file: plain.bst
 Reallocated glb_str_ptr (elt_size=4) to 10 items from 0.
 Reallocated global_strs (elt_size=1001) to 10 items from 0.
@@ -15,5 +15,5 @@ Here's how much of BibTeX's memory you used:
  Fields:              125 out of 5000
  Hash table:         4829 out of 5000
  Strings:             532 out of 4000
- Free string pool:   5103 out of 65000
+ Free string pool:   5115 out of 65000
  Wizard functions:   2118 out of 3000

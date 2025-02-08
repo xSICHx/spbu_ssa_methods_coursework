@@ -238,7 +238,7 @@ get_middle_point_filters <- function(ts, L, alpha = 0){
 }
 ```
 
-#### sin + cos + хорошее L
+#### ! sin + cos + хорошее L
 
 ```{r}
 n <- 96*2-1
@@ -314,7 +314,7 @@ lines(afc(filt, freq) ~ omega, col ="blue")
 n <- 96*2-1
 x <- 0:(n-1)
 L <- 48
-w1 <- 1/12 + 4.3/(12*12)
+w1 <- 1/19
 y1 <- sin(2*pi/12 * x)
 y2 <- cos(2*pi*w1 * x)/2
 y <- y1 + y2
@@ -349,7 +349,7 @@ r_gssa <- gssa(y, L, alpha = alpha)
 
 # Create a data frame to store MSE values
 mse_table <- data.frame(
-  Method = c("r", "rw", "r_gssa"),
+  Method = c("SSA", "rw", "GSSA"),
   MSE_y1 = c(mse(r$s1, y1),
              mse(rw$s1, y1),
              mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)),
@@ -366,10 +366,19 @@ mse_table <- data.frame(
 
 mse_table |> print()
 
+
+#------------------------------------------------------------
+library(xtable)
+df <- mse_table
+df[, sapply(df, is.numeric)] <- lapply(df[, sapply(df, is.numeric)], formatC, format = "e", digits = 2)
+print(xtable(df, scientific = TRUE), type = "latex")
+
+#------------------------------------------------------------
+
 freq <- seq(0, pi, 0.001)
 omega <- freq/2/pi
 
-filters <- get_middle_point_filters(y1, L, alpha = 0)
+filters <- get_middle_point_filters(y1+y2, L, alpha = 0)
 filt <- filters[[1]] + filters[[2]]
 
 # print(afc(filt, freq), digits = 1)
@@ -378,13 +387,57 @@ plot(afc(filt, freq) ~ omega, type = "l")
 abline(v = 1/12, col = "red")
 
 
-abline(v = 1/12 + 4.3/(12*12))
+# abline(v = 1/12 + 4.3/(12*12))
+abline(v = 1/18)
 
-filters <- get_middle_point_filters(y1, L, alpha = alpha)
+filters <- get_middle_point_filters(y1+y2, L, alpha = alpha)
 filt <- filters[[1]] + filters[[2]]
 
 lines(afc(filt, freq) ~ omega, col ="blue")
 
+
+library(ggplot2)
+
+alphas <- c(0, 1/2)
+freq <- seq(0, pi, 0.001)
+omega <- freq / (2 * pi)
+
+# Определяем цвета (черный для 0, остальные разные)
+colors <- c("black", "blue")
+
+# Создаем пустой график
+plot(NULL, xlim = c(0, 0.2), ylim = c(0, 1), xlab = "Частота", 
+     ylab = "АЧХ", main = "Фильтры для различных α"
+     , xaxt = "n"
+     )
+
+alpha <- alphas[1]
+filters <- get_middle_point_filters(y, L, alpha = alpha)
+filt <- filters[[1]] + filters[[2]]
+
+lines(omega, afc(filt, freq), col = colors[1], lwd = 2)
+
+# Рисуем графики для каждого alpha
+for (i in seq_along(alphas)) {
+  alpha <- alphas[i]
+  filters <- get_middle_point_filters(y, L, alpha = alpha)
+  filt <- filters[[1]] + filters[[2]]
+  
+  lines(omega, afc(filt, freq), col = colors[i], lwd = 2)
+}
+
+# Добавляем вертикальную линию
+abline(v = 1/12, col = "red", lty = 2)
+# Добавляем подпись на оси X
+axis(1, at = 1/12, labels = "1/12")
+
+# Добавляем легенду с LaTeX-обозначением α
+legend("topright", legend = sapply(alphas, function(a) bquote(alpha == .(a))),
+       col = colors, lwd = 2)
+
+abline(v = 1/19, col = "red", lty = 2)
+axis(1, at = 1/19, labels = "1/19")
+axis(1, at = c(0, 0.1, 0.15, 0.2), labels = c("0", "0.1", "0.15", "0.2"))
 ```
 
 #### sin + cos + плохое L
@@ -448,7 +501,7 @@ mse_table
 
 Получилось лучше
 
-#### sin + cos + шум + хорошее L
+#### ! sin + cos + шум + хорошее L
 
 ```{r}
 # Load necessary library
@@ -456,7 +509,7 @@ n <- 96*2-1
 x <- 0:(n-1)
 L <- 48
 y1 <- sin(2*pi/12 * x)
-y2 <- cos(2*pi/3 * x)/2
+y2 <- cos(2*pi/19 * x)/2
 y <- y1 + y2
 alpha <- 1
 filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
@@ -554,6 +607,30 @@ mse_table$SD_y <- c(sd_mse_r_y, sd_mse_rw_y, sd_mse_rgssa_y)
 
 # Print the table
 print(mse_table)
+
+library(xtable)
+df <- mse_table
+df[, sapply(df, is.numeric)] <- lapply(df[, sapply(df, is.numeric)], formatC, format = "e", digits = 2)
+print(xtable(df, scientific = TRUE), type = "latex")
+```
+
+Проверка значимости:
+
+```{r}
+x <- mse_r_y1
+y <- mse_rgssa_y1
+t_test_result <- t.test(x, y, paired = TRUE)
+print(paste("sin, ", "SSA", " ", "GSSA", ", p-val = ", t_test_result$p.value))
+
+x <- mse_r_y2
+y <- mse_rgssa_y2
+t_test_result <- t.test(x, y, paired = TRUE)
+print(paste("sin, ", "SSA", " ", "GSSA", ", p-val = ", t_test_result$p.value))
+
+x <- mse_r_y
+y <- mse_rgssa_y
+t_test_result <- t.test(x, y, paired = TRUE)
+print(paste("sin, ", "SSA", " ", "GSSA", ", p-val = ", t_test_result$p.value))
 ```
 
 #### sin + cos + шум + плохое L
@@ -895,7 +972,7 @@ r_gssa <- gssa(y, L, alpha = alpha)
 filter(y, filter = filt, method = "convolution", sides = 2) |> lines(col = "red")
 ```
 
-#### Сравнение ачх SSA и GSSA для одиночного sin
+#### ! Сравнение ачх SSA и GSSA для одиночного sin
 
 ```{r}
 n <- 96*2-1
