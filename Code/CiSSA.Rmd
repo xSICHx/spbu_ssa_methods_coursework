@@ -954,21 +954,19 @@ res_mse_test$ssa |> sd()
 ## Как выполняется расширение ряда
 
 ```{r}
-IP_values_slice |> extend(192) |> plot(type="l", lwd = 3)
-c(rep(0, 192),IP_values_slice) |> lines(type="l", col="red")
+IP_values_slice |> extend(192) |>
+  plot(type="l", lwd = 3, ylab="Значения", xlab = "Индексы", main="Расширение временного ряда IP values")
+lines((192:(length(IP_values_slice) + 192 -1)) + 1, IP_values_slice, type="l", col="red")
 
 ```
-
-\|
 
 ```{r}
 n <- 96*2 + 6
 x <- 0:(n-1)
 y <- sin(2*pi/12 * x)
 L <- 96+6
-y |> extend(L) |> plot(type="l", lwd = 3)
-c(rep(0, L), y) |> lines(type="l", col="red", lwd = 3)
-
+plot(y |> extend(L), type="l", lwd = 4, ylab="Значения", xlab = "Индексы", main="Расширение временного ряда sin")
+lines((x+L+1), y, type="l", col="red", lwd = 2)
 ```
 
 ## CiSSA через Фурье
