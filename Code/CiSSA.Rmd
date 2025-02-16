@@ -10,6 +10,7 @@ x <- 1:L
 y <- sin(pi*x/(L+1))^2 |> sqrt() 
 
 plot(x, y)
+700 *2/3
 ```
 
 ## Вспомогательные функции
@@ -379,7 +380,7 @@ c <- circulant_SSA(f_n, L = L, extend_flag = TRUE)
 r <- grouping_cissa(c,
                     groups = list(
                       # trend = c(0, 1/100),
-                      trend = c(0, eps),
+                      trend = c(-1, 1/25),
                       sesonal_cos = c(1/12-eps, 1/12+eps),
                       sesonal_sin = c(1/24 - eps, 1/24+eps)
                     ))$t_series
@@ -413,11 +414,11 @@ legend("topleft", legend = c("Весь ряд", "Компоненты"),
 
 
 s <- ssa(f_n, L)
-# e <- eossa_new(s, nested.groups = list(1:30), clust_type = "distance")
+#e <- eossa_new(s, nested.groups = list(1:10), clust_type = "distance", k= 7)
 e <- eossa(s, 1:10, k = 7)
 
 g_sesonal <- grouping.auto(e, base = "eigen",
-                   freq.bins = list(trend = c(eps),
+                   freq.bins = list(trend = c(2*eps),
                                     sesonal2 = c(1/24-eps, 1/24+eps),
                                     sesonal1 = c(1/12-eps, 1/12+eps)
                                     ),
