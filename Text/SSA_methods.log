@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.11.11)  15 FEB 2025 12:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.11.11)  16 FEB 2025 18:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -892,65 +892,63 @@ Package pdftex.def Info: img/various_alphas_sin_cos.png  used on input line 781
 .
 (pdftex.def)             Requested size: 469.75499pt x 290.19968pt.
 [19 <./img/various_alphas.png>] [20 <./img/various_alphas_sin_cos.png>]
-[21] [22] [23]
-<img/trend inseparability example/all.png, id=476, 497.86pt x 307.549pt>
+[21] [22] [23] [24]
+<img/trend inseparability example/all.png, id=483, 497.86pt x 307.549pt>
 File: img/trend inseparability example/all.png Graphic file (type png)
 <use img/trend inseparability example/all.png>
 Package pdftex.def Info: img/trend inseparability example/all.png  used on inpu
-t line 1018.
+t line 1095.
 (pdftex.def)             Requested size: 375.80542pt x 232.15349pt.
- [24]
-<img/trend inseparability example/ssa.png, id=483, 497.86pt x 307.549pt>
+<img/trend inseparability example/ssa.png, id=484, 497.86pt x 307.549pt>
 File: img/trend inseparability example/ssa.png Graphic file (type png)
 <use img/trend inseparability example/ssa.png>
 Package pdftex.def Info: img/trend inseparability example/ssa.png  used on inpu
-t line 1025.
+t line 1102.
 (pdftex.def)             Requested size: 375.80542pt x 232.15349pt.
-<img/trend inseparability example/cissa.png, id=484, 497.86pt x 307.549pt>
+ [25 <./img/trend inseparability example/all.png>]
+<img/trend inseparability example/cissa.png, id=492, 497.86pt x 307.549pt>
 File: img/trend inseparability example/cissa.png Graphic file (type png)
 <use img/trend inseparability example/cissa.png>
 Package pdftex.def Info: img/trend inseparability example/cissa.png  used on in
-put line 1034.
+put line 1111.
 (pdftex.def)             Requested size: 375.80542pt x 232.15349pt.
- [25 <./img/trend inseparability example/all.png> <./img/trend inseparability e
-xample/ssa.png>] [26 <./img/trend inseparability example/cissa.png>]
-Overfull \hbox (23.34993pt too wide) in paragraph at lines 1106--1107
+ [26 <./img/trend inseparability example/ssa.png> <./img/trend inseparability e
+xample/cissa.png>] [27]
+Overfull \hbox (23.34993pt too wide) in paragraph at lines 1183--1184
 []\T2A/cmr/m/n/10.95 Теперь рас-смот-рим ре-аль-ные дан-ные --- ме-сяч-ные ря-д
 ы про-мыш-лен-но-го про-из-вод-ства (Industrial
  []
 
-<img/trend inseparability example/IP_trend.png, id=517, 497.86pt x 307.549pt>
+<img/trend inseparability example/IP_trend.png, id=523, 497.86pt x 307.549pt>
 File: img/trend inseparability example/IP_trend.png Graphic file (type png)
 <use img/trend inseparability example/IP_trend.png>
 Package pdftex.def Info: img/trend inseparability example/IP_trend.png  used on
- input line 1116.
+ input line 1193.
 (pdftex.def)             Requested size: 375.80542pt x 232.15349pt.
-[27]
-<img/trend inseparability example/IP_cycle.png, id=526, 497.86pt x 307.549pt>
+<img/trend inseparability example/IP_cycle.png, id=524, 497.86pt x 307.549pt>
 File: img/trend inseparability example/IP_cycle.png Graphic file (type png)
 <use img/trend inseparability example/IP_cycle.png>
 Package pdftex.def Info: img/trend inseparability example/IP_cycle.png  used on
- input line 1125.
+ input line 1202.
 (pdftex.def)             Requested size: 375.80542pt x 232.15349pt.
-<img/trend inseparability example/IP_sesonal.jpg, id=527, 681.98451pt x 557.802
+[28 <./img/trend inseparability example/IP_trend.png>]
+<img/trend inseparability example/IP_sesonal.jpg, id=534, 681.98451pt x 557.802
 25pt>
 File: img/trend inseparability example/IP_sesonal.jpg Graphic file (type jpg)
 <use img/trend inseparability example/IP_sesonal.jpg>
 Package pdftex.def Info: img/trend inseparability example/IP_sesonal.jpg  used 
-on input line 1134.
+on input line 1211.
 (pdftex.def)             Requested size: 375.80542pt x 307.37946pt.
- [28 <./img/trend inseparability example/IP_trend.png> <./img/trend inseparabil
-ity example/IP_cycle.png>]
-<img/trend inseparability example/W-corr.jpg, id=536, 3310.16957pt x 1469.8293p
+ [29 <./img/trend inseparability example/IP_cycle.png> <./img/trend inseparabil
+ity example/IP_sesonal.jpg>]
+<img/trend inseparability example/W-corr.jpg, id=542, 3310.16957pt x 1469.8293p
 t>
 File: img/trend inseparability example/W-corr.jpg Graphic file (type jpg)
 <use img/trend inseparability example/W-corr.jpg>
 Package pdftex.def Info: img/trend inseparability example/W-corr.jpg  used on i
-nput line 1151.
+nput line 1228.
 (pdftex.def)             Requested size: 375.80542pt x 166.86253pt.
- [29 <./img/trend inseparability example/IP_sesonal.jpg> <./img/trend inseparab
-ility example/W-corr.jpg>] [30] [31]
-(SSA_methods.bbl
+ [30 <./img/trend inseparability example/W-corr.jpg>] [31] (SSA_methods.bbl
 LaTeX Font Info:    Trying to load font information for T2A+cmtt on input line 
 37.
 
@@ -962,9 +960,9 @@ Package rerunfilecheck Info: File `SSA_methods.out' has not changed.
 (rerunfilecheck)             Checksum: FD48ED07D8CADA7020BF6C7ECB16C081;4792.
  ) 
 Here is how much of TeX's memory you used:
- 14618 strings out of 475386
- 237441 string characters out of 2776905
- 598557 words of memory out of 3000000
+ 14619 strings out of 475386
+ 237457 string characters out of 2776905
+ 598542 words of memory out of 3000000
  35580 multiletter control sequences out of 15000+600000
  492532 words of font info for 78 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -997,9 +995,9 @@ ik1m/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:
 /cm/cmsy6.pfb><C:/Users/nik1m/AppData/Local/Programs/MiKTeX/fonts/type1/public/
 amsfonts/cm/cmsy8.pfb><C:/Users/nik1m/AppData/Local/Programs/MiKTeX/fonts/type1
 /public/amsfonts/symbols/msbm10.pfb>
-Output written on SSA_methods.pdf (32 pages, 1057343 bytes).
+Output written on SSA_methods.pdf (32 pages, 1058872 bytes).
 PDF statistics:
- 1133 PDF objects out of 1200 (max. 8388607)
- 150 named destinations out of 1000 (max. 500000)
+ 1136 PDF objects out of 1200 (max. 8388607)
+ 151 named destinations out of 1000 (max. 500000)
  236 words of extra memory for PDF output out of 10000 (max. 10000000)
 

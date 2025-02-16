@@ -1250,17 +1250,23 @@ library(xtable)
 data <- data.frame(
   Метод = c("SSA", "SSA EOSSA","Fourier", "CiSSA", "CiSSA extended", "Fourier extended"),
   sin_err = c (1, 20, 20, 1, 1, 1),
-  cos_err = c(1, 1, 1, 1, 1, 1)
+  cos_err = c(1, 1, 1, 1, 1, 1),
+  all_err = c(1, 1, 1, 1, 1, 1)
 )
 
 data$sin_err[1] <- mse(y1[1:(n-1)], r_ssa$F1) |>
   formatC(format = "e", digits = 1) 
 data$cos_err[1] <- mse(y2[1:(n-1)], r_ssa$F2) |>
   formatC(format = "e", digits = 1)
+data$all_err[1] <- mse(y1[1:(n-1)] + y2[1:(n-1)], r_ssa$F1 + r_ssa$F2) |>
+  formatC(format = "e", digits = 1)
 
 data$cos_err[2] <- mse(y1[1:(n-1)], r_ssa_e$sesonal_sin) |>
   formatC(format = "e", digits = 1)
 data$sin_err[2] <- mse(y2[1:(n-1)], r_ssa_e$sesonal_cos) |>
+  formatC(format = "e", digits = 1)
+data$all_err[2] <- mse(y1[1:(n-1)] + y2[1:(n-1)],
+                       r_ssa_e$sesonal_sin + r_ssa_e$sesonal_cos) |>
   formatC(format = "e", digits = 1)
 
 
@@ -1268,11 +1274,19 @@ data$cos_err[3] <- mse(y1, r_fft_grouped$sesonal_sin) |>
   formatC(format = "e", digits = 1)
 data$sin_err[3] <- mse(y2, r_fft_grouped$sesonal_cos) |>
   formatC(format = "e", digits = 1)
+data$all_err[3] <- mse(y1 + y2,
+                       r_fft_grouped$sesonal_sin + r_fft_grouped$sesonal_cos
+                       ) |>
+  formatC(format = "e", digits = 1)
 
 
 data$cos_err[4] <- mse(y1, r_cissa_grouped$sesonal_sin) |> 
   formatC(format = "e", digits = 1)
 data$sin_err[4] <- mse(y2, r_cissa_grouped$sesonal_cos) |> 
+  formatC(format = "e", digits = 1)
+data$all_err[4] <- mse(y1 + y2,
+                       r_cissa_grouped$sesonal_sin + r_cissa_grouped$sesonal_cos
+                       ) |>
   formatC(format = "e", digits = 1)
 
 
@@ -1280,12 +1294,20 @@ data$cos_err[5] <- mse(y1, r_cissa_grouped_ext$sesonal_sin) |>
   formatC(format = "e", digits = 1)
 data$sin_err[5] <- mse(y2, r_cissa_grouped_ext$sesonal_cos) |> 
   formatC(format = "e", digits = 1)
+data$all_err[5] <- mse(y1 + y2,
+                       r_cissa_grouped_ext$sesonal_sin + r_cissa_grouped_ext$sesonal_cos
+                       ) |>
+  formatC(format = "e", digits = 1)
+
 
 data$cos_err[6] <- mse(y1, r_fft_grouped_extended$sesonal_sin) |>
   formatC(format = "e", digits = 1)
 data$sin_err[6] <- mse(y2, r_fft_grouped_extended$sesonal_cos) |>
   formatC(format = "e", digits = 1)
-
+data$all_err[6] <- mse(y1 + y2,
+                       r_fft_grouped_extended$sesonal_sin + r_fft_grouped_extended$sesonal_cos
+                       ) |>
+  formatC(format = "e", digits = 1)
 
 
 table_latex <- xtable(data, caption = "Example Table")
@@ -1301,10 +1323,11 @@ print(table_latex, include.rownames = FALSE)
 data <- list(
   Метод = c("SSA","SSA EOSSA","Fourier", "CiSSA", "CiSSA extended", "Fourier extended"),
   sin_err = list(list(), list(), list(), list(), list(), list()),
-  cos_err = list(list(), list(), list(), list(), list(), list())
+  cos_err = list(list(), list(), list(), list(), list(), list()),
+  all_err = list(list(), list(), list(), list(), list(), list())
 )
 
-for (i in 1:50){
+for (i in 1:100){
   set.seed(i)
   
   n <- 96*2
@@ -1384,24 +1407,38 @@ for (i in 1:50){
     min(mse(y1[1:(n-1)], r_ssa$F1), mse(y1[1:(n-1)], r_ssa$F2))
   data$sin_err[[1]][[i]] <-
     min(mse(y2[1:(n-1)], r_ssa$F1), mse(y2[1:(n-1)], r_ssa$F2))
+  data$all_err[[1]][[i]] <-
+    min(mse(y1[1:(n-1)]+y2[1:(n-1)], r_ssa$F1+ r_ssa$F2))
   
   data$cos_err[[2]][[i]] <- mse(y1[1:(n-1)], r_ssa_e$sesonal_sin)
   data$sin_err[[2]][[i]] <- mse(y2[1:(n-1)], r_ssa_e$sesonal_cos)
+  data$all_err[[2]][[i]] <- mse(y1[1:(n-1)]+ y2[1:(n-1)],
+                                r_ssa_e$sesonal_sin + r_ssa_e$sesonal_cos)
   
   
   data$cos_err[[3]][[i]] <- mse(y1, r_fft_grouped$sesonal_sin)
   data$sin_err[[3]][[i]] <- mse(y2, r_fft_grouped$sesonal_cos)
+  data$all_err[[3]][[i]] <- mse(y1 + y2,
+                                r_fft_grouped$sesonal_cos +  r_fft_grouped$sesonal_sin)
   
   
   data$cos_err[[4]][[i]] <- mse(y1, r_cissa_grouped$sesonal_sin)
   data$sin_err[[4]][[i]] <- mse(y2, r_cissa_grouped$sesonal_cos)
-  
+  data$all_err[[4]][[i]] <- mse(y1 + y2,
+                          r_cissa_grouped$sesonal_sin +  r_cissa_grouped$sesonal_cos
+                                )
   
   data$cos_err[[5]][[i]] <- mse(y1, r_cissa_grouped_ext$sesonal_sin)
   data$sin_err[[5]][[i]] <- mse(y2, r_cissa_grouped_ext$sesonal_cos)
+  data$all_err[[5]][[i]] <- mse(y1 + y2,
+                          r_cissa_grouped_ext$sesonal_sin + r_cissa_grouped_ext$sesonal_cos
+                                )
   
   data$cos_err[[6]][[i]] <- mse(y1, r_fft_grouped_extended$sesonal_sin)
   data$sin_err[[6]][[i]] <- mse(y2, r_fft_grouped_extended$sesonal_cos)
+  data$all_err[[6]][[i]] <- mse(y1 + y2,
+                          r_fft_grouped_extended$sesonal_sin + r_fft_grouped_extended$sesonal_cos
+                                )
 }
 library(xtable)
 
@@ -1411,17 +1448,22 @@ data_prev <- data
 data <- data.frame(
   Метод = c("SSA", "SSA EOSSA","Fourier", "CiSSA", "CiSSA extended", "Fourier extended"),
   sin_err = c(0, 0, 0, 0, 0, 0),
-  cos_err = c(0, 0, 0, 0, 0, 0)
+  cos_err = c(0, 0, 0, 0, 0, 0),
+  all_err = c(0, 0, 0, 0, 0, 0)
 )
 
 data$cos_err[1] <- mean(data_prev$cos_err[[1]] |> unlist()) |>
   formatC(format = "e", digits = 1)
 data$sin_err[1] <- mean(data_prev$sin_err[[1]]|> unlist()) |>
   formatC(format = "e", digits = 1)
+data$all_err[1] <- mean(data_prev$all_err[[1]]|> unlist()) |>
+  formatC(format = "e", digits = 1)
 
 data$cos_err[2] <- mean(data_prev$cos_err[[2]] |> unlist()) |>
   formatC(format = "e", digits = 1)
 data$sin_err[2] <- mean(data_prev$sin_err[[2]]|> unlist()) |>
+  formatC(format = "e", digits = 1)
+data$all_err[2] <- mean(data_prev$all_err[[2]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 
 
@@ -1429,11 +1471,15 @@ data$cos_err[3] <- mean(data_prev$cos_err[[3]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 data$sin_err[3] <- mean(data_prev$sin_err[[3]]|> unlist()) |>
   formatC(format = "e", digits = 1)
+data$all_err[3] <- mean(data_prev$all_err[[3]]|> unlist()) |>
+  formatC(format = "e", digits = 1)
 
 
 data$cos_err[4] <- mean(data_prev$cos_err[[4]]|> unlist()) |> 
   formatC(format = "e", digits = 1)
 data$sin_err[4] <- mean(data_prev$sin_err[[4]]|> unlist()) |> 
+  formatC(format = "e", digits = 1)
+data$all_err[4] <- mean(data_prev$all_err[[4]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 
 
@@ -1441,18 +1487,22 @@ data$cos_err[5] <- mean(data_prev$cos_err[[5]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 data$sin_err[5] <- mean(data_prev$sin_err[[5]]|> unlist()) |> 
   formatC(format = "e", digits = 1)
+data$all_err[5] <- mean(data_prev$all_err[[5]]|> unlist()) |>
+  formatC(format = "e", digits = 1)
 
 data$cos_err[6] <- mean(data_prev$cos_err[[6]]|> unlist()) |> 
   formatC(format = "e", digits = 1)
 data$sin_err[6] <- mean(data_prev$sin_err[[6]]|> unlist()) |> 
+  formatC(format = "e", digits = 1)
+data$all_err[6] <- mean(data_prev$all_err[[6]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 
 
 ```
 
 ```{r}
-for (i in 1:4){
-  for (j in (i):4){
+for (i in 1:6){
+  for (j in (i):6){
     x <- data_prev$cos_err[[i]] |> unlist()
     y <- data_prev$cos_err[[j]] |> unlist()
     t_test_result <- t.test(x, y, paired = TRUE)
@@ -1460,12 +1510,21 @@ for (i in 1:4){
   }
 }
 
-for (i in 1:4){
-  for (j in (i):4){
+for (i in 1:6){
+  for (j in (i):6){
     x <- data_prev$sin_err[[i]] |> unlist()
     y <- data_prev$sin_err[[j]] |> unlist()
     t_test_result <- t.test(x, y, paired = TRUE)
     print(paste("sin, ", data$Метод[i], " ", data$Метод[j], ", p-val = ", t_test_result$p.value))
+  }
+}
+
+for (i in 1:6){
+  for (j in (i):6){
+    x <- data_prev$all_err[[i]] |> unlist()
+    y <- data_prev$all_err[[j]] |> unlist()
+    t_test_result <- t.test(x, y, paired = TRUE)
+    print(paste("all_err, ", data$Метод[i], " ", data$Метод[j], ", p-val = ", t_test_result$p.value))
   }
 }
 
@@ -1474,6 +1533,9 @@ table_latex <- xtable(data, caption = "Example Table")
 
 # Шаг 4: Вывод таблицы в LaTeX файл
 print(table_latex, include.rownames = FALSE)
+
+# mean(data_prev$sin_err[[2]] |> unlist()) |> print()
+# mean(data_prev$sin_err[[1]] |> unlist()) |> print()
 ```
 
 #### Добавим непериодичность
@@ -1567,7 +1629,8 @@ data <- data.frame(
   Метод = c("SSA", "SSA EOSSA","Fourier", "CiSSA", "CiSSA extended", "Fourier extended"),
   e_err = c(1, 1, 1, 1, 1, 1),
   sin_err = c (1, 20, 20, 1, 1, 1),
-  cos_err = c(1, 1, 1, 1, 1, 1)
+  cos_err = c(1, 1, 1, 1, 1, 1),
+  all_err = c(1, 1, 1, 1, 1, 1)
 )
 
 data$cos_err[1] <- mse(y1[1:(n-1)], r_ssa$sesonal_sin) |>
@@ -1576,12 +1639,19 @@ data$sin_err[1] <- mse(y2[1:(n-1)], r_ssa$sesonal_cos) |>
   formatC(format = "e", digits = 1)
 data$e_err[1] <- mse(y3[1:(n-1)], r_ssa$e) |>
   formatC(format = "e", digits = 1)
+data$all_err[1] <- mse(y1[1:(n-1)]+ y2[1:(n-1)] + y3[1:(n-1)],
+                     r_ssa$sesonal_sin + r_ssa$sesonal_cos + r_ssa$e) |>
+  formatC(format = "e", digits = 1)
 
 data$cos_err[2] <- mse(y1[1:(n-1)], r_ssa_e$sesonal_sin) |>
   formatC(format = "e", digits = 1)
 data$sin_err[2] <- mse(y2[1:(n-1)], r_ssa_e$sesonal_cos) |>
   formatC(format = "e", digits = 1)
 data$e_err[2] <- mse(y3[1:(n-1)], r_ssa_e$e) |>
+  formatC(format = "e", digits = 1)
+data$all_err[2] <- mse(y1[1:(n-1)]+ y2[1:(n-1)] + y3[1:(n-1)],
+                     r_ssa_e$sesonal_sin + r_ssa_e$sesonal_cos + r_ssa_e$e
+                       ) |>
   formatC(format = "e", digits = 1)
 
 
@@ -1591,6 +1661,9 @@ data$sin_err[3] <- mse(y2, r_fft_grouped$sesonal_cos) |>
   formatC(format = "e", digits = 1)
 data$e_err[3] <- mse(y3, r_fft_grouped$e) |>
   formatC(format = "e", digits = 1)
+data$all_err[3] <- mse(y1 + y2 + y3, 
+                       r_fft_grouped$sesonal_sin + r_fft_grouped$sesonal_cos + r_fft_grouped$e) |>
+  formatC(format = "e", digits = 1)
 
 
 data$cos_err[4] <- mse(y1, r_cissa_grouped$sesonal_sin) |> 
@@ -1599,6 +1672,12 @@ data$sin_err[4] <- mse(y2, r_cissa_grouped$sesonal_cos) |>
   formatC(format = "e", digits = 1)
 data$e_err[4] <- mse(y3, r_cissa_grouped$e) |>
   formatC(format = "e", digits = 1)
+data$all_err[4] <- mse(y1 + y2 + y3, 
+                       r_cissa_grouped$sesonal_sin + 
+                         r_cissa_grouped$sesonal_cos + 
+                         r_cissa_grouped$e
+                       ) |>
+  formatC(format = "e", digits = 1)
 
 data$cos_err[5] <- mse(y1, r_cissa_grouped_ext$sesonal_sin) |> 
   formatC(format = "e", digits = 1)
@@ -1606,12 +1685,24 @@ data$sin_err[5] <- mse(y2, r_cissa_grouped_ext$sesonal_cos) |>
   formatC(format = "e", digits = 1)
 data$e_err[5] <- mse(y3, r_cissa_grouped_ext$e) |>
   formatC(format = "e", digits = 1)
+data$all_err[5] <- mse(y1 + y2 + y3, 
+                       r_cissa_grouped_ext$sesonal_sin + 
+                         r_cissa_grouped_ext$sesonal_cos +
+                          r_cissa_grouped_ext$e
+                       ) |>
+  formatC(format = "e", digits = 1)
 
 data$cos_err[6] <- mse(y1, r_fft_grouped_extended$sesonal_sin) |> 
   formatC(format = "e", digits = 1)
 data$sin_err[6] <- mse(y2, r_fft_grouped_extended$sesonal_cos) |> 
   formatC(format = "e", digits = 1)
 data$e_err[6] <- mse(y3, r_fft_grouped_extended$e) |>
+  formatC(format = "e", digits = 1)
+data$all_err[6] <- mse(y1 + y2 + y3, 
+                       r_fft_grouped_extended$sesonal_sin +
+                         r_fft_grouped_extended$sesonal_cos +
+                         r_fft_grouped_extended$e
+                       ) |>
   formatC(format = "e", digits = 1)
 
 
@@ -1635,7 +1726,8 @@ data <- list(
   Метод = c("SSA", "SSA EOSSA","Fourier", "CiSSA", "CiSSA extended", "Fourier extended"),
   sin_err = list(list(), list(), list(), list(), list(), list()),
   cos_err = list(list(), list(), list(), list(), list(), list()),
-  exp_err = list(list(), list(), list(), list(), list(), list())
+  exp_err = list(list(), list(), list(), list(), list(), list()),
+  all_err = list(list(), list(), list(), list(), list(), list())
 )
 
 for (i in 1:100){
@@ -1658,7 +1750,7 @@ for (i in 1:100){
   ))
   
   
-  e_ssa <- eossa_new(s_ssa, nested.groups = list(1:6), clust_type = "distance")
+  e_ssa <- eossa_new(s_ssa, nested.groups = list(1:7), clust_type = "distance")
   g_sesonal_e <- grouping.auto(e_ssa, base = "eigen",
                          freq.bins = list(
                            e = c(0, 1/12-eps-eps),
@@ -1713,10 +1805,21 @@ for (i in 1:100){
   data$cos_err[[1]][[i]] <- mse(y1[1:(n-1)], r_ssa$sesonal_sin)
   data$sin_err[[1]][[i]] <- mse(y2[1:(n-1)], r_ssa$sesonal_cos)
   data$exp_err[[1]][[i]] <- mse(y3[1:(n-1)], r_ssa$e)
+  data$all_err[[1]][[i]] <- mse(y1[1:(n-1)] + y2[1:(n-1)] + y3[1:(n-1)],
+                                r_ssa$sesonal_sin+
+                                  r_ssa$sesonal_cos +
+                                  r_ssa$e
+                                )
   
   data$cos_err[[2]][[i]] <- mse(y1[1:(n-1)], r_ssa_e$sesonal_sin)
   data$sin_err[[2]][[i]] <- mse(y2[1:(n-1)], r_ssa_e$sesonal_cos)
   data$exp_err[[2]][[i]] <- mse(y3[1:(n-1)], r_ssa_e$e)
+  data$all_err[[2]][[i]] <- mse(y1[1:(n-1)] + y2[1:(n-1)] + y3[1:(n-1)],
+                                r_ssa_e$sesonal_sin+ 
+                                  r_ssa_e$sesonal_cos + 
+                                  r_ssa_e$e
+                                )
+  
   
   # print(data$sin_err[[2]][[i]])
   
@@ -1724,20 +1827,40 @@ for (i in 1:100){
   data$cos_err[[3]][[i]] <- mse(y1, r_fft_grouped$sesonal_sin)
   data$sin_err[[3]][[i]] <- mse(y2, r_fft_grouped$sesonal_cos)
   data$exp_err[[3]][[i]] <- mse(y3, r_fft_grouped$e)
+  data$all_err[[3]][[i]] <- mse(y1 + y2 + y3,
+                                r_fft_grouped$sesonal_sin +
+                                  r_fft_grouped$sesonal_cos +
+                                  r_fft_grouped$e
+                                )
   
   
   data$cos_err[[4]][[i]] <- mse(y1, r_cissa_grouped$sesonal_sin)
   data$sin_err[[4]][[i]] <- mse(y2, r_cissa_grouped$sesonal_cos)
   data$exp_err[[4]][[i]] <- mse(y3, r_cissa_grouped$e)
+  data$all_err[[4]][[i]] <- mse(y1 + y2 + y3,
+                                r_cissa_grouped$sesonal_sin +
+                                  r_cissa_grouped$sesonal_cos +
+                                  r_cissa_grouped$e
+                                )
   
   
   data$cos_err[[5]][[i]] <- mse(y1, r_cissa_grouped_ext$sesonal_sin)
   data$sin_err[[5]][[i]] <- mse(y2, r_cissa_grouped_ext$sesonal_cos)
   data$exp_err[[5]][[i]] <- mse(y3, r_cissa_grouped_ext$e)
+  data$all_err[[5]][[i]] <- mse(y1 + y2 + y3,
+                                r_cissa_grouped_ext$sesonal_sin + 
+                                  r_cissa_grouped_ext$sesonal_cos +
+                                  r_cissa_grouped_ext$e
+                                )
   
   data$cos_err[[6]][[i]] <- mse(y1, r_fft_grouped_extended$sesonal_sin)
   data$sin_err[[6]][[i]] <- mse(y2, r_fft_grouped_extended$sesonal_cos)
   data$exp_err[[6]][[i]] <- mse(y3, r_fft_grouped_extended$e)
+  data$all_err[[6]][[i]] <- mse(y1 + y2 + y3,
+                                r_fft_grouped_extended$sesonal_sin +
+                                  r_fft_grouped_extended$sesonal_cos +
+                                  r_fft_grouped_extended$e
+                                )
 }
 library(xtable)
 # data$sin_err[[2]]
@@ -1745,9 +1868,10 @@ library(xtable)
 data_prev <- data
 data <- data.frame(
   Метод = c("SSA", "SSA EOSSA","Fourier", "CiSSA", "CiSSA extended", "Fourier extended"),
+  exp_err = c(0, 0, 0, 0, 0, 0),
   sin_err = c(0, 0, 0, 0, 0, 0),
   cos_err = c(0, 0, 0, 0, 0, 0),
-  exp_err = c(0, 0, 0, 0, 0, 0)
+  all_err = c(0, 0, 0, 0, 0, 0)
 )
 
 data$cos_err[1] <- mean(data_prev$cos_err[[1]] |> unlist()) |>
@@ -1755,6 +1879,8 @@ data$cos_err[1] <- mean(data_prev$cos_err[[1]] |> unlist()) |>
 data$sin_err[1] <- mean(data_prev$sin_err[[1]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 data$exp_err[1] <- mean(data_prev$exp_err[[1]]|> unlist()) |>
+  formatC(format = "e", digits = 1)
+data$all_err[1] <- mean(data_prev$all_err[[1]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 
 
@@ -1764,6 +1890,8 @@ data$sin_err[2] <- mean(data_prev$sin_err[[2]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 data$exp_err[2] <- mean(data_prev$exp_err[[2]]|> unlist()) |>
   formatC(format = "e", digits = 1)
+data$all_err[2] <- mean(data_prev$all_err[[2]]|> unlist()) |>
+  formatC(format = "e", digits = 1)
 
 
 data$cos_err[3] <- mean(data_prev$cos_err[[3]]|> unlist()) |> 
@@ -1771,6 +1899,8 @@ data$cos_err[3] <- mean(data_prev$cos_err[[3]]|> unlist()) |>
 data$sin_err[3] <- mean(data_prev$sin_err[[3]]|> unlist()) |> 
   formatC(format = "e", digits = 1)
 data$exp_err[3] <- mean(data_prev$exp_err[[3]]|> unlist()) |>
+  formatC(format = "e", digits = 1)
+data$all_err[3] <- mean(data_prev$all_err[[3]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 
 
@@ -1780,12 +1910,16 @@ data$sin_err[4] <- mean(data_prev$sin_err[[4]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 data$exp_err[4] <- mean(data_prev$exp_err[[4]]|> unlist()) |>
   formatC(format = "e", digits = 1)
+data$all_err[4] <- mean(data_prev$all_err[[4]]|> unlist()) |>
+  formatC(format = "e", digits = 1)
 
 data$cos_err[5] <- mean(data_prev$cos_err[[5]]|> unlist()) |> 
   formatC(format = "e", digits = 1)
 data$sin_err[5] <- mean(data_prev$sin_err[[5]]|> unlist()) |> 
   formatC(format = "e", digits = 1)
 data$exp_err[5] <- mean(data_prev$exp_err[[5]]|> unlist()) |>
+  formatC(format = "e", digits = 1)
+data$all_err[5] <- mean(data_prev$all_err[[5]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 
 data$cos_err[6] <- mean(data_prev$cos_err[[6]]|> unlist()) |> 
@@ -1794,35 +1928,54 @@ data$sin_err[6] <- mean(data_prev$sin_err[[6]]|> unlist()) |>
   formatC(format = "e", digits = 1)
 data$exp_err[6] <- mean(data_prev$exp_err[[6]]|> unlist()) |>
   formatC(format = "e", digits = 1)
+data$all_err[6] <- mean(data_prev$all_err[[6]]|> unlist()) |>
+  formatC(format = "e", digits = 1)
 
 
 ```
 
 ```{r}
-for (i in 1:4){
-  for (j in (i):4){
+for (i in 1:6){
+  for (j in (i):6){
     x <- data_prev$cos_err[[i]] |> unlist()
     y <- data_prev$cos_err[[j]] |> unlist()
     t_test_result <- t.test(x, y, paired = TRUE)
-    print(paste("cos, ", data$Метод[i], " ", data$Метод[j], ", p-val = ", t_test_result$p.value))
+    if (!is.na(t_test_result$p.value) & t_test_result$p.value > 0.05){
+      print(paste("cos, ", data$Метод[i], " ",
+                  data$Метод[j], ", p-val = ", t_test_result$p.value))
+      }
   }
 }
 
-for (i in 1:4){
-  for (j in (i):4){
+for (i in 1:6){
+  for (j in (i):6){
     x <- data_prev$sin_err[[i]] |> unlist()
     y <- data_prev$sin_err[[j]] |> unlist()
     t_test_result <- t.test(x, y, paired = TRUE)
-    print(paste("sin, ", data$Метод[i], " ", data$Метод[j], ", p-val = ", t_test_result$p.value))
+    if (!is.na(t_test_result$p.value) & t_test_result$p.value > 0.05){
+      print(paste("sin, ", data$Метод[i], " ", data$Метод[j], ", p-val = ", t_test_result$p.value))
+      }
   }
 }
 
-for (i in 1:4){
-  for (j in (i):4){
+for (i in 1:6){
+  for (j in (i):6){
     x <- data_prev$exp_err[[i]] |> unlist()
     y <- data_prev$exp_err[[j]] |> unlist()
     t_test_result <- t.test(x, y, paired = TRUE)
-    print(paste("exp, ", data$Метод[i], " ", data$Метод[j], ", p-val = ", t_test_result$p.value))
+    if (!is.na(t_test_result$p.value) & t_test_result$p.value > 0.05){
+      print(paste("exp, ", data$Метод[i], " ", data$Метод[j], ", p-val = ", t_test_result$p.value))}
+  }
+}
+
+for (i in 1:6){
+  for (j in (i):6){
+    x <- data_prev$all_err[[i]] |> unlist()
+    y <- data_prev$all_err[[j]] |> unlist()
+    t_test_result <- t.test(x, y, paired = TRUE)
+    if (!is.na(t_test_result$p.value) & t_test_result$p.value > 0.05){
+      print(paste("all_err, ", data$Метод[i], " ", data$Метод[j], ", p-val = ", t_test_result$p.value))
+      }
   }
 }
 
