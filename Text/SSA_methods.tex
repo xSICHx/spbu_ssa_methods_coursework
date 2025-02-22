@@ -80,19 +80,25 @@
 Методы разделения временных рядов играют ключевую роль в выделении тренда, сезонности и других структурных компонентов, что позволяет глубже понять и моделировать временные зависимости.
 
 
+В данной работе будут рассмотрены следующие постановки задачи разделения временных рядов:
+\begin{enumerate}
+	\item \label{item:freq} Разделение временного ряда на компоненты, соответствующие определенным частотным диапазонам;
+	\item \label{item:general} Разделение временного ряда на компоненты без привязки к частотным характеристикам, то есть в их исходном виде.
+\end{enumerate}
 
-Анализ сингулярного спектра ($\SSA$ \cite{golyandina2001analysis}) --- метод, целью которого является разложение оригинального ряда на сумму небольшого числа интерпретируемых компонентов, таких как медленно изменяющаяся тенденция (тренд), колебательные компоненты (сезонность) и шум. При этом, базовый алгоритм метода $\SSA$ не требует стационарности ряда, знания модели тренда, а также сведений о наличии в ряде периодиках, а за счет своего адаптивного базиса позволяет подстраиваться под любой входной ряд.
+
+Анализ сингулярного спектра ($\SSA$ \cite{golyandina2001analysis}) --- метод, целью которого является разложение оригинального ряда на сумму небольшого числа интерпретируемых компонентов, таких как медленно изменяющаяся тенденция (тренд), колебательные компоненты (сезонность) и шум. Позволяет решать как задачу в формулировке \ref{item:freq}, так и её обобщение, представленное в \ref{item:general}. При этом, базовый алгоритм метода $\SSA$ не требует стационарности ряда, знания модели тренда, а также сведений о наличии в ряде периодиках, а за счет своего адаптивного базиса позволяет подстраиваться под любой входной ряд.
 
 В данном исследовании рассматриваются модификации $\SSA$, предложенные другими авторами, а именно, $\CISSA$ \cite{bogalo2020} и $\GSSA$ \cite{gu2024generalized}. 
 
-В алгоритме $\CISSA$ предложено решение задачи разделения временного ряда на заранее известные компоненты, отвечающие конкретным периодикам. За счет этого можно автоматически группировать компоненты по частотам, однако именно поэтому алгоритм лишается адаптивности, которая имеется в $\SSA$. 
+В алгоритме $\CISSA$ предложено решение задачи разделения временного ряда на заранее известные компоненты (задача в постановке \ref{item:freq}), отвечающие конкретным периодикам. За счет этого можно автоматически группировать компоненты по частотам, однако именно поэтому алгоритм лишается адаптивности, которая имеется в $\SSA$. 
 
 $\GSSA$ отличается от базового $\SSA$ тем, что он добавляет веса на определенном этапе алгоритма $\SSA$. В некоторых случаях это может оказаться полезным, в других --- повлиять на разделимость в худшую сторону. 
-Это исследование раскрывает смысловую ценность $\GSSA$ с точки зрения линейных фильтров и и отмечает ситуации, где такой алгоритм предпочтительнее стандартного $\SSA$.
+Это исследование раскрывает смысловую ценность $\GSSA$ с точки зрения линейных фильтров и отмечает ситуации, где такой алгоритм предпочтительнее стандартного $\SSA$.
 
 Целью работы является описание модификаций в контексте теории $\SSA$ и на этой основе сравнение методов по теоретическим свойствам и численно.
 
-Далее кратко опишем структуру работы. В разделе \ref{sec:ssa} рассматривается базовый метод $\SSA$ и его ключевые свойства. В следующем разделе \ref{sec:cissa} представлен метод $\CISSA$, также с описанием его основных характеристик. В секции \ref{sec:gssa} показан $\GSSA$. Раздел \ref{sec:comparison} посвящён сравнению методов $\SSA$, разложения Фурье и $\CISSA$ на модельных и реальных примерах. В заключительной секции \ref{sec:concl} подведены основные итоги исследования.
+Далее кратко опишем структуру работы. В разделе \ref{sec:ssa} рассматривается базовый метод $\SSA$ и его ключевые свойства. В секции \ref{sec:gssa} показан алгоритм $\GSSA$. В следующем разделе \ref{sec:cissa} представлен метод $\CISSA$, также с описанием его основных характеристик. Раздел \ref{sec:comparison} посвящен сравнению методов $\SSA$, $\GSSA$, разложения Фурье и $\CISSA$ на модельных и реальных примерах. В заключительной секции \ref{sec:concl} подведены основные итоги исследования.
 
 
 
@@ -273,7 +279,7 @@ $\TS_{i,j}\,=\,(x_{i-1},\cdot\cdot\cdot,x_{j-1}),\;\;1\,\leq\,i\,\leq\,j\,<\,N.$
 \end{table}
 
 \subsubsection{Алгоритмы улучшения разделимости}
-Для $\SSA$ существуют алгоритмы улучшения разделимости. Они позволяют более точно отделять временные подряды друг от друга. В данной работе будут использоваться методы EOSSA и FOSSA. Подробнее про них можно почитать в \cite{golyandina2023intelligent}. 
+Для $\SSA$ существуют алгоритмы улучшения разделимости. По заданному набору компонент, они позволяют более точно отделять временные ряды друг от друга. В данной работе будут использоваться методы EOSSA и FOSSA. Подробнее про них можно почитать в \cite{golyandina2023intelligent}. 
 
 Кроме того, применение алгоритмов улучшения разделимости позволяет не только понизить ошибку разделения $\SSA$, но и автоматически группировать компоненты в соответствии с заранее заданными частотами.
 
@@ -373,6 +379,138 @@ $$
 
 \newpage
 
+
+
+
+\section{Метод Generalized singular spectrum analysis (GSSA)}
+\label{sec:gssa}
+
+В этом разделе описана модификация $\SSA$ на основе добавления весов к строкам $L$-траекторная матрица $\mathbf{X}$ \cite{gu2024generalized}. Авторы метода называют его обобщенным, поскольку базовый $\SSA$ является частным случаем $\GSSA$ с параметром $\alpha = 0$.
+
+\subsection{Алгоритм метода GSSA}
+Алгоритм $\GSSA$ сильно схож с базовым $\SSA$. Пусть $N > 2$, вещественнозначный временной ряд
+$\TS = (x_1, \dots, x_{N})$ длины $N$. Фиксируется параметр $\alpha \geq 0$, отвечающий за веса:
+\begin{equation*}
+	{\boldsymbol{w}}^{(a)} = (w_{1}, w_{2}, \ldots, w_{L}) = \left( \left| \sin\left(\frac{\pi n}{L+1}\right) \right| \right)^\alpha, \quad \text{для } \quad n = 1, 2, \dots, L.
+\end{equation*}
+
+\subsubsection{Вложение}
+$L$ --- некоторое целое число (длина окна), $1 < L < N$. Строится $L$-траекторная матрица $\mathbf{X}^{(\alpha)}$:
+\begin{equation}
+	\label{eq:X_alpha}
+	\mathbf{X}^{(\alpha)} = 
+	\begin{pmatrix}
+		w_1 x_1 & w_1 x_2 & w_1 x_3 & \dots & w_1 x_{K} \\
+		w_2 x_2 & w_2 x_3 & w_2 x_4 & \dots & w_2 x_{K+1} \\
+		w_3 x_3 & w_3 x_4 & w_3 x_5 & \dots & w_3 x_{K+2} \\
+		\vdots & \vdots & \vdots & \ddots & \vdots \\
+		w_L x_{L} & w_L x_{L+1} & w_L x_{L+2} & \dots & w_L x_{N}
+	\end{pmatrix}.
+\end{equation}
+
+\subsubsection{Сингулярное разложение (SVD)}
+Этот шаг такой же, как и в $\SSA$, только матрица $\mathbf{X}$ заменяется на $\mathbf{X}^{(\alpha)}$. Будем обозначать собственные тройки в этом случае так: $(\sqrt{\lambda^{(\alpha)}},\,U^{(\alpha)},\,V^{(\alpha)})$.
+
+\subsubsection{Группировка}
+В точности как в $\SSA$. Тем самым, разложение может быть записано в сгруппированном виде:
+\begin{equation*}
+	\mathbf{X}^{(\alpha)} = \mathbf{X}^{(\alpha)}_{I_1} + \dots + \mathbf{X}^{(\alpha)}_{I_m}.
+\end{equation*}
+
+\subsubsection{Взвешенное диагональное усреднение}
+Поскольку траекторная матрица была изменена весами, то диагональное усреднение тоже будет зависеть от весов.
+
+Пусть $\mathbf{Y}$ --- матрица размерности $L \times K$. Взвешенное диагональное усреднение переводит матрицу $\mathbf{Y}$ в временной ряд $g_0, \dots, g_{N-1} $:
+
+\begin{equation*}
+	g_{k}=
+	\begin{cases}
+		\frac{1}{\sum_{n = 1}^k w_n} \sum\limits_{m=1}^{k+1} y_{m,k-m+2}^{*} &
+		\text{для } 0 \leq k < L - 1, \\
+		
+		\frac{1}{\sum_{n = 1}^L w_n} \sum\limits_{m=1}^{L} y_{m,k-m+2}^{*} &
+		\text{для } L-1 \leq k < K , \\
+		
+		\frac{1}{\sum_{n = k-K+1}^L w_n} \sum\limits_{m=k-K+2}^{N-K+1} y_{m,k-m+2}^{*} &
+		\text{для } K \leq k < N .\\
+	\end{cases}
+\end{equation*}
+Применяя данную операцию к матрицам $\mathbf{X}_{I_1}^{(\alpha)}, \dots, \mathbf{X}_{I_m}^{(\alpha)}$, получаются $m$ новых рядов: $\TS^{(\alpha)}_1, \dots, \TS^{(\alpha)}_m$. 
+Результатом данного шага и всего алгоритма является разложение временного ряда $\TS^{(\alpha)}_1 + \dots + \TS^{(\alpha)}_m = \TS^{(\alpha)}$.
+
+
+
+\subsection{Свойства GSSA}
+\subsubsection{Ранг ряда}
+Зафиксируем ряд $\TS = (x_1, \dots, x_{N})$ длины $N > 3$ и длину окна $L$. 
+
+%Рассмотрим базовый $\SSA$. В процессе процедуры вложения получаем последовательность векторов вложения:
+%\begin{equation*}
+%	\mathrm{X}_i^{(L)} = \mathrm{X}_i = (x_{i-1}, \dots, x_{i+L-2}), \quad i = 1, \dots, K,
+%\end{equation*}
+%$\mathcal{L}^{(L)} = \mathcal{L}^{(L)}(\TS) \stackrel{{\rm def}}{{=}} \operatorname{span}(\mathrm X_{1}, \ldots, \mathrm X_{K})$ --- траекторное пространство ряда $\TS$. 
+%При этом, если $\dim \mathcal{L}^{(L)}= \operatorname{rank} \mathbf X = d$, то будем говорить, что ряд $\TS$ имеет $L$-ранг $d$ и записывать это как $\operatorname{rank}_L = d$.
+
+В секции \ref{subsubsec: ssa_rank} было введено понятие ранга ряда для базового $\SSA$.
+Теперь рассмотрим $\GSSA$ и поймем, что для того же ряда $\operatorname{rank} \mathbf{X}^{(\alpha)} = \operatorname{rank} \mathbf{X}$, а значит, что для $\GSSA$ также применимы понятия $L$-ранга ряда. Из вида \eqref{eq:X_alpha} $\mathbf{X}^{(\alpha)}$ можно получить, что $\mathbf{X}^{(\alpha)} = \operatorname{diag}\left(w_1, w_2, \dots, w_L \right) \mathbf{X} = \operatorname{diag}\left({\boldsymbol{w}}^{(a)}\right) \mathbf{X}$. Поскольку матрица $\operatorname{diag}\left({\boldsymbol{w}}^{(a)}\right)$ имеет ранг равный $L$, она диагональна, то и $\operatorname{rank} \mathbf{X}^{(\alpha)} = \operatorname{rank} \operatorname{diag}\left({\boldsymbol{w}}^{(a)}\right)\mathbf{X} = \operatorname{rank} \mathbf{X}$.
+
+\subsubsection{GSSA как линейный фильтр}
+Аналогично $\SSA$, метод $\GSSA$ можно переписать с помощью линейных фильтров.
+Пусть $\TS = (x_1, \dots, x_{N})$ --- временной ряд длины $N$, $K = N - L + 1, \quad L^{*} = \min(L, K)$. Пусть $L$ будет длиной окна, а $(\sqrt{\lambda^{(\alpha)}},\,U^{(\alpha)},\,V^{(\alpha)})$ — одной из собственных троек. Определим диагональную матрицу $N \times N$:
+$$
+\mathbf{D}^{(\alpha)} = \text{diag}(w_1, w_1 + w_2, \ldots,
+\sum \limits_{i = 1}^{L^*-1}w_i,
+\sum \limits_{i = 1}^{L^*}w_i, \sum \limits_{i = 1}^{L^*}w_i, \ldots, \sum \limits_{i = 1}^{L^*}w_i,
+\sum \limits_{i = 2}^{L^*}w_i, \ldots, w_{L^*-1}+ w_{L^*}, w_{L^*})
+$$
+и две матрицы  $K \times N$:
+\[
+\mathbf{W}^{(\alpha)} = \begin{pmatrix}
+	u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 & 0 \\
+	0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 \\
+	\vdots & 0 & \ddots & \ddots & \ddots & \cdots & \ddots & 0 & \cdots & 0 \\
+	0 & \cdots & 0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 & \vdots \\
+	0 & 0 & \cdots & 0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 \\
+	0 & 0 & 0 & \cdots & 0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)}
+\end{pmatrix},
+\]
+\[
+\mathbf{W}_{\boldsymbol{w}}^{(\alpha)} = \begin{pmatrix}
+	w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 & 0 \\
+	0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 \\
+	\vdots & 0 & \ddots & \ddots & \ddots & \cdots & \ddots & 0 & \cdots & 0 \\
+	0 & \cdots & 0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 & \vdots \\
+	0 & 0 & \cdots & 0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 \\
+	0 & 0 & 0 & \cdots & 0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)}
+\end{pmatrix}.
+\]
+Здесь $U = (u_1, \dots, u_L)$ --- собственный вектор матрицы $\mathbf{S}$.
+\begin{theorem}
+	\label{th:filter_GSSA}
+	Компонента временного ряда $\widetilde \TS$, восстановленная с использованием собственной тройки $(\sqrt{\lambda^{(\alpha)}},\,U^{(\alpha)},\,V^{(\alpha)})$, имеет вид:
+	\[
+	\widetilde{\TS}^{{\rm T}} = {\mathbf{D}^{(\alpha)}}^{-1}
+	{\mathbf{W}^{(\alpha)}}^{{\rm T}}
+	\mathbf{W}_{\boldsymbol{w}}^{(\alpha)}
+	\TS^{\rm T}.
+	\]
+\end{theorem}
+\begin{proof}
+	Доказательство проводится аналогично доказательству теоремы $\ref{th:filter_SSA}$.
+\end{proof}
+
+Таким образом, для восстановления методом $\GSSA$ средних точек (индексы от $L$ до $K$) имеем следующий фильтр:
+\begin{equation}
+	\label{eq:representation_gssa_as_filter}
+	{\widetilde{x}}_{s} = \sum_{j=-(L-1)}^{L-1} \left( \sum_{k=1}^{L-|j|} u_{k}^{(\alpha)} u_{k+|j|}^{(\alpha)} w_k / \sum\limits_{i = 1}^{L}w_i \right) x_{s-j}, \quad L \leq s \leq K.
+\end{equation}
+Похожим образом можно переписать $\GSSA$ через линейные фильтры для точек в начале и конце.
+
+
+\newpage
+
+
+
 \section{Метод Circulant singular spectrum analysis (CiSSA)}
 \label{sec:cissa}
 
@@ -429,13 +567,41 @@ $$
 
 \subsubsection{Разложение}
 
-Для каждого $k = 1:L$ вычисляются векторы ${U}_{k}$:
+Для каждого $k = 1:L$ вычисляются собственные векторы ${U}_{k}$:
 \begin{equation*}
 	{U}_{k}=L^{-1/2}(u_{k,1\cdot}\cdot\cdot\cdot,u_{k,L}), \, \text{где} \, 
 	u_{k,j}=\exp\left(-\mathrm{i}2\pi\d(j-1)\frac{k-1}{L}\right), \,
 	\text{причем} \, U_{k} = U_{L+2-k}^*,
 \end{equation*}
 где $U^*$ --- комплексное сопряжение вектора $U$.
+
+
+\paragraph{Элементарное разложение \newline}
+
+Для каждой частоты $w_k = \frac{k-1}{L}$, $k = 1:\lfloor \frac{L+1}{2} \rfloor$, есть два собственных вектора: $U_k$ и $U_{L+2-k}$. За частоту $w_0$ отвечает один собственный вектор --- $U_0$. Если же $L$ --- четное, то частоте $w_{\frac{L}{2} + 1}$ будет соответствовать один вектор $U_{\frac{L}{2}+1}$.
+
+Следовательно, индексы группируются следующим образом:
+\begin{equation*}
+	B_1 = \{1\}; \, B_k = \{k, L+2-k\}, \,  \text{для } k = 1:\lfloor \frac{L+1}{2}\rfloor; \, 
+	B_{\frac{L}{2} + 1} = \left\{ \frac{L}{2} + 1 \right\}, \, \text{если} \, L\mod 2 = 0.
+\end{equation*}
+%Разложение $\mathbf X_{B_k} = \mathbf X_k + \mathbf X_{L+2-k} = U_k U_k^H \mathbf X + U_{L+2-k} U_{L+2-k}^H \mathbf X$, где $U^H$ --- это комплексное сопряжение и транспонирование вектора $U$.
+
+Таким образом, получается элементарная группировка по частотам $w_k$: 
+\begin{align*}
+	\mathbf X_{B_k} &= \mathbf X_k + \mathbf X_{L+2-k} = U_k U_k^H \mathbf X + U_{L+2-k} U_{L+2-k}^H \mathbf X, \,  \text{для } k = 1:\lfloor \frac{L+1}{2}\rfloor;\\
+	\mathbf X_{B_{\frac{L}{2} + 1}} &= \mathbf X_{{\frac{L}{2} + 1}} = 
+	U_{\frac{L}{2} + 1} U_{\frac{L}{2} + 1}^H \mathbf X, \, \text{если} \, L \mod 2 = 0,
+\end{align*}
+ где $U^H$ --- это комплексное сопряжение и транспонирование вектора $U$.
+ 
+ Таким образом, получаем разложение исходной матрицы $\mathbf X$ в сумму матриц $\mathbf{X}_{B_k}$, отвечающих периодикам с определенными частотами $w_k$.
+ 
+\subsubsection{Группировка} 
+Такой же шаг, как и в базовом $\SSA$. Однако группировка будет производиться на непересекающиеся подгруппы по частотам от $w_k$, которые находятся в диапазоне от $0$ до $0.5$. 
+
+\subsubsection{Диагональное усреднение}
+Такой же шаг, как и в базовом $\SSA$.
 
 \begin{comment}
 	$U_k$ можно получить по аналогии с $\SSA$.
@@ -475,25 +641,6 @@ $$
 	\end{equation*}
 	а собственные вектора, связанные с $\lambda_{L, k}$ --- это векторы $U_k$.
 \end{comment}
-
-
-\paragraph{Элементарное разложение \newline}
-
-Для каждой частоты $w_k = \frac{k-1}{L}$, $k = 2:\lfloor \frac{L+1}{2} \rfloor$, есть два собственных вектора: $U_k$ и $U_{L+2-k}$. За частоту $w_0$ отвечает один собственный вектор --- $U_0$. Если же $L$ --- четное, то частоте $w_{\frac{L}{2} + 1}$ будет соответствовать один вектор $U_{\frac{L}{2}+1}$.
-
-Следовательно, индексы группируются следующим образом:
-\begin{equation*}
-	B_1 = \{1\}; \, B_k = \{k, L+2-k\}, \,  \text{для } k = 2:\lfloor \frac{L+1}{2}\rfloor; \, 
-	B_{\frac{L}{2} + 1} = \left\{ \frac{L}{2} + 1 \right\}, \, \text{если} \, L\mod 2 = 0.
-\end{equation*}
-%Разложение $\mathbf X_{B_k} = \mathbf X_k + \mathbf X_{L+2-k} = U_k U_k^H \mathbf X + U_{L+2-k} U_{L+2-k}^H \mathbf X$, где $U^H$ --- это комплексное сопряжение и транспонирование вектора $U$.
-
-
-\subsubsection{Группировка} 
-Такой же шаг, как и в базовом $\SSA$. Однако группировка будет производиться на непересекающиеся подгруппы по частотам от $0$ до $0.5$, поскольку частоты выше 0.5 представляют собой зеркальное отражение частот ниже 0.5. Именно поэтому объединяются матрицы $\mathbf X_{B_k} = \mathbf X_k + \mathbf X_{L+2-k}$. Разложение $\mathbf X_{B_k} = \mathbf X_k + \mathbf X_{L+2-k} = U_k U_k^H \mathbf X + U_{L+2-k} U_{L+2-k}^H \mathbf X$, где $U^H$ --- это комплексное сопряжение и транспонирование вектора $U$.
-
-\subsubsection{Диагональное усреднение}
-Такой же шаг, как и в базовом $\SSA$.
 
 \begin{comment}
 	\label{comm:proector}
@@ -620,133 +767,6 @@ $$
 
 \newpage
 
-
-\section{Метод Generalized singular spectrum analysis (GSSA)}
-\label{sec:gssa}
-
-В этом разделе описана модификация $\SSA$ на основе добавления весов к строкам $L$-траекторная матрица $\mathbf{X}$ \cite{gu2024generalized}. Авторы метода называют его обобщенным, поскольку базовый $\SSA$ является частным случаем $\GSSA$ с параметром $\alpha = 0$.
-
-\subsection{Алгоритм метода GSSA}
-Алгоритм $\GSSA$ сильно схож с базовым $\SSA$. Пусть $N > 2$, вещественнозначный временной ряд
-$\TS = (x_1, \dots, x_{N})$ длины $N$. Фиксируется параметр $\alpha \geq 0$, отвечающий за веса:
-\begin{equation*}
-	{\boldsymbol{w}}^{(a)} = (w_{1}, w_{2}, \ldots, w_{L}) = \left( \left| \sin\left(\frac{\pi n}{L+1}\right) \right| \right)^\alpha, \quad \text{для } \quad n = 1, 2, \dots, L.
-\end{equation*}
-
-\subsubsection{Вложение}
-$L$ --- некоторое целое число (длина окна), $1 < L < N$. Строится $L$-траекторная матрица $\mathbf{X}^{(\alpha)}$:
-\begin{equation}
-	\label{eq:X_alpha}
-	\mathbf{X}^{(\alpha)} = 
-	\begin{pmatrix}
-		w_1 x_1 & w_1 x_2 & w_1 x_3 & \dots & w_1 x_{K} \\
-		w_2 x_2 & w_2 x_3 & w_2 x_4 & \dots & w_2 x_{K+1} \\
-		w_3 x_3 & w_3 x_4 & w_3 x_5 & \dots & w_3 x_{K+2} \\
-		\vdots & \vdots & \vdots & \ddots & \vdots \\
-		w_L x_{L} & w_L x_{L+1} & w_L x_{L+2} & \dots & w_L x_{N}
-	\end{pmatrix}.
-\end{equation}
-
-\subsubsection{Сингулярное разложение (SVD)}
-Этот шаг такой же, как и в $\SSA$, только матрица $\mathbf{X}$ заменяется на $\mathbf{X}^{(\alpha)}$. Будем обозначать собственные тройки в этом случае так: $(\sqrt{\lambda^{(\alpha)}},\,U^{(\alpha)},\,V^{(\alpha)})$.
-
-\subsubsection{Группировка}
-В точности как в $\SSA$. Тем самым, разложение может быть записано в сгруппированном виде:
-\begin{equation*}
-	\mathbf{X}^{(\alpha)} = \mathbf{X}^{(\alpha)}_{I_1} + \dots + \mathbf{X}^{(\alpha)}_{I_m}.
-\end{equation*}
-
-\subsubsection{Взвешенное диагональное усреднение}
-Поскольку траекторная матрица была изменена весами, то диагональное усреднение тоже будет зависеть от весов.
-
-Пусть $\mathbf{Y}$ --- матрица размерности $L \times K$. Взвешенное диагональное усреднение переводит матрицу $\mathbf{Y}$ в временной ряд $g_0, \dots, g_{N-1} $:
-
-\begin{equation*}
-	g_{k}=
-	\begin{cases}
-		\frac{1}{\sum_{n = 1}^k w_n} \sum\limits_{m=1}^{k+1} y_{m,k-m+2}^{*} &
-		\text{для } 0 \leq k < L - 1, \\
-		
-		\frac{1}{\sum_{n = 1}^L w_n} \sum\limits_{m=1}^{L} y_{m,k-m+2}^{*} &
-		\text{для } L-1 \leq k < K , \\
-		
-		\frac{1}{\sum_{n = k-K+1}^L w_n} \sum\limits_{m=k-K+2}^{N-K+1} y_{m,k-m+2}^{*} &
-		\text{для } K \leq k < N .\\
-	\end{cases}
-\end{equation*}
-Применяя данную операцию к матрицам $\mathbf{X}_{I_1}^{(\alpha)}, \dots, \mathbf{X}_{I_m}^{(\alpha)}$, получаются $m$ новых рядов: $\TS^{(\alpha)}_1, \dots, \TS^{(\alpha)}_m$. 
-Результатом данного шага и всего алгоритма является разложение временного ряда $\TS^{(\alpha)}_1 + \dots + \TS^{(\alpha)}_m = \TS^{(\alpha)}$.
-
-
-
-\subsection{Свойства GSSA}
-\subsubsection{Ранг ряда}
-Зафиксируем ряд $\TS = (x_1, \dots, x_{N})$ длины $N > 3$ и длину окна $L$. 
-
-%Рассмотрим базовый $\SSA$. В процессе процедуры вложения получаем последовательность векторов вложения:
-%\begin{equation*}
-%	\mathrm{X}_i^{(L)} = \mathrm{X}_i = (x_{i-1}, \dots, x_{i+L-2}), \quad i = 1, \dots, K,
-%\end{equation*}
-%$\mathcal{L}^{(L)} = \mathcal{L}^{(L)}(\TS) \stackrel{{\rm def}}{{=}} \operatorname{span}(\mathrm X_{1}, \ldots, \mathrm X_{K})$ --- траекторное пространство ряда $\TS$. 
-%При этом, если $\dim \mathcal{L}^{(L)}= \operatorname{rank} \mathbf X = d$, то будем говорить, что ряд $\TS$ имеет $L$-ранг $d$ и записывать это как $\operatorname{rank}_L = d$.
-
-В секции \ref{subsubsec: ssa_rank} было введено понятие ранга ряда для базового $\SSA$.
-Теперь рассмотрим $\GSSA$ и поймем, что для того же ряда $\operatorname{rank} \mathbf{X}^{(\alpha)} = \operatorname{rank} \mathbf{X}$, а значит, что для $\GSSA$ также применимы понятия $L$-ранга ряда. Из вида \eqref{eq:X_alpha} $\mathbf{X}^{(\alpha)}$ можно получить, что $\mathbf{X}^{(\alpha)} = \operatorname{diag}\left(w_1, w_2, \dots, w_L \right) \mathbf{X} = \operatorname{diag}\left({\boldsymbol{w}}^{(a)}\right) \mathbf{X}$. Поскольку матрица $\operatorname{diag}\left({\boldsymbol{w}}^{(a)}\right)$ имеет ранг равный $L$, она диагональна, то и $\operatorname{rank} \mathbf{X}^{(\alpha)} = \operatorname{rank} \operatorname{diag}\left({\boldsymbol{w}}^{(a)}\right)\mathbf{X} = \operatorname{rank} \mathbf{X}$.
-
-\subsubsection{GSSA как линейный фильтр}
-Аналогично $\SSA$, метод $\GSSA$ можно переписать с помощью линейных фильтров.
-Пусть $\TS = (x_1, \dots, x_{N})$ --- временной ряд длины $N$, $K = N - L + 1, \quad L^{*} = \min(L, K)$. Пусть $L$ будет длиной окна, а $(\sqrt{\lambda^{(\alpha)}},\,U^{(\alpha)},\,V^{(\alpha)})$ — одной из собственных троек. Определим диагональную матрицу $N \times N$:
-$$
-\mathbf{D}^{(\alpha)} = \text{diag}(w_1, w_1 + w_2, \ldots,
- \sum \limits_{i = 1}^{L^*-1}w_i,
-  \sum \limits_{i = 1}^{L^*}w_i, \sum \limits_{i = 1}^{L^*}w_i, \ldots, \sum \limits_{i = 1}^{L^*}w_i,
-   \sum \limits_{i = 2}^{L^*}w_i, \ldots, w_{L^*-1}+ w_{L^*}, w_{L^*})
-$$
-и две матрицы  $K \times N$:
-\[
-\mathbf{W}^{(\alpha)} = \begin{pmatrix}
-	u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 & 0 \\
-	0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 \\
-	\vdots & 0 & \ddots & \ddots & \ddots & \cdots & \ddots & 0 & \cdots & 0 \\
-	0 & \cdots & 0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 & \vdots \\
-	0 & 0 & \cdots & 0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)} & 0 \\
-	0 & 0 & 0 & \cdots & 0 & u_{1}^{(\alpha)} & u_{2}^{(\alpha)} & u_{3}^{(\alpha)} & \cdots & u_{L}^{(\alpha)}
-\end{pmatrix},
-\]
-\[
-\mathbf{W}_{\boldsymbol{w}}^{(\alpha)} = \begin{pmatrix}
-	w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 & 0 \\
-	0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 & \cdots & 0 & 0 \\
-	\vdots & 0 & \ddots & \ddots & \ddots & \cdots & \ddots & 0 & \cdots & 0 \\
-	0 & \cdots & 0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 & \vdots \\
-	0 & 0 & \cdots & 0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)} & 0 \\
-	0 & 0 & 0 & \cdots & 0 & w_1 u_{1}^{(\alpha)} & w_2 u_{2}^{(\alpha)} & w_3 u_{3}^{(\alpha)} & \cdots & w_L u_{L}^{(\alpha)}
-\end{pmatrix}.
-\]
-Здесь $U = (u_1, \dots, u_L)$ --- собственный вектор матрицы $\mathbf{S}$.
-\begin{theorem}
-	\label{th:filter_GSSA}
-	Компонента временного ряда $\widetilde \TS$, восстановленная с использованием собственной тройки $(\sqrt{\lambda^{(\alpha)}},\,U^{(\alpha)},\,V^{(\alpha)})$, имеет вид:
-	\[
-	\widetilde{\TS}^{{\rm T}} = {\mathbf{D}^{(\alpha)}}^{-1}
-	{\mathbf{W}^{(\alpha)}}^{{\rm T}}
-	\mathbf{W}_{\boldsymbol{w}}^{(\alpha)}
-	\TS^{\rm T}.
-	\]
-\end{theorem}
-\begin{proof}
-	Доказательство проводится аналогично доказательству теоремы $\ref{th:filter_SSA}$.
-\end{proof}
-
-Таким образом, для восстановления методом $\GSSA$ средних точек (индексы от $L$ до $K$) имеем следующий фильтр:
-\begin{equation}
-	\label{eq:representation_gssa_as_filter}
-	{\widetilde{x}}_{s} = \sum_{j=-(L-1)}^{L-1} \left( \sum_{k=1}^{L-|j|} u_{k}^{(\alpha)} u_{k+|j|}^{(\alpha)} w_k / \sum\limits_{i = 1}^{L}w_i \right) x_{s-j}, \quad L \leq s \leq K.
-\end{equation}
-Похожим образом можно переписать $\GSSA$ через линейные фильтры для точек в начале и конце.
-
-
-\newpage
 
 \section{Сравнение алгоритмов разложения SSA, GSSA, Фурье и CiSSA}
 \label{sec:comparison}
@@ -879,7 +899,7 @@ $$
 		Метод/Компонента & $\TS_{\sin}$ & $\TS_{\cos}$  & $\TS$\\ 
 		\hline
 		SSA & 6.8e-30 & 1.5e-29 & 1.8e-29 \\ 
-		SSA EOSSA & 1.5e-29 & 7.5e-30 & 2.0e-29 \\ 
+		SSA EOSSA, $r = 4$ & 1.5e-29 & 7.5e-30 & 2.0e-29 \\ 
 		Fourier & 1.7e-28 & 3.5e-28 & 5.1e-28 \\ 
 		Fourier extended & 6.2e-04 & 2.6e-03 & 3.2e-03 \\ 
 		CiSSA & 1.9e-29 & 5.3e-30 & 2.1e-29 \\ 
@@ -918,7 +938,7 @@ $$
 		Метод/Компонента & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$\\ 
 		\hline
 		SSA & 2.9e-04 & 3.1e-04 & 5.9e-04 \\ 
-		SSA EOSSA & 2.9e-04 & 3.1e-04 & 5.9e-04 \\ 
+		SSA EOSSA, $r = 4$ & 2.9e-04 & 3.1e-04 & 5.9e-04 \\ 
 		Fourier & 1.0e-04 & 1.1e-04 & 2.2e-04 \\ 
 		Fourier extended  & 1.2e-03 & 3.9e-03 & 5.1e-03 \\ 
 		CiSSA & 1.6e-04 & 1.8e-04 & 3.4e-04 \\ 
@@ -961,7 +981,7 @@ $$
 		Метод/Компонента & $\TS_{c} + \TS_e$ & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$\\ 
 		\hline
 		SSA& 5.0e-03 & 8.9e-07 & 5.2e-05 & 4.4e-03 \\ 
-		SSA EOSSA & 1.7e-28 & 1.6e-29 & 8.7e-30 & 1.6e-28 \\ 
+		SSA EOSSA, $r = 7$ & 1.7e-28 & 1.6e-29 & 8.7e-30 & 1.6e-28 \\ 
 		Fourier  & 1.1e-01 & 6.1e-04 & 6.8e-03 & 1.1e-01 \\ 
 		Fourier extended & 1.4e-03 & 1.3e-03 & 8.4e-03 & 9.6e-03 \\ 
 		CiSSA & 5.3e-02 & 1.6e-05 & 4.9e-04 & 4.4e-02 \\ 
@@ -1002,7 +1022,7 @@ $$
 		Метод/Компонента & $\TS_{c} + \TS_e$ & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$\\ 
 		\hline
 		SSA & 5.2e-03 & 2.9e-04 & 3.6e-04 & 5.2e-03 \\ 
-		SSA EOSSA & 9.5e-04 & 2.9e-04 & 3.1e-04 & 1.5e-03 \\ 
+		SSA EOSSA, $r = 7$ & 9.5e-04 & 2.9e-04 & 3.1e-04 & 1.5e-03 \\ 
 		Fourier & 1.2e-01 & 6.9e-04 & 7.2e-03 & 1.1e-01 \\ 
 		Fourier extended & 3.0e-03 & 1.9e-03 & 9.6e-03 & 1.2e-02 \\ 
 		CiSSA & 5.5e-02 & 1.7e-04 & 7.0e-04 & 4.6e-02 \\ 
@@ -1014,22 +1034,22 @@ $$
 \end{table}
 
 % Sun Feb 16 18:50:41 2025
-\begin{table}[ht]
-	\centering
-	\begin{tabular}{lllll}
-		\hline
-		Метод & exp\_err & sin\_err & cos\_err & all\_err \\ 
-		\hline
-		SSA & 5.2e-03 & 2.9e-04 & 3.6e-04 & 5.2e-03 \\ 
-		SSA EOSSA & 9.5e-04 & 2.9e-04 & 3.1e-04 & 1.5e-03 \\ 
-		Fourier & 1.2e-01 & 6.9e-04 & 7.2e-03 & 1.1e-01 \\ 
-		CiSSA & 5.5e-02 & 1.7e-04 & 7.0e-04 & 4.6e-02 \\ 
-		CiSSA extended & 2.7e-03 & 6.8e-04 & 2.1e-03 & 3.1e-03 \\ 
-		Fourier extended & 3.0e-03 & 1.9e-03 & 9.6e-03 & 1.2e-02 \\ 
-		\hline
-	\end{tabular}
-	\caption{Example Table} 
-\end{table}
+%%%%\begin{table}[ht]
+%%%%	\centering
+%%%%	\begin{tabular}{lllll}
+%%%%		\hline
+%%%%		Метод & exp\_err & sin\_err & cos\_err & all\_err \\ 
+%%%%		\hline
+%%%%		SSA & 5.2e-03 & 2.9e-04 & 3.6e-04 & 5.2e-03 \\ 
+%%%%		SSA EOSSA & 9.5e-04 & 2.9e-04 & 3.1e-04 & 1.5e-03 \\ 
+%%%%		Fourier & 1.2e-01 & 6.9e-04 & 7.2e-03 & 1.1e-01 \\ 
+%%%%		CiSSA & 5.5e-02 & 1.7e-04 & 7.0e-04 & 4.6e-02 \\ 
+%%%%		CiSSA extended & 2.7e-03 & 6.8e-04 & 2.1e-03 & 3.1e-03 \\ 
+%%%%		Fourier extended & 3.0e-03 & 1.9e-03 & 9.6e-03 & 1.2e-02 \\ 
+%%%%		\hline
+%%%%	\end{tabular}
+%%%%	\caption{Example Table} 
+%%%%\end{table}
 
 
 Как видно из таблицы \ref{tab:errs_fourier_cissa_trend_noised}, разделения ухудшились, однако $\SSA$ с улучшением разделимости EOSSA отработал лучше всех. Также был проведен был проведён двухвыборочный t-критерий для зависимых выборок с целью проверки гипотезы о равенстве средних значений ошибки для каждой компоненты, попарно для всех методов. В качестве нулевой гипотезы ($H_0$) предполагалось, что средние значения двух сравниваемых выборок равны. Критический уровень значимости был установлен на уровне $\alpha = 0.05$.
