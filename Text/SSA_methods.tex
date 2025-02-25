@@ -273,7 +273,7 @@ $\TS_{i,j}\,=\,(x_{i-1},\cdot\cdot\cdot,x_{j-1}),\;\;1\,\leq\,i\,\leq\,j\,<\,N.$
 				cos     & +     & +   & +   & +       & +    \\
 				exp     & +     & +   & +   & +       & +    \\
 				exp cos & +     & +   & +   & +       & +    \\
-				ak+b    & +     & +   & +   & +       & -    \\ \hline
+				ak+b    & -     & +   & +   & +       & -    \\ \hline
 		\end{tabular}}
 	\end{center}
 \end{table}
@@ -865,6 +865,10 @@ $$
 
 
 \subsubsection{Точная разделимость}
+\label{subsubsec:exact}
+
+ПРИВЕСТИ В НОРМАЛЬНЫЙ ВИД ТАБЛИЦУ
+
 В свойствах методов были приведены классы функций и условия, при которых методы могут безошибочно разделить два ряда друг от друга. Сравним эти условия.
 
 Разложение Фурье может отличить друг от друга периодические компоненты, попадающие в решетку его частот. Другими словами, разложением Фурье может быть точно разделен ряд $\TS = \TS_{w_1} + \TS_{w_2}$, где $\TS_{w_1} = A_1 \cos(2\pi w_1 n + \varphi_1)$, $\TS_{w_2} = A_2 \cos(2\pi w_2 n + \varphi_2)$ и $Nw_1, Nw_2 \in \mathbb{N}$, $w_1 \not = w_2$.
@@ -873,7 +877,45 @@ $$
 
 У алгоритма $\SSA$ для разделения $\TS = \TS_{w_1} + \TS_{w_2}$ накладываются более жесткие ограничения:  $Lw_1, Lw_2, Kw_1, Kw_2 \in \mathbb{N}$, $w_1 \not = w_2$, $A_1 \not = A_2$. Однако также могут быть точно разделены ряды $\TS = \TS_{\exp_1} + \TS_{\exp_2} = A_1 \exp(\alpha_1 n)\cos(2\pi w_1 n + \varphi_1) + A_2 \exp(\alpha_2 n)\cos(2\pi w_2 n + \varphi_2)$, где $Lw_1, Lw_2, Kw_1, Kw_2 \in \mathbb{N}$, $w_1 \not = w_2$, $A_1 \not = A_2$, $\alpha_1 \not = \alpha_2$.
 
+\textbf{\large{Пример.}} Будем разделять временной ряд $\TS = \TS_{\sin} + \TS_{\cos} = \sin{\frac{2\pi}{12}n} + \frac{1}{2}\cos{\frac{2\pi}{3}n}$. Рассмотрим разложения методов в лучшем и худшем случае.
+% latex table generated in R 4.2.2 by xtable 1.8-4 package
+% Tue Feb 25 10:19:06 2025
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l|ccc}
+		\hline
+		Метод & sin\_err & cos\_err & all\_err \\ 
+		\hline
+		SSA, 
+		Lw, Kw in N & 6.8e-30 & 1.5e-29 & 1.8e-29 \\ 
+		SSA EOSSA, 
+		Lw, Kw in N & 1.5e-29 & 7.5e-30 & 2.0e-29 \\ 
+		Fourier, Nw in N & 1.7e-28 & 3.5e-28 & 5.1e-28 \\ 
+		CiSSA, Lw in N & 1.9e-29 & 5.3e-30 & 2.1e-29 \\ 
+		CiSSA extended, Lw in N & 2.0e-04 & 8.6e-04 & 1.1e-03 \\ 
+		Fourier extended, Nw in N & 6.2e-04 & 2.6e-03 & 3.2e-03 \\ 
+		\hline
+		SSA, 
+		Lw in N, Kw not in N & 2.2e-06 & 2.2e-06 & 2.0e-29 \\ 
+		SSA EOSSA, 
+		Lw in N, Kw not in N & 1.5e-29 & 8.8e-30 & 1.9e-29 \\ 
+		Fourier, Nw not in N & 9.4e-03 & 3.5e-03 & 1.3e-02 \\ 
+		CiSSA, Lw not in N & 1.7e-02 & 7.0e-03 & 2.3e-02 \\ 
+		CiSSA extended, Lw not in N & 2.4e-03 & 6.9e-04 & 3.1e-03 \\ 
+		Fourier extended, Nw not in N & 1.1e-05 & 4.9e-04 & 4.9e-04 \\ 
+		\hline
+	\end{tabular}
+	\caption{Разложения методов ряда $\TS = \TS_{\sin} + \TS_{\cos}$ в лучших и худших случаях} 
+	\label{tab:precise_separability_example1}
+\end{table}
+Таблица \ref{tab:precise_separability_example1} подтверждает, теоретические результаты. 
+
 Таким образом, условия на разделение синусов, слабее у методов $\CISSA$ и Фурье, чем у $\SSA$. Однако $\SSA$ может точно отличать друг от друга больше классов функций.
+
+
+
+
+
 %Проверим на примерах. 
 %Возьмем временной ряд, с разложением которого оба алгоритма должны справиться: $\TS = \TS_{C} + \TS_{cos} = 1 + \cos(\frac{2\pi}{12}x)$, $L = 96 \mid 12$, $N = 96 \cdot 2-1$, $K = 96 \mid 12$. Будем считать MSE между настоящими компонентами ряда и вычисленными.
 %\begin{table}[H]
@@ -911,7 +953,136 @@ $$
 
 
 
+
+
+\subsubsection{Асимптотическая разделимость}
+\label{subsec:asymp}
+Как было сказано, асимптотически разделимы в методе $\SSA$ полиномы, гармонические функции (косинус, косинус помноженный на экспоненту, экспонента) \cite{golyandina2001analysis}. 
+
+В алгоритме $\CISSA$ при увеличении длины окна $L$ меняется сетка разбиения частот. Из-за этого, даже если не удастся выбрать подходящее $L$, при котором будет точно отделим косинус, но постоянно его увеличивать, в конечном счете получится снизить ошибку выделения нужной компоненты косинуса, если брать соседние частоты с частотой компоненты. Однако в таком подходе есть две проблемы. Во-первых, в этом случае нужно выбирать диапазон частот, которые стоит объединить. Во-вторых, в реальности это труднореализуемо, слишком большое $N$ и $L$ придется выбрать, чтобы значимо снизить ошибку. Поэтому, при использовании $\CISSA$ обязательно нужно заранее понимать, какие частоты интересуют. Аналогичная ситуация для разложения Фурье.
+
+Теперь рассмотрим разложение непериодических компонент. Поскольку все непериодические компоненты относятся к частотам достаточно близким к нулю, то и разделить между собой непериодические компоненты методы $\CISSA$ и Фурье не могут даже асимптотически, в отличие от $\SSA$. 
+
+
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.8\textwidth]{img/trend inseparability example/all.png}
+%	\caption{Правильное разложение ряда $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin}$}
+%	\label{fig:c_e_cos}
+%\end{figure}
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.8\textwidth]{img/trend inseparability example/ssa.png}
+%	\caption{Разложение ряда $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin}$ методом $\SSA$}
+%	\label{fig:c_e_cos_ssa}
+%\end{figure}
+%
+%Метод $\SSA$ разделил правильно все компоненты друг от друга.
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.8\textwidth]{img/trend inseparability example/cissa.png}
+%	\caption{Разложение ряда $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin}$ методом $\CISSA$}
+%	\label{fig:c_e_cos_cissa}
+%\end{figure}
+%
+%В случае $\CISSA$ получилось так, что экспонента и константа смешались в одну компоненту, одни и те же низкие частоты отвечают за них одновременно, поскольку они не являются периодиками.
+%
+%% latex table generated in R 4.2.2 by xtable 1.8-4 package
+%% Wed Jun 12 06:57:37 2024
+%\begin{table}[H]
+%	\centering
+%	\begin{tabular}{l|lll|llll}
+%		\hline
+%		Метод/Компонента & $\TS_e$ & $\TS_c$ & $\TS_c + \TS_e$ & $\TS_{\sin}$ & $\TS_{\cos}$ \\ 
+%		\hline
+%		SSA & 2.2e-25 & 2.2e-25 & 4.2e-28 &3.8e-29 & 1.6e-29 \\ 
+%		CiSSA &none & none & 3.5e-02 & 1.4e-04 & 1.9e-03 \\ 
+%		\hline
+%	\end{tabular}
+%	\caption{MSE разложений ряда $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin}$ методов $\SSA$ и \CISSA} 
+%	\label{tab:errs}
+%\end{table}
+%
+%Таблица \ref{tab:errs} и рисунки \ref{fig:c_e_cos_ssa}, \ref{fig:c_e_cos_cissa} показывают, что метод $\SSA$ справился лучше в сравнении с $\CISSA$, причем как по разделимости, так и по ошибке. В алгоритме $\CISSA$ трендовая составляющая также смешалась с сезонной, поэтому увеличилась ошибка при косинусе. Стоит отметить, что в данном примере использовался алгоритм улучшения разделимости EOSSA \cite{golyandina2023intelligent} для метода $\SSA$. Без него не получились бы такие результаты.
+%
+%Или же, если заменить $\TS_{e}$ на $\TS_{e \cdot \cos}$, то есть теперь ряд $\TS = \TS_c + \TS_{e \cdot \cos} + \TS_{\cos} + \TS_{\sin} = 1 + e^{\frac{x}{100}} \cos(\frac{2\pi}{48} x) + \cos(\frac{2\pi}{12} x) + \sin(\frac{2\pi}{24} x)$, то получится следующая таблица ошибок:
+%\begin{table}[H]
+%	\centering
+%	\begin{tabular}{l|lllllll}
+%		\hline
+%		Метод/Компонента & $\TS_{e \cdot \cos}$ & $\TS_{\sin}$ & $\TS_{\cos}$ \\ 
+%		\hline
+%		SSA & 4.7e-29 & 1.1e-29 & 8.4e-30 \\ 
+%		CiSSA  &3.2e-02 & 2.6e-04 & 5.8e-03 \\ 
+%		\hline
+%	\end{tabular}
+%	\caption{MSE разложений ряда $\TS = \TS_c + \TS_{e \cdot \cos} + \TS_{\cos} + \TS_{\sin}$ методов $\SSA$ и \CISSA} 
+%	\label{tab:errs_exp_cos}
+%\end{table}
+%
+%Таким образом, таблица \ref{tab:errs_exp_cos} показывает тот же недостаток у метода $\CISSA$, что и таблица \ref{tab:errs}.
+
+
+\subsubsection{Выделение тренда}
+Рассмотрим, влияние непериодических компонент на разложение ряда. 
+
+Базовый алгоритм $\SSA$ может выделять трендовую составляющую за счет своего адаптивного базиса. Для алгоритмов $\CISSA$ и разложения Фурье нужно применять процедуры расширения временного ряда, чтобы использовать их для выделения тренда. 
+
+\textbf{\large{Пример.}} Рассмотрим ряд из примера в секции \ref{subsubsec:exact} и добавим к нему непериодичность. $\TS = \TS_{\sin} + \TS_{\cos} + \TS_{c} + \TS_e = \sin{\frac{2\pi}{12}x} + \frac{1}{2}\cos{\frac{2\pi}{3}x} + 1 + e^{\frac{x}{100}}$. Будем искать экспоненту и константу по низким частотам, назовем это трендовой составляющей ряда.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l|cccc}
+			\hline
+			Метод/Компонента & $\TS_{c} + \TS_e$ & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$\\ 
+			\hline
+			SSA& 5.0e-03 & 8.9e-07 & 5.2e-05 & 4.4e-03 \\ 
+			SSA EOSSA, $r = 7$ & 1.7e-28 & 1.6e-29 & 8.7e-30 & 1.6e-28 \\ 
+			Fourier  & 1.1e-01 & 6.1e-04 & 6.8e-03 & 1.1e-01 \\ 
+			Fourier extended & 1.4e-03 & 1.3e-03 & 8.4e-03 & 9.6e-03 \\ 
+			CiSSA & 5.3e-02 & 1.6e-05 & 4.9e-04 & 4.4e-02 \\ 
+			CiSSA extended & 5.0e-04 & 2.1e-04 & 1.1e-03 & 6.0e-04 \\ 
+			\hline
+		\end{tabular}
+	\caption{MSE разложений ряда $\TS = \TS_{\sin} + \TS_{\cos} + \TS_{c} + \TS_e$ методов} 
+	\label{tab:errs_fourier_cissa_trend}
+\end{table}
+
+
+По таблице \ref{tab:errs_fourier_cissa_trend} видно, что алгоритмы $\CISSA$ и Фурье без модификаций достаточно плохо определяют тренд. Ситуация с выделением тренда улучшается при использовании процедуры расширения ряда, однако есть недостаток у такого решения. В примерах, рассматривающихся  для таблиц \ref{tab:precise_separability_example1} и \ref{tab:errs_fourier_cissa_trend}, можно заметить, что при применении расширения ряда ухудшается отделение периодических составляющих. Подобной проблемы нет с улучшением разделимости в методе $\SSA$.
+
+\subsubsection{Отделение сигнала от шума}
+%Рассматривая ряд из предыдущего пункта, добавим к нему гауссовский  шум с стандартным отклонением $0.1$: $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin} +\TS_{\mathrm{noise}} = 1 + e^{\frac{x}{100}} + \cos(\frac{2\pi}{12} x) + \sin(\frac{2\pi}{24} x) + \mathrm N(0, 0.1^2)$, $N = 96 \cdot 2 - 1, \, L = 96$. Сделав такой тест $10000$ раз, получим следующий результат по ошибке $\mathrm{MSE}$ между настоящим сигналом и его оценкой:
+%\begin{table}[H]
+%	\centering
+%	\begin{tabular}{l|lllllll}
+%		\hline
+%		Метод/Статистики & min & median & mean & max & sd\\ 
+%		\hline
+%		
+%		SSA & 5.8e-04 & 2.0e-03 & 2.1e-03 & 4.9e-03 & 6.2e-04\\ 
+%		CiSSA & 2.5e-02 & 3.4e-02 & 3.4e-02 & 4.9e-02 & 3.7e-03\\ 
+%		\hline
+%	\end{tabular}
+%	\caption{Данные по распределению ошибки восстановления сигнала разложений методов $\SSA$ и \CISSA} 
+%	\label{tab:errs_of_errs}
+%\end{table}
+%
+%
+%По таблице \ref{tab:errs_of_errs} можно увидеть что метод $\SSA$ отработал лучше $\CISSA$.
+НАПИСАТЬ РЕЗУЛЬТАТЫ ПРЕДЫДУЩИХ ПРИМЕРОВ С ШУМОМ. СДЕЛАТЬ ВЫВОДЫ.
+
+
+\subsubsection{Автоматическая группировка}
+НАПИСАТЬ ПРО ВОЗМОЖНОСТЬ В SSA РАЗДЕЛЯТЬ ПО ЧАСТОТАМ С ПОМОЩЬЮ EOSSA
+
+
+
 \subsubsection{Преимущества и недостатки методов SSA, Фурье и CiSSA}
+ДОБАВИТЬ НЕДОСТАЮЩИЕ ПРИМЕРЫ ПО СТОЛБЦАМ, СКАЗАТЬ, КАКИЕ СТОЛБЦЫ УЖЕ С ПРИМЕРАМИ (ИЗ ПРЕДЫДУЩИХ СЕКЦИЙ), СДЕЛАТЬ МИНИ ВЫВОДЫ
 
 Для наглядного отображения преимуществ каждого из этих методов составлены похожие по смыслу таблицы \ref{tab:advantages_ssa_cissa} и \ref{tab:advantages_fourier}, где строки соответствуют методам, а столбцы --- условиям (особым видам компонент ряда). Разделение на две таблицы объяснимо тем, что методам $\SSA$ и $\CISSA$ важно, какие $L$ и  $K$ выбраны у ряда, в то время как разложение Фурье волнует только $N$. На пересечении строк и столбцов указан знак, показывающий, достигается ли разделение компоненты: плюс (+) обозначает точное выполнение, знак стремления указывает на асимптотическое выполнение, а минус (–) --- на отсутствие разделимости.
 
@@ -923,23 +1094,23 @@ $$
 	непериодическими компонентами;
 	\item group --- автоматическая группировка по заданным частотам.
 \end{itemize}
- 
- 
+
+
 \begin{table}[H]
 	\centering
 	\begin{center}
-	\begin{tabular}{l|cccccccc}
-		\hline
-		Метод/Условие  & $\cos$,                 & $\cos$,                    & $\cos$,                     & $\TS_{\mathrm{np1}}$   & $\TS_{\mathrm{np}}$ & group\\ 
-		               & $Lw \in \mathbb N$, & $Lw\in \mathbb N$,    & $Lw \not\in \mathbb N$, &             \\
-		               & $Kw\in \mathbb N$  & $Kw \not\in \mathbb N$ & $Kw \not\in \mathbb N$  &             \\ 
-		\hline
-		SSA            & $+$                     & $\to$                      & $\to$                       & $\to$ & $\to$ & $-$ \\
-		SSA EOSSA      & $+$                     & $\to$                      & $\to$                       & $\to$ & $\to$ & $+$ \\
-		CiSSA          & $+$                     & $+$                        & $\to$                       & $-$   & $-$ & $+$ \\
-		CiSSA extended & $+$                     & $+$                        & $\to$                       & $\to$ & $-$ & $+$ \\
-		\hline
-	\end{tabular}
+		\begin{tabular}{l|cccccccc}
+			\hline
+			Метод/Условие  & $\cos$,                 & $\cos$,                    & $\cos$,                     & $\TS_{\mathrm{np1}}$   & $\TS_{\mathrm{np}}$ & group\\ 
+			& $Lw \in \mathbb N$, & $Lw\in \mathbb N$,    & $Lw \not\in \mathbb N$, &             \\
+			& $Kw\in \mathbb N$  & $Kw \not\in \mathbb N$ & $Kw \not\in \mathbb N$  &             \\ 
+			\hline
+			SSA            & $+$                     & $\to$                      & $\to$                       & $\to$ & $\to$ & $-$ \\
+			SSA EOSSA      & $+$                     & $\to$                      & $\to$                       & $\to$ & $\to$ & $+$ \\
+			CiSSA          & $+$                     & $+$                        & $\to$                       & $-$   & $-$ & $+$ \\
+			CiSSA extended & $+$                     & $+$                        & $\to$                       & $\to$ & $-$ & $+$ \\
+			\hline
+		\end{tabular}
 	\end{center}
 	\caption{Преимущества и недостатки методов $\SSA$, $\CISSA$} 
 	\label{tab:advantages_ssa_cissa}
@@ -971,17 +1142,17 @@ $$
 %\begin{table}[H]
 %	\centering
 %	\begin{tabular}{l|ccccccl}
-%		\hline
-%		Метод/Компонента & $\TS_{\sin}$ & $\TS_{\cos}$  & $\TS$\\ 
-%		\hline
-%		SSA & 6.8e-30 & 1.5e-29 & 1.8e-29 \\ 
-%		SSA EOSSA, $r = 4$ & 1.5e-29 & 7.5e-30 & 2.0e-29 \\ 
-%		Fourier & 1.7e-28 & 3.5e-28 & 5.1e-28 \\ 
-%		Fourier extended & 6.2e-04 & 2.6e-03 & 3.2e-03 \\ 
-%		CiSSA & 1.9e-29 & 5.3e-30 & 2.1e-29 \\ 
-%		CiSSA extended & 2.0e-04 & 8.6e-04 & 1.1e-03 \\ 
-%		\hline
-%	\end{tabular}
+	%		\hline
+	%		Метод/Компонента & $\TS_{\sin}$ & $\TS_{\cos}$  & $\TS$\\ 
+	%		\hline
+	%		SSA & 6.8e-30 & 1.5e-29 & 1.8e-29 \\ 
+	%		SSA EOSSA, $r = 4$ & 1.5e-29 & 7.5e-30 & 2.0e-29 \\ 
+	%		Fourier & 1.7e-28 & 3.5e-28 & 5.1e-28 \\ 
+	%		Fourier extended & 6.2e-04 & 2.6e-03 & 3.2e-03 \\ 
+	%		CiSSA & 1.9e-29 & 5.3e-30 & 2.1e-29 \\ 
+	%		CiSSA extended & 2.0e-04 & 8.6e-04 & 1.1e-03 \\ 
+	%		\hline
+	%	\end{tabular}
 %	\caption{MSE разложений ряда $\TS = \TS_{\sin} + \TS_{\cos}$} 
 %	\label{tab:errs_fourier_cissa_sin_cos}
 %\end{table}
@@ -989,17 +1160,17 @@ $$
 %%\begin{table}[ht]
 %%	\centering
 %%	\begin{tabular}{llll}
-%%		\hline
-%%		Метод & sin\_err & cos\_err & all\_err \\ 
-%%		\hline
-%%		SSA & 6.8e-30 & 1.5e-29 & 1.8e-29 \\ 
-%%		SSA EOSSA & 1.5e-29 & 7.5e-30 & 2.0e-29 \\ 
-%%		Fourier & 1.7e-28 & 3.5e-28 & 5.1e-28 \\ 
-%%		CiSSA & 1.9e-29 & 5.3e-30 & 2.1e-29 \\ 
-%%		CiSSA extended & 2.0e-04 & 8.6e-04 & 1.1e-03 \\ 
-%%		Fourier extended & 6.2e-04 & 2.6e-03 & 3.2e-03 \\ 
-%%		\hline
-%%	\end{tabular}
+	%%		\hline
+	%%		Метод & sin\_err & cos\_err & all\_err \\ 
+	%%		\hline
+	%%		SSA & 6.8e-30 & 1.5e-29 & 1.8e-29 \\ 
+	%%		SSA EOSSA & 1.5e-29 & 7.5e-30 & 2.0e-29 \\ 
+	%%		Fourier & 1.7e-28 & 3.5e-28 & 5.1e-28 \\ 
+	%%		CiSSA & 1.9e-29 & 5.3e-30 & 2.1e-29 \\ 
+	%%		CiSSA extended & 2.0e-04 & 8.6e-04 & 1.1e-03 \\ 
+	%%		Fourier extended & 6.2e-04 & 2.6e-03 & 3.2e-03 \\ 
+	%%		\hline
+	%%	\end{tabular}
 %%	\caption{Example Table} 
 %%\end{table}
 %
@@ -1010,17 +1181,17 @@ $$
 %\begin{table}[H]
 %	\centering
 %	\begin{tabular}{l|ccc}
-%		\hline
-%		Метод/Компонента & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$\\ 
-%		\hline
-%		SSA & 2.9e-04 & 3.1e-04 & 5.9e-04 \\ 
-%		SSA EOSSA, $r = 4$ & 2.9e-04 & 3.1e-04 & 5.9e-04 \\ 
-%		Fourier & 1.0e-04 & 1.1e-04 & 2.2e-04 \\ 
-%		Fourier extended  & 1.2e-03 & 3.9e-03 & 5.1e-03 \\ 
-%		CiSSA & 1.6e-04 & 1.8e-04 & 3.4e-04 \\ 
-%		CiSSA extended & 6.6e-04 & 1.9e-03 & 2.5e-03 \\ 
-%		\hline
-%	\end{tabular}
+	%		\hline
+	%		Метод/Компонента & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$\\ 
+	%		\hline
+	%		SSA & 2.9e-04 & 3.1e-04 & 5.9e-04 \\ 
+	%		SSA EOSSA, $r = 4$ & 2.9e-04 & 3.1e-04 & 5.9e-04 \\ 
+	%		Fourier & 1.0e-04 & 1.1e-04 & 2.2e-04 \\ 
+	%		Fourier extended  & 1.2e-03 & 3.9e-03 & 5.1e-03 \\ 
+	%		CiSSA & 1.6e-04 & 1.8e-04 & 3.4e-04 \\ 
+	%		CiSSA extended & 6.6e-04 & 1.9e-03 & 2.5e-03 \\ 
+	%		\hline
+	%	\end{tabular}
 %	\caption{MSE разложений ряда $\TS = \TS_{\sin} + \TS_{\cos} +\TS_{\mathrm{noise}}$ } 
 %	\label{tab:errs_fourier_cissa_sin_cos_noised}
 %\end{table}
@@ -1030,17 +1201,17 @@ $$
 %%\begin{table}[ht]
 %%	\centering
 %%	\begin{tabular}{llll}
-%%		\hline
-%%		Метод & sin\_err & cos\_err & all\_err \\ 
-%%		\hline
-%%		SSA & 2.9e-04 & 3.1e-04 & 5.9e-04 \\ 
-%%		SSA EOSSA & 2.9e-04 & 3.1e-04 & 5.9e-04 \\ 
-%%		Fourier & 1.0e-04 & 1.1e-04 & 2.2e-04 \\ 
-%%		CiSSA & 1.6e-04 & 1.8e-04 & 3.4e-04 \\ 
-%%		CiSSA extended & 6.6e-04 & 1.9e-03 & 2.5e-03 \\ 
-%%		Fourier extended & 1.2e-03 & 3.9e-03 & 5.1e-03 \\ 
-%%		\hline
-%%	\end{tabular}
+	%%		\hline
+	%%		Метод & sin\_err & cos\_err & all\_err \\ 
+	%%		\hline
+	%%		SSA & 2.9e-04 & 3.1e-04 & 5.9e-04 \\ 
+	%%		SSA EOSSA & 2.9e-04 & 3.1e-04 & 5.9e-04 \\ 
+	%%		Fourier & 1.0e-04 & 1.1e-04 & 2.2e-04 \\ 
+	%%		CiSSA & 1.6e-04 & 1.8e-04 & 3.4e-04 \\ 
+	%%		CiSSA extended & 6.6e-04 & 1.9e-03 & 2.5e-03 \\ 
+	%%		Fourier extended & 1.2e-03 & 3.9e-03 & 5.1e-03 \\ 
+	%%		\hline
+	%%	\end{tabular}
 %%	\caption{Example Table} 
 %%\end{table}
 %
@@ -1053,17 +1224,17 @@ $$
 %\begin{table}[H]
 %	\centering
 %	\begin{tabular}{l|ccccc}
-%		\hline
-%		Метод/Компонента & $\TS_{c} + \TS_e$ & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$\\ 
-%		\hline
-%		SSA& 5.0e-03 & 8.9e-07 & 5.2e-05 & 4.4e-03 \\ 
-%		SSA EOSSA, $r = 7$ & 1.7e-28 & 1.6e-29 & 8.7e-30 & 1.6e-28 \\ 
-%		Fourier  & 1.1e-01 & 6.1e-04 & 6.8e-03 & 1.1e-01 \\ 
-%		Fourier extended & 1.4e-03 & 1.3e-03 & 8.4e-03 & 9.6e-03 \\ 
-%		CiSSA & 5.3e-02 & 1.6e-05 & 4.9e-04 & 4.4e-02 \\ 
-%		CiSSA extended & 5.0e-04 & 2.1e-04 & 1.1e-03 & 6.0e-04 \\ 
-%		\hline
-%	\end{tabular}
+	%		\hline
+	%		Метод/Компонента & $\TS_{c} + \TS_e$ & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$\\ 
+	%		\hline
+	%		SSA& 5.0e-03 & 8.9e-07 & 5.2e-05 & 4.4e-03 \\ 
+	%		SSA EOSSA, $r = 7$ & 1.7e-28 & 1.6e-29 & 8.7e-30 & 1.6e-28 \\ 
+	%		Fourier  & 1.1e-01 & 6.1e-04 & 6.8e-03 & 1.1e-01 \\ 
+	%		Fourier extended & 1.4e-03 & 1.3e-03 & 8.4e-03 & 9.6e-03 \\ 
+	%		CiSSA & 5.3e-02 & 1.6e-05 & 4.9e-04 & 4.4e-02 \\ 
+	%		CiSSA extended & 5.0e-04 & 2.1e-04 & 1.1e-03 & 6.0e-04 \\ 
+	%		\hline
+	%	\end{tabular}
 %	\caption{MSE разложений ряда $\TS = \TS_{\sin} + \TS_{\cos} + \TS_{c} + \TS_e$ методов} 
 %	\label{tab:errs_fourier_cissa_trend}
 %\end{table}
@@ -1072,17 +1243,17 @@ $$
 %%\begin{table}[ht]
 %%	\centering
 %%	\begin{tabular}{lllll}
-%%		\hline
-%%		Метод & e\_err & sin\_err & cos\_err & all\_err \\ 
-%%		\hline
-%%		SSA & 5.0e-03 & 8.9e-07 & 5.2e-05 & 4.4e-03 \\ 
-%%		SSA EOSSA & 1.7e-28 & 1.6e-29 & 8.7e-30 & 1.6e-28 \\ 
-%%		Fourier & 1.1e-01 & 6.1e-04 & 6.8e-03 & 1.1e-01 \\ 
-%%		CiSSA & 5.3e-02 & 1.6e-05 & 4.9e-04 & 4.4e-02 \\ 
-%%		CiSSA extended & 5.0e-04 & 2.1e-04 & 1.1e-03 & 6.0e-04 \\ 
-%%		Fourier extended & 1.4e-03 & 1.3e-03 & 8.4e-03 & 9.6e-03 \\ 
-%%		\hline
-%%	\end{tabular}
+	%%		\hline
+	%%		Метод & e\_err & sin\_err & cos\_err & all\_err \\ 
+	%%		\hline
+	%%		SSA & 5.0e-03 & 8.9e-07 & 5.2e-05 & 4.4e-03 \\ 
+	%%		SSA EOSSA & 1.7e-28 & 1.6e-29 & 8.7e-30 & 1.6e-28 \\ 
+	%%		Fourier & 1.1e-01 & 6.1e-04 & 6.8e-03 & 1.1e-01 \\ 
+	%%		CiSSA & 5.3e-02 & 1.6e-05 & 4.9e-04 & 4.4e-02 \\ 
+	%%		CiSSA extended & 5.0e-04 & 2.1e-04 & 1.1e-03 & 6.0e-04 \\ 
+	%%		Fourier extended & 1.4e-03 & 1.3e-03 & 8.4e-03 & 9.6e-03 \\ 
+	%%		\hline
+	%%	\end{tabular}
 %%	\caption{Example Table} 
 %%\end{table}
 %
@@ -1094,17 +1265,17 @@ $$
 %\begin{table}[H]
 %	\centering
 %	\begin{tabular}{l|cccc}
-%		\hline
-%		Метод/Компонента & $\TS_{c} + \TS_e$ & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$\\ 
-%		\hline
-%		SSA & 5.2e-03 & 2.9e-04 & 3.6e-04 & 5.2e-03 \\ 
-%		SSA EOSSA, $r = 7$ & 9.5e-04 & 2.9e-04 & 3.1e-04 & 1.5e-03 \\ 
-%		Fourier & 1.2e-01 & 6.9e-04 & 7.2e-03 & 1.1e-01 \\ 
-%		Fourier extended & 3.0e-03 & 1.9e-03 & 9.6e-03 & 1.2e-02 \\ 
-%		CiSSA & 5.5e-02 & 1.7e-04 & 7.0e-04 & 4.6e-02 \\ 
-%		CiSSA extended & 2.7e-03 & 6.8e-04 & 2.1e-03 & 3.1e-03 \\ 
-%		\hline
-%	\end{tabular}
+	%		\hline
+	%		Метод/Компонента & $\TS_{c} + \TS_e$ & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$\\ 
+	%		\hline
+	%		SSA & 5.2e-03 & 2.9e-04 & 3.6e-04 & 5.2e-03 \\ 
+	%		SSA EOSSA, $r = 7$ & 9.5e-04 & 2.9e-04 & 3.1e-04 & 1.5e-03 \\ 
+	%		Fourier & 1.2e-01 & 6.9e-04 & 7.2e-03 & 1.1e-01 \\ 
+	%		Fourier extended & 3.0e-03 & 1.9e-03 & 9.6e-03 & 1.2e-02 \\ 
+	%		CiSSA & 5.5e-02 & 1.7e-04 & 7.0e-04 & 4.6e-02 \\ 
+	%		CiSSA extended & 2.7e-03 & 6.8e-04 & 2.1e-03 & 3.1e-03 \\ 
+	%		\hline
+	%	\end{tabular}
 %	\caption{MSE разложений ряда $\TS = \TS_{\sin} + \TS_{\cos} + \TS_{c} + \TS_e+\TS_{\mathrm{noise}}$ методов} 
 %	\label{tab:errs_fourier_cissa_trend_noised}
 %\end{table}
@@ -1113,17 +1284,17 @@ $$
 %%%%%\begin{table}[ht]
 %%%%%	\centering
 %%%%%	\begin{tabular}{lllll}
-%%%%%		\hline
-%%%%%		Метод & exp\_err & sin\_err & cos\_err & all\_err \\ 
-%%%%%		\hline
-%%%%%		SSA & 5.2e-03 & 2.9e-04 & 3.6e-04 & 5.2e-03 \\ 
-%%%%%		SSA EOSSA & 9.5e-04 & 2.9e-04 & 3.1e-04 & 1.5e-03 \\ 
-%%%%%		Fourier & 1.2e-01 & 6.9e-04 & 7.2e-03 & 1.1e-01 \\ 
-%%%%%		CiSSA & 5.5e-02 & 1.7e-04 & 7.0e-04 & 4.6e-02 \\ 
-%%%%%		CiSSA extended & 2.7e-03 & 6.8e-04 & 2.1e-03 & 3.1e-03 \\ 
-%%%%%		Fourier extended & 3.0e-03 & 1.9e-03 & 9.6e-03 & 1.2e-02 \\ 
-%%%%%		\hline
-%%%%%	\end{tabular}
+	%%%%%		\hline
+	%%%%%		Метод & exp\_err & sin\_err & cos\_err & all\_err \\ 
+	%%%%%		\hline
+	%%%%%		SSA & 5.2e-03 & 2.9e-04 & 3.6e-04 & 5.2e-03 \\ 
+	%%%%%		SSA EOSSA & 9.5e-04 & 2.9e-04 & 3.1e-04 & 1.5e-03 \\ 
+	%%%%%		Fourier & 1.2e-01 & 6.9e-04 & 7.2e-03 & 1.1e-01 \\ 
+	%%%%%		CiSSA & 5.5e-02 & 1.7e-04 & 7.0e-04 & 4.6e-02 \\ 
+	%%%%%		CiSSA extended & 2.7e-03 & 6.8e-04 & 2.1e-03 & 3.1e-03 \\ 
+	%%%%%		Fourier extended & 3.0e-03 & 1.9e-03 & 9.6e-03 & 1.2e-02 \\ 
+	%%%%%		\hline
+	%%%%%	\end{tabular}
 %%%%%	\caption{Example Table} 
 %%%%%\end{table}
 %
@@ -1143,14 +1314,14 @@ $$
 %\begin{table}[H]
 %	\centering
 %	\begin{tabular}{l|lllllll}
-%		\hline
-%		Метод/Компонента & $\TS_{C}$ & $\TS_{\cos} $\\ 
-%		\hline
-%		SSA & 2.1e-30 & 4.9e-30 \\ 
-%		CiSSA & 3.6e-31 & 5.2e-30 \\ 
-%		
-%		\hline
-%	\end{tabular}
+	%		\hline
+	%		Метод/Компонента & $\TS_{C}$ & $\TS_{\cos} $\\ 
+	%		\hline
+	%		SSA & 2.1e-30 & 4.9e-30 \\ 
+	%		CiSSA & 3.6e-31 & 5.2e-30 \\ 
+	%		
+	%		\hline
+	%	\end{tabular}
 %	\caption{MSE разложений ряда $\TS = \TS_{C} + \TS_{\cos}$, $\omega K \in \mathbb N$.} 
 %	\label{tab:4_2_1}
 %\end{table}
@@ -1160,110 +1331,23 @@ $$
 %\begin{table}[H]
 %	\centering
 %	\begin{tabular}{l|lllllll}
-%		\hline
-%		Метод/Компонента & $\TS_{C}$ & $\TS_{\cos} $\\ 
-%		\hline
-%		SSA & 9.5e-5 & 9.6e-5 \\ 
-%		CiSSA & 3.2e-31 & 5.1e-30 \\ 
-%		
-%		\hline
-%	\end{tabular}
+	%		\hline
+	%		Метод/Компонента & $\TS_{C}$ & $\TS_{\cos} $\\ 
+	%		\hline
+	%		SSA & 9.5e-5 & 9.6e-5 \\ 
+	%		CiSSA & 3.2e-31 & 5.1e-30 \\ 
+	%		
+	%		\hline
+	%	\end{tabular}
 %	\caption{MSE разложений ряда $\TS = \TS_{C} + \TS_{\cos}$, $\omega K \not \in \mathbb N$.} 
 %	\label{tab:4_2_2}
 %\end{table}
 %Таким образом, с разделением косинуса от константы лучше справился алгоритм $\CISSA$, поскольку в нем требуется меньше условий на параметры алгоритма.
 
-\subsection{Асимптотическая разделимость}
-\label{subsec:asymp}
-Как было сказано, асимптотически разделимы в методе $\SSA$ полиномы, гармонические функции (косинус, косинус помноженный на экспоненту, экспонента) \cite{golyandina2001analysis}. 
-В алгоритме $\CISSA$ при увеличении длины окна $L$ меняется сетка разбиения частот. Из-за этого, даже если не удастся выбрать подходящее $L$, при котором будет точно отделим косинус, но постоянно его увеличивать, в конечном счете получится снизить ошибку выделения нужной компоненты косинуса, если брать соседние частоты с частотой компоненты. Однако в этом случае нужно выбирать диапазон частот, которые стоит объединить.
 
-Непериодические компоненты повлияют на ошибку разложений всего временного ряда, они смешаются и их уже никак не получится отделить методом $\CISSA$. Рассмотрим более детально пример с экспонентой: $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin} = 1 + e^{\frac{x}{100}} + \cos(\frac{2\pi}{12} x) + \sin(\frac{2\pi}{24} x)$, $N = 96 \cdot 2 - 1, \, L = 96$, можно получить следующие результаты:
+\subsubsection{Проверка алгоритмов на реальных данных}
+УБРАТЬ ПРО АВТОМАТИЧЕСКУЮ ГРУППИРОВКУ, ОСТАВИТЬ ТОЛЬКО РЕАЛЬНЫЙ ПРИМЕР
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.8\textwidth]{img/trend inseparability example/all.png}
-	\caption{Правильное разложение ряда $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin}$}
-	\label{fig:c_e_cos}
-\end{figure}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.8\textwidth]{img/trend inseparability example/ssa.png}
-	\caption{Разложение ряда $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin}$ методом $\SSA$}
-	\label{fig:c_e_cos_ssa}
-\end{figure}
-
-Метод $\SSA$ разделил правильно все компоненты друг от друга.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.8\textwidth]{img/trend inseparability example/cissa.png}
-	\caption{Разложение ряда $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin}$ методом $\CISSA$}
-	\label{fig:c_e_cos_cissa}
-\end{figure}
-
-В случае $\CISSA$ получилось так, что экспонента и константа смешались в одну компоненту, одни и те же низкие частоты отвечают за них одновременно, поскольку они не являются периодиками.
-
-% latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Wed Jun 12 06:57:37 2024
-\begin{table}[H]
-	\centering
-	\begin{tabular}{l|lll|llll}
-		\hline
-		Метод/Компонента & $\TS_e$ & $\TS_c$ & $\TS_c + \TS_e$ & $\TS_{\sin}$ & $\TS_{\cos}$ \\ 
-		\hline
-		SSA & 2.2e-25 & 2.2e-25 & 4.2e-28 &3.8e-29 & 1.6e-29 \\ 
-		CiSSA &none & none & 3.5e-02 & 1.4e-04 & 1.9e-03 \\ 
-		\hline
-	\end{tabular}
-	\caption{MSE разложений ряда $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin}$ методов $\SSA$ и \CISSA} 
-	\label{tab:errs}
-\end{table}
-
-Таблица \ref{tab:errs} и рисунки \ref{fig:c_e_cos_ssa}, \ref{fig:c_e_cos_cissa} показывают, что метод $\SSA$ справился лучше в сравнении с $\CISSA$, причем как по разделимости, так и по ошибке. В алгоритме $\CISSA$ трендовая составляющая также смешалась с сезонной, поэтому увеличилась ошибка при косинусе. Стоит отметить, что в данном примере использовался алгоритм улучшения разделимости EOSSA \cite{golyandina2023intelligent} для метода $\SSA$. Без него не получились бы такие результаты.
-
-Или же, если заменить $\TS_{e}$ на $\TS_{e \cdot \cos}$, то есть теперь ряд $\TS = \TS_c + \TS_{e \cdot \cos} + \TS_{\cos} + \TS_{\sin} = 1 + e^{\frac{x}{100}} \cos(\frac{2\pi}{48} x) + \cos(\frac{2\pi}{12} x) + \sin(\frac{2\pi}{24} x)$, то получится следующая таблица ошибок:
-\begin{table}[H]
-	\centering
-	\begin{tabular}{l|lllllll}
-		\hline
-		Метод/Компонента & $\TS_{e \cdot \cos}$ & $\TS_{\sin}$ & $\TS_{\cos}$ \\ 
-		\hline
-		SSA & 4.7e-29 & 1.1e-29 & 8.4e-30 \\ 
-		CiSSA  &3.2e-02 & 2.6e-04 & 5.8e-03 \\ 
-		\hline
-	\end{tabular}
-	\caption{MSE разложений ряда $\TS = \TS_c + \TS_{e \cdot \cos} + \TS_{\cos} + \TS_{\sin}$ методов $\SSA$ и \CISSA} 
-	\label{tab:errs_exp_cos}
-\end{table}
-
-Таким образом, таблица \ref{tab:errs_exp_cos} показывает тот же недостаток у метода $\CISSA$, что и таблица \ref{tab:errs}.
-
-\subsection{Отделение сигнала от шума}
-%TODO: везде указывать диапазоны частот
-Рассматривая ряд из предыдущего пункта, добавим к нему гауссовский  шум с стандартным отклонением $0.1$: $\TS = \TS_c + \TS_e + \TS_{\cos} + \TS_{\sin} +\TS_{\mathrm{noise}} = 1 + e^{\frac{x}{100}} + \cos(\frac{2\pi}{12} x) + \sin(\frac{2\pi}{24} x) + \mathrm N(0, 0.1^2)$, $N = 96 \cdot 2 - 1, \, L = 96$. Сделав такой тест $10000$ раз, получим следующий результат по ошибке $\mathrm{MSE}$ между настоящим сигналом и его оценкой:
-\begin{table}[H]
-	\centering
-	\begin{tabular}{l|lllllll}
-		\hline
-		Метод/Статистики & min & median & mean & max & sd\\ 
-		\hline
-		
-		SSA & 5.8e-04 & 2.0e-03 & 2.1e-03 & 4.9e-03 & 6.2e-04\\ 
-		CiSSA & 2.5e-02 & 3.4e-02 & 3.4e-02 & 4.9e-02 & 3.7e-03\\ 
-		\hline
-	\end{tabular}
-	\caption{Данные по распределению ошибки восстановления сигнала разложений методов $\SSA$ и \CISSA} 
-	\label{tab:errs_of_errs}
-\end{table}
-
-
-По таблице \ref{tab:errs_of_errs} можно увидеть что метод $\SSA$ отработал лучше $\CISSA$.
-
-
-
-\subsection{Автоматическая группировка и проверка на реальных данных}
 Авторы статьи \cite{bogalo2020} выделяют главным преимуществом то, что $\CISSA$ автоматически разделяет компоненты ряда по частотам. Однако есть метод, позволяющий сделать автоматическое объединение частот по периодограмме в методе $\SSA$ 
 %\cite{golyandina2023intelligent}
 . При этом, прежде чем применять его, стоит выполнить процедуру улучшения разделимости. В данной работе будут использоваться методы EOSSA и FOSSA \cite{golyandina2023intelligent}.
