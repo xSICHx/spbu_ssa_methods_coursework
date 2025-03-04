@@ -1,29 +1,48 @@
-This is 8-bit Big BibTeX version 0.99d-x4.02 ( 24.4)
-Implementation:  Microsoft(R) C/C++ for Win32
-Release version: 4.02 (16 dec 2023)
-
-The 8-bit codepage and sorting file: 88591lat.csf
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: 6BP_322_Pogrebnikov_Pres.aux
-The style file: plainnat.bst
-I couldn't open database file ref.bib.bib
----line 107 of file 6BP_322_Pogrebnikov_Pres.aux
- : \bibdata{ref.bib
- :                 }
-I'm skipping whatever remains of this command
-I found no database files---while reading file 6BP_322_Pogrebnikov_Pres.aux
-Reallocated glb_str_ptr (elt_size=4) to 10 items from 0.
-Reallocated global_strs (elt_size=1001) to 10 items from 0.
-Reallocated glb_str_end (elt_size=4) to 10 items from 0.
-Warning--I didn't find a database entry for "golyandina2001analysis"
-Warning--I didn't find a database entry for "bogalo2020"
-Warning--I didn't find a database entry for "golyandina2023intelligent"
-Warning--I didn't find a database entry for "spbu_cissa_coursework_github"
-
-Here's how much of BibTeX's memory you used:
- Cites:                 0 out of 750
- Fields:               84 out of 5000
- Hash table:         4794 out of 5000
- Strings:             596 out of 4000
- Free string pool:   4937 out of 65000
- Wizard functions:   2773 out of 3000
-(There were 2 error messages)
+Reallocating 'name_of_file' (item size: 1) to 6 items.
+The style file: plain.bst
+Reallocating 'name_of_file' (item size: 1) to 4 items.
+Database file #1: ref.bib
+You've used 4 entries,
+            2118 wiz_defined-function locations,
+            522 strings with 4820 characters,
+and the built_in function-call counts, 1291 in all, are:
+= -- 113
+> -- 92
+< -- 0
++ -- 36
+- -- 32
+* -- 97
+:= -- 243
+add.period$ -- 12
+call.type$ -- 4
+change.case$ -- 27
+chr.to.int$ -- 0
+cite$ -- 4
+duplicate$ -- 43
+empty$ -- 80
+format.name$ -- 32
+if$ -- 250
+int.to.chr$ -- 0
+int.to.str$ -- 4
+missing$ -- 5
+newline$ -- 23
+num.names$ -- 8
+pop$ -- 26
+preamble$ -- 1
+purify$ -- 24
+quote$ -- 0
+skip$ -- 29
+stack$ -- 0
+substring$ -- 29
+swap$ -- 4
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 14
+warning$ -- 0
+while$ -- 9
+width$ -- 5
+write$ -- 45
