@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex SSA_methods"] 1741113749.65789 "SSA_methods.aux" "SSA_methods.bbl" "SSA_methods" 1741114952.59269 0
+["bibtex SSA_methods"] 1741192777.46488 "SSA_methods.aux" "SSA_methods.bbl" "SSA_methods" 1741194522.68476 0
   "./ref.bib" 1740756053 2810 37445073278d9e1552397f8c5d32ef93 ""
   "C:/Program Files/MiKTeX/bibtex/bst/bibtex/plain.bst" 1291864736 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "SSA_methods.aux" 1741114951 34226 733d583a29fed100745c029785b3179b "pdflatex"
+  "SSA_methods.aux" 1741194521 34024 81d7c7353a7cf91a36c2728e34e4d8d4 "pdflatex"
   (generated)
   "SSA_methods.bbl"
   "SSA_methods.blg"
   (rewritten before read)
-["pdflatex"] 1741114949.08693 "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Text/SSA_methods.tex" "SSA_methods.pdf" "SSA_methods" 1741114952.59382 0
+["pdflatex"] 1741194519.49234 "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Text/SSA_methods.tex" "SSA_methods.pdf" "SSA_methods" 1741194522.68585 0
   "../Title/report.pdf" 1736159507 37314 bea8711fbecbcb2aa2dca09ed78b31dd ""
   "C:/Program Files/MiKTeX/fonts/tfm/jknappen/ec/ecrm1095.tfm" 993062124 3172 eb6efaa83c6c52473a1c403f376eab0f ""
   "C:/Program Files/MiKTeX/fonts/tfm/jknappen/ec/tcrm1095.tfm" 993062508 1460 8005ce585ff351dff78998923504da5e ""
@@ -168,18 +168,18 @@
   "C:/Users/nik1m/AppData/Local/Programs/MiKTeX/tex/latex/refcount/refcount.sty" 1576433952 9878 9e94e8fa600d95f9c7731bb21dfb67a4 ""
   "C:/Users/nik1m/AppData/Local/Programs/MiKTeX/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1657800696 9714 ba3194bd52c8499b3f1e3eb91d409670 ""
   "C:/Users/nik1m/AppData/Local/Programs/MiKTeX/tex/latex/ulem/ulem.sty" 1578651445 15682 94f55b803e160cf7fb6e4d77d07cfe1d ""
-  "SSA_methods.aux" 1741114951 34226 733d583a29fed100745c029785b3179b "pdflatex"
-  "SSA_methods.bbl" 1741113750 1707 844ccf2746818c9569539428a591f139 "bibtex SSA_methods"
-  "SSA_methods.out" 1741114951 2980 cbd9cb830ad87a22cb83c57e65633e7c "pdflatex"
-  "SSA_methods.tex" 1741114947 94366 556412ec12611a97a974fcb3bc3bc6fd ""
-  "SSA_methods.toc" 1741114951 14449 b2d4614413cb3164f24fd0e182990e73 "pdflatex"
-  "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Text/SSA_methods.tex" 1741114947 94366 556412ec12611a97a974fcb3bc3bc6fd ""
+  "SSA_methods.aux" 1741194521 34024 81d7c7353a7cf91a36c2728e34e4d8d4 "pdflatex"
+  "SSA_methods.bbl" 1741192777 1707 844ccf2746818c9569539428a591f139 "bibtex SSA_methods"
+  "SSA_methods.out" 1741194521 2980 cbd9cb830ad87a22cb83c57e65633e7c "pdflatex"
+  "SSA_methods.tex" 1741194518 94669 c52e1300b29881f57d45ed1976c02a78 ""
+  "SSA_methods.toc" 1741194521 14288 ab74592f5cbd0bd0395ac1b85224ce45 "pdflatex"
+  "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Text/SSA_methods.tex" 1741194518 94669 c52e1300b29881f57d45ed1976c02a78 ""
   "img/extended_IP_values.png" 1739608097 7577 2cbb0c0c6792c9663ebc7547bd4d2a3a ""
   "img/extended_sin.png" 1739608151 7609 fd8def5bd7ab15ef82e8f058426c2e15 ""
-  "img/trend inseparability example/IP_cycle.png" 1729016803 7183 0fcef1ffe46e97ba7bb1212c3752d3cc ""
-  "img/trend inseparability example/IP_sesonal.jpg" 1729016623 264740 6134579d0eca8f0e950de2479138f8e7 ""
-  "img/trend inseparability example/IP_trend.png" 1729016743 6429 745eb0dafb5dc228cf707788bf46316c ""
-  "img/trend inseparability example/IP_trend_sycle.png" 1740762005 8968 c72f7adff5f4c7aa13cadcf416052fe1 ""
+  "img/trend inseparability example/IP_cycle.png" 1741190583 9353 e9c147cab3c6cc4a9aba3842c47ecf9a ""
+  "img/trend inseparability example/IP_sesonal.jpg" 1741190384 10946 6c80e9eabdd222189bbcf326cad6fb56 ""
+  "img/trend inseparability example/IP_trend.png" 1741190572 8670 67e386eb87897c22add01d65d1d55315 ""
+  "img/trend inseparability example/IP_trend_sycle.png" 1741190592 8842 03d3ec2ebb3a49613c9ef3513bf713cc ""
   "img/trend inseparability example/W-corr.jpg" 1729016200 214287 99ce907b28e72be670abb97ed0032679 ""
   "img/various_alphas.png" 1738925597 7842 10850a5dd1650ec4164991427689a6c6 ""
   "img/various_alphas_sin_cos.png" 1739006386 7097 d6e42819767f8eafb613589f1fc1c55e ""

@@ -638,7 +638,7 @@ plot(dates, IP_values, type="l")
 data_slice <- 1:537
 dates_slice <- dates[data_slice]
 IP_values_slice <- IP_values[data_slice]
-eps <- 1/193
+eps <- 1/160
 
 c <- circulant_SSA(IP_values_slice, L = 192, extend_flag = TRUE)
 r <- c$t_series
@@ -742,13 +742,18 @@ plot(dates_slice, ssa_residuals_f,
 ```{r}
 library(Rssa)
 source("eossa_new.r")
+
+
+groups_r <- 1:24
+
 s <- ssa(IP_values_slice, L = 192)
-e <- eossa_new(s, nested.groups = list(1:20), clust_type = "distance")
+e <- eossa_new(s, nested.groups = list(groups_r), clust_type = "distance")
 
 
 
 
 groups <- grouping.auto(e,
+                        groups = groups_r,
                    freq.bins = list(trend = c(1/192),
                                     cycle = c(1/97, 5/95),
                                     s1 = c(16/192 - eps, 16/192 + eps),
@@ -759,6 +764,9 @@ groups <- grouping.auto(e,
                                     s6 = c(96/192 - eps, 96/192 + eps)
                                     ),
                    threshold = 0)
+
+print(groups)
+
 plot(wcor(e, groups = 1:30), scales = list(at = c(10, 20, 30)),
      main = "W-correlation matrix SSA (eossa)")
 
@@ -782,6 +790,13 @@ plot(dates_slice, ssa_sesonal,
 
 plot(dates_slice, ssa_residuals,
      type="l", col = "blue")
+```
+
+```{r}
+plot(s, type="vectors", idx = 1:20)
+plot(s, type="paired", idx = 1:30)
+plot(s, type="series", groups=1:13)
+# plot(wcor(s, groups=1:30))
 ```
 
 ```{r}
