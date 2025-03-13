@@ -1195,6 +1195,7 @@ reconstruct_fft <- function(x_init, y_init, extend_flag = FALSE) {
 ```
 
 #### Идеальный случай для CiSSA и Fourier
+
 ```{r}
 interesting_sin <- function(x){
   first_seq <- sin(x[x <= 15]*2*pi/12)
@@ -1546,7 +1547,6 @@ data$all_err[6] <- mean(data_prev$all_err[[6]]|> unlist()) |>
 
 
 ```
-
 
 ```{r}
 for (i in 1:6){

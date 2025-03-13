@@ -662,7 +662,7 @@ n <- 96*2-1
 x <- 0:(n-1)
 L <- 50
 y1 <- sin(2*pi/12 * x)
-y2 <- cos(2*pi/3 * x)/2
+y2 <- cos(2*pi/19 * x)/2
 y <- y1 + y2
 alpha <- 1
 filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
@@ -834,6 +834,118 @@ mse_table <- data.frame(
 
 # Print the table
 print(mse_table)
+```
+
+### sin + cos + шум  SSA потом GSSA
+
+```{r}
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/19 * x)/2
+y <- y1 + y2
+alpha <- 1
+filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
+
+# Define parameters
+n_experiment <- 100
+sigma <- 0.1
+
+# Initialize vectors to store MSE values
+mse_r_y1 <- numeric(n_experiment)
+mse_rw_y1 <- numeric(n_experiment)
+mse_rgssa_y1 <- numeric(n_experiment)
+mse_r_y2 <- numeric(n_experiment)
+mse_rw_y2 <- numeric(n_experiment)
+mse_rgssa_y2 <- numeric(n_experiment)
+mse_r_y <- numeric(n_experiment)
+mse_rw_y <- numeric(n_experiment)
+mse_rgssa_y <- numeric(n_experiment)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Perform experiments
+for (i in 1:n_experiment) {
+  # Add noise to y
+  noisy_y <- y + rnorm(n, mean = 0, sd = sigma)
+  
+  # Perform SSA
+  s <- ssa(noisy_y, L)
+  r <- reconstruct(s, groups = list(s1 = 1:2, s2 = 3:4))
+  
+  # Perform SSA with oblique filtering
+  sw <- ssa(noisy_y, L, col.oblique = filt, row.oblique = rep(1, n - L + 1))
+  rw <- reconstruct(sw, groups = list(s1 = 1:2, s2 = 3:4))
+  
+  # Perform gSSA
+  r_gssa <- gssa(r$s1 + r$s2, L, alpha = alpha)
+  
+  # Calculate MSE for r method
+  mse_r_y1[i] <- mse(r$s1, y1)
+  mse_r_y2[i] <- mse(r$s2, y2)
+  mse_r_y[i] <- mse(r$s1 + r$s2, y1 + y2)
+  
+  # Calculate MSE for rw method
+  mse_rw_y1[i] <- mse(rw$s1, y1)
+  mse_rw_y2[i] <- mse(rw$s2, y2)
+  mse_rw_y[i] <- mse(rw$s1 + rw$s2, y1 + y2)
+  
+  # Calculate MSE for r_gssa method
+  mse_rgssa_y1[i] <- mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)
+  mse_rgssa_y2[i] <- mse(r_gssa$ts[[3]] + r_gssa$ts[[4]], y2)
+  mse_rgssa_y[i] <- mse(r_gssa$ts[[1]] + r_gssa$ts[[2]] + r_gssa$ts[[3]] + r_gssa$ts[[4]], y1 + y2)
+}
+
+# Compute mean and standard deviation of MSE values
+mean_mse_r_y1 <- mean(mse_r_y1)
+sd_mse_r_y1 <- sd(mse_r_y1)
+
+mean_mse_rw_y1 <- mean(mse_rw_y1)
+sd_mse_rw_y1 <- sd(mse_rw_y1)
+
+mean_mse_rgssa_y1 <- mean(mse_rgssa_y1)
+sd_mse_rgssa_y1 <- sd(mse_rgssa_y1)
+
+mean_mse_r_y2 <- mean(mse_r_y2)
+sd_mse_r_y2 <- sd(mse_r_y2)
+
+mean_mse_rw_y2 <- mean(mse_rw_y2)
+sd_mse_rw_y2 <- sd(mse_rw_y2)
+
+mean_mse_rgssa_y2 <- mean(mse_rgssa_y2)
+sd_mse_rgssa_y2 <- sd(mse_rgssa_y2)
+
+mean_mse_r_y <- mean(mse_r_y)
+sd_mse_r_y <- sd(mse_r_y)
+
+mean_mse_rw_y <- mean(mse_rw_y)
+sd_mse_rw_y <- sd(mse_rw_y)
+
+mean_mse_rgssa_y <- mean(mse_rgssa_y)
+sd_mse_rgssa_y <- sd(mse_rgssa_y)
+
+# Create a data frame with mean MSE values
+mse_table <- data.frame(
+  Method = c("r", "rw", "r_gssa"),
+  MSE_y1 = c(mean_mse_r_y1, mean_mse_rw_y1, mean_mse_rgssa_y1),
+  MSE_y2 = c(mean_mse_r_y2, mean_mse_rw_y2, mean_mse_rgssa_y2),
+  MSE_y = c(mean_mse_r_y, mean_mse_rw_y, mean_mse_rgssa_y)
+)
+
+# Optionally, include standard deviations
+mse_table$SD_y1 <- c(sd_mse_r_y1, sd_mse_rw_y1, sd_mse_rgssa_y1)
+mse_table$SD_y2 <- c(sd_mse_r_y2, sd_mse_rw_y2, sd_mse_rgssa_y2)
+mse_table$SD_y <- c(sd_mse_r_y, sd_mse_rw_y, sd_mse_rgssa_y)
+
+# Print the table
+print(mse_table)
+
+library(xtable)
+df <- mse_table
+df[, sapply(df, is.numeric)] <- lapply(df[, sapply(df, is.numeric)], formatC, format = "e", digits = 2)
+print(xtable(df, scientific = TRUE), type = "latex")
 ```
 
 ### SSA/GSSA как фильтры
