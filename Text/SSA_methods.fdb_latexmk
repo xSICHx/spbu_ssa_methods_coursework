@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex SSA_methods"] 1741192777.46488 "SSA_methods.aux" "SSA_methods.bbl" "SSA_methods" 1741194522.68476 0
+["bibtex SSA_methods"] 1741905950.35715 "SSA_methods.aux" "SSA_methods.bbl" "SSA_methods" 1741905955.11482 0
   "./ref.bib" 1740756053 2810 37445073278d9e1552397f8c5d32ef93 ""
   "C:/Program Files/MiKTeX/bibtex/bst/bibtex/plain.bst" 1291864736 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "SSA_methods.aux" 1741194521 34024 81d7c7353a7cf91a36c2728e34e4d8d4 "pdflatex"
+  "SSA_methods.aux" 1741905953 35627 5f617d216eca184680209e193752bb69 "pdflatex"
   (generated)
   "SSA_methods.bbl"
   "SSA_methods.blg"
   (rewritten before read)
-["pdflatex"] 1741194519.49234 "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Text/SSA_methods.tex" "SSA_methods.pdf" "SSA_methods" 1741194522.68585 0
+["pdflatex"] 1741905951.06872 "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Text/SSA_methods.tex" "SSA_methods.pdf" "SSA_methods" 1741905955.11593 0
   "../Title/report.pdf" 1736159507 37314 bea8711fbecbcb2aa2dca09ed78b31dd ""
   "C:/Program Files/MiKTeX/fonts/tfm/jknappen/ec/ecrm1095.tfm" 993062124 3172 eb6efaa83c6c52473a1c403f376eab0f ""
   "C:/Program Files/MiKTeX/fonts/tfm/jknappen/ec/tcrm1095.tfm" 993062508 1460 8005ce585ff351dff78998923504da5e ""
@@ -168,12 +168,12 @@
   "C:/Users/nik1m/AppData/Local/Programs/MiKTeX/tex/latex/refcount/refcount.sty" 1576433952 9878 9e94e8fa600d95f9c7731bb21dfb67a4 ""
   "C:/Users/nik1m/AppData/Local/Programs/MiKTeX/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1657800696 9714 ba3194bd52c8499b3f1e3eb91d409670 ""
   "C:/Users/nik1m/AppData/Local/Programs/MiKTeX/tex/latex/ulem/ulem.sty" 1578651445 15682 94f55b803e160cf7fb6e4d77d07cfe1d ""
-  "SSA_methods.aux" 1741194521 34024 81d7c7353a7cf91a36c2728e34e4d8d4 "pdflatex"
-  "SSA_methods.bbl" 1741192777 1707 844ccf2746818c9569539428a591f139 "bibtex SSA_methods"
-  "SSA_methods.out" 1741194521 2980 cbd9cb830ad87a22cb83c57e65633e7c "pdflatex"
-  "SSA_methods.tex" 1741194518 94669 c52e1300b29881f57d45ed1976c02a78 ""
-  "SSA_methods.toc" 1741194521 14288 ab74592f5cbd0bd0395ac1b85224ce45 "pdflatex"
-  "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Text/SSA_methods.tex" 1741194518 94669 c52e1300b29881f57d45ed1976c02a78 ""
+  "SSA_methods.aux" 1741905953 35627 5f617d216eca184680209e193752bb69 "pdflatex"
+  "SSA_methods.bbl" 1741905950 1707 844ccf2746818c9569539428a591f139 "bibtex SSA_methods"
+  "SSA_methods.out" 1741905953 2980 cbd9cb830ad87a22cb83c57e65633e7c "pdflatex"
+  "SSA_methods.tex" 1741905940 97086 77970c67d849b2e62cd04173990b4466 ""
+  "SSA_methods.toc" 1741905953 15069 50f4b6b81dc8578f93a1348a9ea3deb5 "pdflatex"
+  "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Text/SSA_methods.tex" 1741905940 97086 77970c67d849b2e62cd04173990b4466 ""
   "img/extended_IP_values.png" 1739608097 7577 2cbb0c0c6792c9663ebc7547bd4d2a3a ""
   "img/extended_sin.png" 1739608151 7609 fd8def5bd7ab15ef82e8f058426c2e15 ""
   "img/trend inseparability example/IP_cycle.png" 1741190583 9353 e9c147cab3c6cc4a9aba3842c47ecf9a ""

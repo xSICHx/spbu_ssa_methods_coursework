@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2025.3.3)  5 MAR 2025 20:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2025.3.3)  14 MAR 2025 01:45
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -739,14 +739,14 @@ Overfull \hbox (14.81725pt too wide) in paragraph at lines 448--451
  []
 
 
-Overfull \hbox (31.94762pt too wide) in paragraph at lines 465--467
+Overfull \hbox (31.94762pt too wide) in paragraph at lines 479--481
 \T2A/cmr/m/n/10.95 ме-ни-мы по-ня-тия $\OML/cmm/m/it/10.95 L$\T2A/cmr/m/n/10.95 -ранга ря-да. Из ви-да [] $\OT1/cmr/bx/n/10.95 X[]$ \T2A/cmr/m/n/10.95 мож-но по-лу-чить, что $\OT1/cmr/bx/n/10.95 X[] \OT1/cmr/m/n/10.95 = [] [] \OT1/cmr/bx/n/10.95 X \OT1/cmr/m/n/10.95 =
  []
 
 
 
 [11]
-Overfull \hbox (6.57382pt too wide) detected at line 497
+Overfull \hbox (6.57382pt too wide) detected at line 511
 \OT1/cmr/bx/n/10.95 W[] \OT1/cmr/m/n/10.95 = [] \OML/cmm/m/it/10.95 :
  []
 
@@ -757,27 +757,27 @@ Overfull \hbox (6.57382pt too wide) detected at line 497
 [13]
 
 [14]
-Underfull \hbox (badness 10000) in paragraph at lines 685--688
+Underfull \hbox (badness 10000) in paragraph at lines 699--702
 
  []
 
 
-Overfull \hbox (0.72253pt too wide) in paragraph at lines 685--688
+Overfull \hbox (0.72253pt too wide) in paragraph at lines 699--702
 \T2A/cmr/m/n/10.95 про-це-ду-ру рас-ши-ре-ния ря-да. Как утвер-жда-ет-ся ав-то-ра-ми ста-тьи [[]], по-сле рас-ши-ре-ния, $[]$
  []
 
 
 
 [15]
-<img/extended_IP_values.png, id=360, 497.19083pt x 307.1475pt>
+<img/extended_IP_values.png, id=363, 497.19083pt x 307.1475pt>
 File: img/extended_IP_values.png Graphic file (type png)
 <use img/extended_IP_values.png>
-Package pdftex.def Info: img/extended_IP_values.png  used on input line 712.
+Package pdftex.def Info: img/extended_IP_values.png  used on input line 726.
 (pdftex.def)             Requested size: 469.75499pt x 290.19968pt.
-<img/extended_sin.png, id=361, 497.19083pt x 307.1475pt>
+<img/extended_sin.png, id=364, 497.19083pt x 307.1475pt>
 File: img/extended_sin.png Graphic file (type png)
 <use img/extended_sin.png>
-Package pdftex.def Info: img/extended_sin.png  used on input line 719.
+Package pdftex.def Info: img/extended_sin.png  used on input line 733.
 (pdftex.def)             Requested size: 469.75499pt x 290.19968pt.
 
 
@@ -786,23 +786,24 @@ Package pdftex.def Info: img/extended_sin.png  used on input line 719.
 [17 <./img/extended_sin.png>]
 
 [18]
-Overfull \hbox (4.39278pt too wide) in paragraph at lines 786--786
+Overfull \hbox (4.39278pt too wide) in paragraph at lines 800--800
 []\T2A/cmr/bx/n/14.4 Сравнение ал-го-рит-мов раз-ло-же-ния SSA, GSSA, Фу-рье и CiSSA 
  []
 
-<img/various_alphas.png, id=397, 497.19083pt x 307.1475pt>
+<img/various_alphas.png, id=400, 497.19083pt x 307.1475pt>
 File: img/various_alphas.png Graphic file (type png)
 <use img/various_alphas.png>
-Package pdftex.def Info: img/various_alphas.png  used on input line 806.
-(pdftex.def)             Requested size: 469.75499pt x 290.19968pt.
-<img/various_alphas_sin_cos.png, id=399, 497.19083pt x 307.1475pt>
-File: img/various_alphas_sin_cos.png Graphic file (type png)
-<use img/various_alphas_sin_cos.png>
-Package pdftex.def Info: img/various_alphas_sin_cos.png  used on input line 816.
+Package pdftex.def Info: img/various_alphas.png  used on input line 823.
 (pdftex.def)             Requested size: 469.75499pt x 290.19968pt.
 
 
 [19 <./img/various_alphas.png>]
+<img/various_alphas_sin_cos.png, id=411, 497.19083pt x 307.1475pt>
+File: img/various_alphas_sin_cos.png Graphic file (type png)
+<use img/various_alphas_sin_cos.png>
+Package pdftex.def Info: img/various_alphas_sin_cos.png  used on input line 833.
+(pdftex.def)             Requested size: 469.75499pt x 290.19968pt.
+
 
 [20 <./img/various_alphas_sin_cos.png>]
 
@@ -815,54 +816,56 @@ Package pdftex.def Info: img/various_alphas_sin_cos.png  used on input line 816.
 [24]
 
 [25]
-Overfull \hbox (6.34993pt too wide) in paragraph at lines 1503--1505
+
+[26]
+Overfull \hbox (6.34993pt too wide) in paragraph at lines 1556--1558
 \T2A/cmr/m/n/10.95 Теперь рас-смот-рим ре-аль-ные дан-ные --- ме-сяч-ные ря-ды про-мыш-лен-но-го про-из-вод-ства (Industrial
  []
 
-<img/trend inseparability example/IP_trend.png, id=482, 497.19083pt x 307.1475pt>
+
+
+[27]
+<img/trend inseparability example/IP_trend.png, id=503, 497.19083pt x 307.1475pt>
 File: img/trend inseparability example/IP_trend.png Graphic file (type png)
 <use img/trend inseparability example/IP_trend.png>
-Package pdftex.def Info: img/trend inseparability example/IP_trend.png  used on input line 1514.
+Package pdftex.def Info: img/trend inseparability example/IP_trend.png  used on input line 1567.
 (pdftex.def)             Requested size: 375.80542pt x 232.15974pt.
-
-
-[26]
-<img/trend inseparability example/IP_cycle.png, id=491, 497.19083pt x 307.1475pt>
+<img/trend inseparability example/IP_cycle.png, id=504, 497.19083pt x 307.1475pt>
 File: img/trend inseparability example/IP_cycle.png Graphic file (type png)
 <use img/trend inseparability example/IP_cycle.png>
-Package pdftex.def Info: img/trend inseparability example/IP_cycle.png  used on input line 1523.
+Package pdftex.def Info: img/trend inseparability example/IP_cycle.png  used on input line 1576.
 (pdftex.def)             Requested size: 375.80542pt x 232.15974pt.
-<img/trend inseparability example/IP_trend_sycle.png, id=492, 497.19083pt x 307.1475pt>
+<img/trend inseparability example/IP_trend_sycle.png, id=505, 497.19083pt x 307.1475pt>
 File: img/trend inseparability example/IP_trend_sycle.png Graphic file (type png)
 <use img/trend inseparability example/IP_trend_sycle.png>
-Package pdftex.def Info: img/trend inseparability example/IP_trend_sycle.png  used on input line 1532.
+Package pdftex.def Info: img/trend inseparability example/IP_trend_sycle.png  used on input line 1585.
 (pdftex.def)             Requested size: 375.80542pt x 232.15974pt.
 
 
-[27 <./img/trend inseparability example/IP_trend.png> <./img/trend inseparability example/IP_cycle.png>]
-<img/trend inseparability example/IP_sesonal.jpg, id=502, 497.19083pt x 307.1475pt>
+[28 <./img/trend inseparability example/IP_trend.png> <./img/trend inseparability example/IP_cycle.png>]
+<img/trend inseparability example/IP_sesonal.jpg, id=516, 497.19083pt x 307.1475pt>
 File: img/trend inseparability example/IP_sesonal.jpg Graphic file (type jpg)
 <use img/trend inseparability example/IP_sesonal.jpg>
-Package pdftex.def Info: img/trend inseparability example/IP_sesonal.jpg  used on input line 1541.
+Package pdftex.def Info: img/trend inseparability example/IP_sesonal.jpg  used on input line 1594.
 (pdftex.def)             Requested size: 375.80542pt x 232.15974pt.
-<img/trend inseparability example/W-corr.jpg, id=503, 3310.16957pt x 1469.8293pt>
+<img/trend inseparability example/W-corr.jpg, id=517, 3310.16957pt x 1469.8293pt>
 File: img/trend inseparability example/W-corr.jpg Graphic file (type jpg)
 <use img/trend inseparability example/W-corr.jpg>
-Package pdftex.def Info: img/trend inseparability example/W-corr.jpg  used on input line 1558.
+Package pdftex.def Info: img/trend inseparability example/W-corr.jpg  used on input line 1611.
 (pdftex.def)             Requested size: 375.80542pt x 166.86253pt.
 
 
-[28 <./img/trend inseparability example/IP_trend_sycle.png> <./img/trend inseparability example/IP_sesonal.jpg>]
+[29 <./img/trend inseparability example/IP_trend_sycle.png> <./img/trend inseparability example/IP_sesonal.jpg>]
 
-[29 <./img/trend inseparability example/W-corr.jpg>]
+[30 <./img/trend inseparability example/W-corr.jpg>]
 
-[30] (SSA_methods.bbl
+[31] (SSA_methods.bbl
 LaTeX Font Info:    Trying to load font information for T2A+cmtt on input line 42.
  (C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex/latex/cyrillic\t2acmtt.fd
 File: t2acmtt.fd 2001/08/11 v1.0a Computer Modern Cyrillic font definitions
 ))
 
-[31] (SSA_methods.aux)
+[32] (SSA_methods.aux)
  ***********
 LaTeX2e <2024-11-01>
 L3 programming layer <2024-11-02>
@@ -871,17 +874,17 @@ Package rerunfilecheck Info: File `SSA_methods.out' has not changed.
 (rerunfilecheck)             Checksum: CBD9CB830AD87A22CB83C57E65633E7C;2980.
  ) 
 Here is how much of TeX's memory you used:
- 15002 strings out of 473682
- 237895 string characters out of 5729116
- 650709 words of memory out of 5000000
- 37692 multiletter control sequences out of 15000+600000
+ 15010 strings out of 473682
+ 238015 string characters out of 5729116
+ 652819 words of memory out of 5000000
+ 37693 multiletter control sequences out of 15000+600000
  581342 words of font info for 86 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,17n,79p,1242b,609s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\nik1m\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\latt1095.pk> <C:\Users\nik1m\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\nik1m\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labi1095.pk> <C:\Users\nik1m\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx1200.pk> <C:\Users\nik1m\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\lati1095.pk> <C:\Users\nik1m\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\larm1095.pk> <C:\Users\nik1m\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx1095.pk> <C:\Users\nik1m\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx1440.pk><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmib10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmmib8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on SSA_methods.pdf (31 pages, 4298794 bytes).
+Output written on SSA_methods.pdf (32 pages, 4313434 bytes).
 PDF statistics:
- 1093 PDF objects out of 1200 (max. 8388607)
- 147 named destinations out of 1000 (max. 500000)
+ 1108 PDF objects out of 1200 (max. 8388607)
+ 154 named destinations out of 1000 (max. 500000)
  178 words of extra memory for PDF output out of 10000 (max. 10000000)
 
