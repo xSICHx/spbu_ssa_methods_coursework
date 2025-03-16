@@ -1,0 +1,78 @@
+\documentclass[specialist,
+               substylefile = spbu_report.rtx,
+               subf,href,colorlinks=true, 12pt]{disser}
+
+\usepackage[a4paper,
+            mag=1000, includefoot,
+            left=3cm, right=1.5cm, top=2cm, bottom=2cm, headsep=1cm, footskip=1cm]{geometry}
+\usepackage[T2A]{fontenc}
+\usepackage[cp1251]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[update,prepend]{epstopdf}
+\usepackage{amsfonts}
+\usepackage{subcaption}
+\ifpdf\usepackage{epstopdf}\fi
+
+\usepackage{adjustbox}
+\usepackage{amsthm}
+\usepackage{indentfirst}
+\newtheorem{definition}{Определение} % задаём выводимое слово (для определений)
+
+
+% Точка с запятой в качестве разделителя между номерами цитирований
+%\setcitestyle{semicolon}
+
+% Использовать полужирное начертание для векторов
+\let\vec=\mathbf
+
+\newcommand{\SSA}{\textbf{SSA}}
+
+% Включать подсекции в оглавление
+\setcounter{tocdepth}{2}
+
+\graphicspath{{fig/}}
+
+%----------------------------------------------------------------
+\begin{document}
+
+%
+% Титульный лист на русском языке
+%
+% Название организации
+\institution{%
+    Санкт-Петербургский государственный университет\\
+    Прикладная математика и информатика
+}
+
+\title{Отчет по учебной практике 4 (научно-исследовательской работе)}
+
+% Тема
+\topic{Модификации метода анализа сингулярного спектра для анализа временных рядов: Circulant SSA и Generalized SSA}
+
+% Автор
+\author{Погребников Николай Вадимович}
+\group{группа 21.Б04-мм}
+    
+% Научный руководитель
+\sa       {Голяндина Нина Эдуардовна\\%
+           Кафедра Статистического Моделирования}
+\sastatus {д.\,ф.-м.\,н., доц.}
+
+% Город и год
+\city{Санкт-Петербург}
+\date{\number\year}
+
+\maketitle
+
+
+
+\bibliographystyle{ugost2008}
+
+
+\end{document}
+
