@@ -1,7 +1,7 @@
 PWD c:\Users\nik1m\Desktop\University\7 sem\Coursework\SSA methods code\Presentation
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
-INPUT c:\Users\nik1m\Desktop\University\7 sem\Coursework\SSA methods code\Presentation\6BP_322_Pogrebnikov_Pres.tex
-OUTPUT 6BP_322_Pogrebnikov_Pres.log
+INPUT c:\Users\nik1m\Desktop\University\7 sem\Coursework\SSA methods code\Presentation\8BP_422_Pogrebnikov_Pres.tex
+OUTPUT 8BP_422_Pogrebnikov_Pres.log
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\beamer\beamer.cls
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\beamer\beamer.cls
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\beamer\beamerbasemodes.sty
@@ -264,7 +264,7 @@ INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\beamer\beamercolort
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\beamer\beamerinnerthemedefault.sty
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\beamer\beamerinnerthemedefault.sty
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\beamer\beamericonbook.pdf
-OUTPUT 6BP_322_Pogrebnikov_Pres.pdf
+OUTPUT 8BP_422_Pogrebnikov_Pres.pdf
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\beamer\beamericonbook.pdf
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\beamer\beamericonbook.pdf
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\beamer\beamericonbook.20.pdf
@@ -388,10 +388,10 @@ INPUT C:\Program Files\MiKTeX\tex\latex\natbib\natbib.sty
 INPUT C:\Program Files\MiKTeX\tex\latex\natbib\natbib.sty
 INPUT C:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
 INPUT C:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
-INPUT .\6BP_322_Pogrebnikov_Pres.aux
-INPUT .\6BP_322_Pogrebnikov_Pres.aux
-INPUT 6BP_322_Pogrebnikov_Pres.aux
-OUTPUT 6BP_322_Pogrebnikov_Pres.aux
+INPUT .\8BP_422_Pogrebnikov_Pres.aux
+INPUT .\8BP_422_Pogrebnikov_Pres.aux
+INPUT 8BP_422_Pogrebnikov_Pres.aux
+OUTPUT 8BP_422_Pogrebnikov_Pres.aux
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\cyrillic\t2acmr.fd
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\cyrillic\t2acmr.fd
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\cyrillic\t2acmr.fd
@@ -405,13 +405,13 @@ INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\grfext\grfext.sty
 INPUT C:\Program Files\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
 INPUT C:\Program Files\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
 INPUT C:\Program Files\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
-INPUT .\6BP_322_Pogrebnikov_Pres.out
-INPUT .\6BP_322_Pogrebnikov_Pres.out
-INPUT 6BP_322_Pogrebnikov_Pres.out
-INPUT 6BP_322_Pogrebnikov_Pres.out
-INPUT .\6BP_322_Pogrebnikov_Pres.out
-INPUT .\6BP_322_Pogrebnikov_Pres.out
-OUTPUT 6BP_322_Pogrebnikov_Pres.out
+INPUT .\8BP_422_Pogrebnikov_Pres.out
+INPUT .\8BP_422_Pogrebnikov_Pres.out
+INPUT 8BP_422_Pogrebnikov_Pres.out
+INPUT 8BP_422_Pogrebnikov_Pres.out
+INPUT .\8BP_422_Pogrebnikov_Pres.out
+INPUT .\8BP_422_Pogrebnikov_Pres.out
+OUTPUT 8BP_422_Pogrebnikov_Pres.out
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\translator\translator-basic-dictionary-English.dict
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\translator\translator-basic-dictionary-English.dict
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\translator\translator-basic-dictionary-English.dict
@@ -430,9 +430,9 @@ INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\translator\translat
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\translator\translator-theorem-dictionary-English.dict
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\translator\translator-theorem-dictionary-English.dict
 INPUT C:\Users\nik1m\AppData\Local\Programs\MiKTeX\tex\latex\translator\translator-theorem-dictionary-English.dict
-INPUT .\6BP_322_Pogrebnikov_Pres.nav
-INPUT .\6BP_322_Pogrebnikov_Pres.nav
-INPUT 6BP_322_Pogrebnikov_Pres.nav
+INPUT .\8BP_422_Pogrebnikov_Pres.nav
+INPUT .\8BP_422_Pogrebnikov_Pres.nav
+INPUT 8BP_422_Pogrebnikov_Pres.nav
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lass0600.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmr6.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmmi6.tfm
@@ -461,6 +461,7 @@ INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lasx0500.tfm
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lass1440.tfm
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lass1000.tfm
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lass0800.tfm
+INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmr8.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmmi10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmmi8.tfm
@@ -487,7 +488,6 @@ INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lasi1095.tfm
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lasi0800.tfm
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lasi0600.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmss8.tfm
-INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\laso1095.tfm
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\laso0800.tfm
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\laso0600.tfm
@@ -522,16 +522,16 @@ INPUT ..\Text\img\extended_IP_values.png
 INPUT ..\Text\img\extended_IP_values.png
 INPUT ..\Text\img\extended_IP_values.png
 INPUT ..\Text\img\extended_IP_values.png
-INPUT .\6BP_322_Pogrebnikov_Pres.bbl
-INPUT .\6BP_322_Pogrebnikov_Pres.bbl
-INPUT 6BP_322_Pogrebnikov_Pres.bbl
+INPUT .\8BP_422_Pogrebnikov_Pres.bbl
+INPUT .\8BP_422_Pogrebnikov_Pres.bbl
+INPUT 8BP_422_Pogrebnikov_Pres.bbl
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lasi1000.tfm
-OUTPUT 6BP_322_Pogrebnikov_Pres.nav
-OUTPUT 6BP_322_Pogrebnikov_Pres.toc
-OUTPUT 6BP_322_Pogrebnikov_Pres.snm
-INPUT 6BP_322_Pogrebnikov_Pres.aux
-INPUT .\6BP_322_Pogrebnikov_Pres.out
-INPUT .\6BP_322_Pogrebnikov_Pres.out
+OUTPUT 8BP_422_Pogrebnikov_Pres.nav
+OUTPUT 8BP_422_Pogrebnikov_Pres.toc
+OUTPUT 8BP_422_Pogrebnikov_Pres.snm
+INPUT 8BP_422_Pogrebnikov_Pres.aux
+INPUT .\8BP_422_Pogrebnikov_Pres.out
+INPUT .\8BP_422_Pogrebnikov_Pres.out
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\pk\ljfour\lh\lh-t2a\dpi600\lasi1000.pk
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\pk\ljfour\lh\lh-t2a\dpi600\lasi1000.pk
 INPUT C:\Users\nik1m\AppData\Local\MiKTeX\fonts\pk\ljfour\lh\lh-t2a\dpi600\lasx1000.pk

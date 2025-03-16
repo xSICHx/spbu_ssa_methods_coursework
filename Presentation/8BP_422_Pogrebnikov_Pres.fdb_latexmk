@@ -1,20 +1,20 @@
 # Fdb version 4
-["bibtex 6BP_322_Pogrebnikov_Pres"] 1741020545.01055 "6BP_322_Pogrebnikov_Pres.aux" "6BP_322_Pogrebnikov_Pres.bbl" "6BP_322_Pogrebnikov_Pres" 1741020603.37917 0
+["bibtex 8BP_422_Pogrebnikov_Pres"] 1742115951.72798 "8BP_422_Pogrebnikov_Pres.aux" "8BP_422_Pogrebnikov_Pres.bbl" "8BP_422_Pogrebnikov_Pres" 1742115958.39263 0
   "./ref.bib" 1740996770 2810 37445073278d9e1552397f8c5d32ef93 ""
-  "6BP_322_Pogrebnikov_Pres.aux" 1741020601 6728 f5c982b43f96bb3fe1a4094c8aaff874 "pdflatex"
+  "8BP_422_Pogrebnikov_Pres.aux" 1742115956 6726 5aa0ebd53446f96e9e419f75e8ec05bf "pdflatex"
   "C:/Program Files/MiKTeX/bibtex/bst/bibtex/plain.bst" 1291864736 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   (generated)
-  "6BP_322_Pogrebnikov_Pres.bbl"
-  "6BP_322_Pogrebnikov_Pres.blg"
+  "8BP_422_Pogrebnikov_Pres.bbl"
+  "8BP_422_Pogrebnikov_Pres.blg"
   (rewritten before read)
-["pdflatex"] 1741020598.08745 "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Presentation/6BP_322_Pogrebnikov_Pres.tex" "6BP_322_Pogrebnikov_Pres.pdf" "6BP_322_Pogrebnikov_Pres" 1741020603.38008 0
+["pdflatex"] 1742115952.34646 "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Presentation/8BP_422_Pogrebnikov_Pres.tex" "8BP_422_Pogrebnikov_Pres.pdf" "8BP_422_Pogrebnikov_Pres" 1742115958.39366 0
   "../Text/img/extended_IP_values.png" 1739608097 7577 2cbb0c0c6792c9663ebc7547bd4d2a3a ""
   "../Text/img/various_alphas_sin_cos.png" 1739006386 7097 d6e42819767f8eafb613589f1fc1c55e ""
-  "6BP_322_Pogrebnikov_Pres.aux" 1741020601 6728 f5c982b43f96bb3fe1a4094c8aaff874 "pdflatex"
-  "6BP_322_Pogrebnikov_Pres.bbl" 1741020545 1048 002403f30fa71c202534ca4b9e51d7f2 "bibtex 6BP_322_Pogrebnikov_Pres"
-  "6BP_322_Pogrebnikov_Pres.nav" 1741020601 2498 083a09ec12e5635660fabde562918fd5 "pdflatex"
-  "6BP_322_Pogrebnikov_Pres.out" 1741020601 51 fadbec7a4c5f7b24e79d5b1e4fa387f4 "pdflatex"
-  "6BP_322_Pogrebnikov_Pres.tex" 1741020596 52349 712eb6c93abcde97b0fc4c686d6f0338 ""
+  "8BP_422_Pogrebnikov_Pres.aux" 1742115956 6726 5aa0ebd53446f96e9e419f75e8ec05bf "pdflatex"
+  "8BP_422_Pogrebnikov_Pres.bbl" 1742115952 1048 002403f30fa71c202534ca4b9e51d7f2 "bibtex 8BP_422_Pogrebnikov_Pres"
+  "8BP_422_Pogrebnikov_Pres.nav" 1742115956 2498 70eb5fa09e4eccfbab4b5482b164cad7 "pdflatex"
+  "8BP_422_Pogrebnikov_Pres.out" 1742115956 51 fadbec7a4c5f7b24e79d5b1e4fa387f4 "pdflatex"
+  "8BP_422_Pogrebnikov_Pres.tex" 1742115943 51871 55b4df17d3d08ae08b63aa7cd8fcf1a2 ""
   "C:/Program Files/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1233951848 1120 1e8878807317373affa7f7bba4cf2f6a ""
   "C:/Program Files/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1233951848 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "C:/Program Files/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmbsy7.tfm" 1233951848 1120 7f9f170e8aa57527ad6c49feafd45d54 ""
@@ -306,13 +306,13 @@
   "beamerinnerthemestatmod.sty" 1731244845 1716 57c6d418260cfb4099f2d55a82dc1dde ""
   "beamerouterthemestatmod.sty" 1731337464 7145 f0718d7ec691a2ca98adadd56a3d184b ""
   "beamerthemeStatmod.sty" 1731244845 1590 6bdd377e8a2d7c20553d51a58b2d740d ""
-  "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Presentation/6BP_322_Pogrebnikov_Pres.tex" 1741020596 52349 712eb6c93abcde97b0fc4c686d6f0338 ""
+  "c:/Users/nik1m/Desktop/University/7 sem/Coursework/SSA methods code/Presentation/8BP_422_Pogrebnikov_Pres.tex" 1742115943 51871 55b4df17d3d08ae08b63aa7cd8fcf1a2 ""
   (generated)
-  "6BP_322_Pogrebnikov_Pres.aux"
-  "6BP_322_Pogrebnikov_Pres.log"
-  "6BP_322_Pogrebnikov_Pres.nav"
-  "6BP_322_Pogrebnikov_Pres.out"
-  "6BP_322_Pogrebnikov_Pres.pdf"
-  "6BP_322_Pogrebnikov_Pres.snm"
-  "6BP_322_Pogrebnikov_Pres.toc"
+  "8BP_422_Pogrebnikov_Pres.aux"
+  "8BP_422_Pogrebnikov_Pres.log"
+  "8BP_422_Pogrebnikov_Pres.nav"
+  "8BP_422_Pogrebnikov_Pres.out"
+  "8BP_422_Pogrebnikov_Pres.pdf"
+  "8BP_422_Pogrebnikov_Pres.snm"
+  "8BP_422_Pogrebnikov_Pres.toc"
   (rewritten before read)
