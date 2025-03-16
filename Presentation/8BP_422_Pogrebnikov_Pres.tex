@@ -10,14 +10,13 @@
 \mode<handout> {
 	\usepackage{pgfpages}
 	\setbeameroption{show notes}
-	% \pgfpagesuselayout{2 on 1}[a4paper, border shrink=5mm]
 	\setbeamercolor{note page}{bg=white}
 	\setbeamercolor{note title}{bg=gray!10}
 	\setbeamercolor{note date}{fg=gray!10}
 }
 
 % убирает заметки
-\setbeameroption{hide notes}
+% \setbeameroption{hide notes}
 
 \usepackage[utf8x]{inputenc}
 \usepackage[T2A]{fontenc}
@@ -33,6 +32,7 @@
 \usepackage{bm}
 \usepackage{float}
 \usepackage[authoryear]{natbib}
+\usepackage{xcolor}
 %\usepackage[numbers, sort&compress]{natbib}
 
 
@@ -58,7 +58,7 @@
 
 \title[Модификации метода $\SSA$]{Модификации метода анализа сингулярного спектра для анализа временных рядов: Circulant SSA и Generalized SSA }
 
-\author{Погребников Николай Вадимович, гр. 21.Б04-мм}
+\author{Погребников Н. В., гр. 21.Б04-мм}
 
 \institute[Санкт-Петербургский Государственный Университет]{%
 	\small
@@ -67,7 +67,7 @@
 	Вычислительная стохастика и статистические модели\\
 	\vspace{1cm}
 %	4 курс (бак.) <<Производственная практика (научно-исследовательская работа)>>\\(Семестр 6)
-	Научный руководитель:  д.\,ф.-м.\,н., доц. Голяндина Н.Э.
+	Научный руководитель:  д. ф.-м. н., доц. Голяндина Н. Э.
 }
 	
 
@@ -80,8 +80,8 @@
 	\begin{frame}[plain]
 		\titlepage
 		
-		\note{Научный руководитель  д.\,ф.-м.\,н., доц. Голяндина Нина Эдуардовна,\\
-			кафедра статистического моделирования}
+		% \note{Научный руководитель  д.\,ф.-м.\,н., доц. Голяндина Нина Эдуардовна,\\
+		% 	кафедра статистического моделирования}
 	\end{frame}
 	
 	%\section{Короткая тема}
@@ -90,101 +90,117 @@
 %	\setbeameroption{show notes}
 	
 	\begin{frame}{Введение}
-		Временные ряды представляют собой последовательность данных, собранных или
-		измеренных в хронологическом порядке. Понимание эволюции явлений во времени является критическим для выявления тенденций, циклов и аномалий. В этих целях были созданы методы разложения временных рядов на сумму интерпретируемых компонент такие как $\SSA$ \citep{golyandina2001analysis} и его модификации: $\GSSA$ \cite{gu2024generalized},  $\CISSA$ \citep{bogalo2020}.
-		 \newline \newline
-		Целью работы является описание модификаций в контексте теории $\SSA$ и на этой основе сравнение методов по теоретическим свойствам и численно.
-		%		Задача --- оценка ошибок восстановления ряда.
-		%		Тут какое-то введение.
-		%		Что за задача решается, какое метод используется, какая цель работы.
+		Пусть $\TS = (x_1, \dots, x_{N})$ -- временной ряд длины \( N \), \( x_i \in \mathbb{R} \) -- наблюдение в момент времени \( i \).
+
+		\(\TS = \TS_{\text{Trend}} + \TS_{\text{Periodics}} + \TS_{\text{Noise}}\), где:
+		\begin{itemize}
+			\item \( \TS_{\text{Trend}} \) -- тренд, медленно меняющаяся компонента;
+			\item \( \TS_{\text{Periodics}} \) -- сумма периодических компонент;
+			\item \( \TS_{\text{Noise}} \) -- шум, случайная составляющая.
+		\end{itemize}
+
+		\textbf{\structure{Методы}:}
+		$\SSA$ -- метод, позволяющий раскладывать временной ряда в сумму интерпретируемых компонент [ссылка]; $\GSSA$ -- модификация $\SSA$ на основе добавления весов [ссылка]; $\CISSA$ -- модификация $\CISSA$ на основе циркулярной матрицы [ссылка].
+
+		\textbf{\structure{Задача}:} 
+		Описание модификаций в контексте теории $\SSA$, сравнение алгоритмов, реализация их на языке R.
 		
 		\note{
-			Сингулярный спектральный анализ ($\SSA$ \citep{golyandina2001analysis}) --- метод, целью которого является разложение оригинального ряда на сумму небольшого числа интерпретируемых компонент, таких как медленно изменяющаяся тенденция (тренд), колебательные компоненты (сезонность) и ``структурный'' шум.  В данном исследовании
-			рассматривается математическая составляющая вариации алгоритма $\SSA$ --- circulant singular spectrum analysis ($\CISSA$), предложенная в статье \citep{bogalo2020}, а также сравнение базового метода и циркулярного, применение их на языке R.
-		}
+			\textcolor{red}{\textbf{TODO}} Дописать ссылки
+			}
 	\end{frame}
 	
 	
 	
-	\begin{frame}{Метод SSA. Алгоритм: разложение}
-		Для временного ряда $\TS = (x_1, \dots, x_{N})$ выбирается длина окна $L$, $1 < L < N$ и определяется $K = N - L + 1$. Строится L-траекторная матрица $\mathbf{X}$, состоящая из столбцов вида $\TS_i = ( x_{i-1}, \ldots, x_{i+L-2})^{\mathrm{T}}$,
-		$1 \leq i \leq K$. \\
-		
-		
-		Пусть $\mathbf{S} = \mathbf{X}\mathbf{X}^{\mathrm{T}}$, 
-		$\lambda_1, \dots, \lambda_L$ --- собственные числа матрицы $\mathbf{S}$, взятые в неубывающем порядке. \\
-		\begin{definition}
-			Сингулярным разложением называется представление матрицы в виде:
-			\begin{equation}
-				\mathbf{X} = \mathbf{X}_1 + \dots + \mathbf{X}_d =
-				\sum_{i = 1}^{d} \sqrt{\lambda_i} U_i V_{i}^{\mathrm{T}}\label{eq:u},
-				\text{где}
-			\end{equation}
+	\begin{frame}{Метод SSA. Алгоритм}
+		\( \TS_N = (x_1, \ldots, x_N) \) — временной ряд.  \( 1 < L < N \) --  длина окна.
+		\textbf{\structure{Алгоритм $\SSA$}}:
+
+		\begin{enumerate}
+			\item \textbf{Построение траекторной матрицы:}  
 			
-			$U_1, \dots, U_L$ --- ортонормированная система собственных векторов матрицы $\mathbf{S}$, $d = \max{ \{i: \lambda_i > 0 \}}$ и 
-			$V_i = \mathbf{X}^{\mathrm{T}} U_i / \sqrt{\lambda_i}$.
-		\end{definition}
-		
-		Набор $( \sqrt{\lambda_i}, U_i, V_{i}^{\mathrm{T}})$ называется $i$-й собственной тройкой.
-		
-		\note{
-			Полезным свойством является то, что матрица $\mathbf{X}$ имеет одинаковые элементы на антидиагоналях. Таким образом, $L$-траекторная матрица является ганкелевой.
-			
-			Набор $( \sqrt{\lambda_i}, U_i, V_{i}^{\mathrm{T}})$ называется $i$-й собственной тройкой разложения $\mathbf{X}$.
-		}
+			$
+			\mathbf X = \mathcal{H}(\TS) = [\TS_1 : \ldots : \TS_K], \, \TS_i = (x_i, \ldots, x_{i+L-1})^T, \,$
+
+			$
+			1 \leq i \leq K, \quad K = N - L + 1.
+			$
+
+			\item \textbf{Сингулярное разложение (SVD)}  траекторной матрицы:
+
+			$
+			\mathbf X = \sum \limits_{i=1}^d \sqrt{\lambda_i} U_i V_i^T = \sum \limits_{i=1}^d \mathbf X_i, \, d = \text{rank}(\mathbf  X).$
+
+			\( \mathbf X_i \) — элементарные матрицы ранга 1.
+
+			$( \sqrt{\lambda_i}, U_i, V_{i}^{\mathrm{T}})$ -- $i$-ая собственная тройка.
+
+			\item \textbf{Группировка} индексов $1, \dots, d$ на $m$ непересекающихся подмножеств 
+			$I_1, \dots, I_m$, $I_k = \{i_1^{(k)}, \dots, i_{p_k}^{(k)}\}$.
+			$\mathbf X_{I_k} = \mathbf X_{i_1^{(k)}} + \dots + \mathbf X_{i_{p_k}^{(k)}}$. 
+			$\mathbf X = \mathbf X_{I_1} + \dots + \mathbf X_{I_m}$.
+
+			\item \textbf{Восстановление:}  
+			$\tilde \TS_{I_k} 
+			= \mathcal{H}^{-1} ( \mathbf{X}_{I_k} )$, 
+			$\TS = \tilde \TS_{I_1}  + \dots + \tilde \TS_{I_m}$.
+		\end{enumerate}
 	\end{frame}
 
 
-	\begin{frame}{Метод SSA. Алгоритм: восстановление}
-		На основе разложения \eqref{eq:u} производится процедура группировки, которая делит все множество индексов $\{1, \dots, d\}$ на $m$ непересекающихся подмножеств $I_1, \dots, I_d$. \\
-		Пусть $I = \{i_1, \dots, i_p\}$, тогда $\mathbf{X}_I =
-		\mathbf{X}_{i_1} + \dots + \mathbf{X}_{i_p}$. Такие матрицы вычисляются для каждого $I = I_1, \dots, I_m$. \newline \newline \pause
-		В результате получаются матрицы $\mathbf{X}_{I_1}, \dots, \mathbf{X}_{I_m}$, для каждой из которых проводится операция диагонального усреднения, составляющая ряды длины $N$: $\TS_1, \dots, \TS_m$. \\ 
-		При этом, $\TS_1 + \dots + \TS_m = \TS$.
-		
-		\note{
-			Диагональное усреднение для каждой антидиагонали усредняет значения элементов матрицы.
-			
-			Применяя данную операцию к матрицам $\mathbf{X_{I_1}}, \dots, \mathbf{X_{I_m}}$, получаются $m$ новых рядов: $\TS_1, \dots, \TS_m$. При этом, $\TS_1 + \dots + \TS_m = \TS$.
-		}
-		
-		
-	\end{frame}
 	
 	
 	\begin{frame}{Метод GSSA. Алгоритм}
-		Алгоритм $\GSSA$ сильно схож с базовым $\SSA$. Пусть $N > 2$, вещественнозначный временной ряд
-		$\TS = (x_1, \dots, x_{N})$ длины $N$. Фиксируется параметр $\alpha \geq 0$, отвечающий за веса:
+		\( \TS_N = (x_1, \ldots, x_N) \) — временной ряд,  параметры \(L\) и  $\alpha \geq 0$.
 		\begin{equation*}
-			{\boldsymbol{w}}^{(a)} = (w_{1}, w_{2}, \ldots, w_{L}) = \left( \left| \sin\left(\frac{\pi n}{L+1}\right) \right| \right)^\alpha, \quad n = 1, 2, \dots, L.
+			{\boldsymbol{w}}^{(a)} = (w_{1}, w_{2}, \ldots, w_{L}) = \left( \left| \sin\left(\frac{\pi n}{L+1}\right) \right| \right)^\alpha,  \quad n = 1, 2, \dots, L.
 		\end{equation*}
-		Для временного ряда $\TS = (x_1, \dots, x_{N})$ выбирается длина окна $L$, $1 < L < N$ и определяется $K = N - L + 1$. Строится L-траекторная матрица $\mathbf{X}^{(\alpha)}$, состоящая из столбцов вида $\TS_i^{(\alpha)} = ( w_1 x_{i-1}, \ldots, w_L x_{i+L-2})^{\mathrm{T}}$,
+
+		% \begin{figure}[H]
+		% 	\centering
+		% 	\includegraphics[width=0.5\textwidth]{../Text/img/weights.png}
+		% \end{figure}
+
+		\textbf{\structure{Шаг 1 алгорима $\GSSA$}}:
+
+		$\mathbf{X}^{(\alpha)} = \mathcal{H}^{(\alpha)}(\TS) = [\TS_1^{\alpha} : \ldots : \TS_K^{\alpha}]$,
+		$\TS_i^{(\alpha)} = ( w_1 x_{i-1}, \ldots, w_L x_{i+L-2})^{\mathrm{T}}$,
 		$1 \leq i \leq K$. 
-		\newline \newline
-		Остальные действия те же самые, что и в $\SSA$.
+		
+		\textbf{\structure{Шаги 2-4}}: аналогичны $\SSA$.
 		
 		\begin{comment}
 			При $\alpha = 0$, $\GSSA$ --- в точности базовый алгоритм $\SSA$.
 		\end{comment}
+
+		
+		\note{
+			\textcolor{red}{\textbf{TODO}} 
+			Сослаться на статью авторов.
+			}
 	\end{frame}
 	
 	
 	\begin{frame}{Сравнение SSA и GSSA. Линейные фильтры 1}
+
 		\begin{definition}
 			Пусть бесконечный временной ряд $\TS = (\dots, x_{-1}, x_0, x_1, \dots)$. Линейный конечный фильтр --- это оператор $\Phi$, который преобразует временной ряд $\TS$ в новый по следующему правилу:
 			\begin{equation*}
 				y_j = \sum \limits_{i = -r_1}^{r_2} h_i x_{j-i}; \quad r_1, r_2 < \infty.
 			\end{equation*}
 		\end{definition} 
-		Связанные определения:
-		\begin{itemize}
-			\item ${h_i}$ --- импульсная характеристика фильтра;
-			\item 		$H_{\Phi}(z) = \sum \limits_{i = -r_1}^{r_2} h_i z^{-i}$ --- передаточная функция;
-			\item $A_{\Phi}(\omega) = \left| H_{\Phi}\left(e^{i2\pi\omega}\right) \right|$ --- АЧХ;
-			\item $\phi_{\Phi}(\omega) = \operatorname{Arg}\left(H_{\Phi}\left(e^{i2\pi\omega}\right)\right)$ --- ФЧХ.
-		\end{itemize}
+
+		$A_{\Phi}(\omega) = \left| H_{\Phi}\left(e^{i2\pi\omega}\right) \right|$ -- амплитудно-частотная характеристика (АЧХ).
+
 		\textbf{\large{Пример.}} При применении фильтра $\Phi$ на $\TS_{\cos} = \cos{2\pi \omega n}$, получается ряд
 		$y_j = A_{\Phi}(\omega) \cos\left(2\pi\omega j + \phi_{\Phi}(\omega) \right)$.
+
+		\note{
+			\textcolor{red}{\textbf{TODO}} 
+			Переписать определение. Пояснить, что означает АЧХ на примере.
+
+			Сказать, что будем сравнивать эти методы с точки зрения линейных фильтров.
+			}
 	\end{frame}
 	
 	
@@ -203,6 +219,12 @@
 			\label{eq:representation_gssa_as_filter}
 			{\widetilde{x}}_{s} = \sum_{j=-(L-1)}^{L-1} \left( \sum_{k=1}^{L-|j|} u_{k}^{(\alpha)} u_{k+|j|}^{(\alpha)} w_k / \sum\limits_{i = 1}^{L}w_i \right) x_{s-j}, \quad L \leq s \leq K.
 		\end{equation*}
+
+		
+		\note{
+			\textcolor{red}{\textbf{TODO}} 
+			Убрать весь текст, оставить только представление в виде фильтров
+			}
 	\end{frame}
 	
 	\begin{frame}{Сравнение SSA и GSSA. Пример}
@@ -210,50 +232,57 @@
 		\begin{figure}[H]
 			\centering
 			\includegraphics[width=0.8\textwidth]{../Text/img/various_alphas_sin_cos.png}
-			\caption{Ряд $\TS = \TS_{\sin} + \TS_{\cos}$. АЧХ фильтров, отвечающих за $\TS_{\sin} = \sin\left(\frac{2\pi}{12} n \right)$, при разных $\alpha$}
 			\label{fig:various_alphas_sin_cos}
 		\end{figure}
+
+		\note{
+			\textcolor{red}{\textbf{TODO}} 
+			Расписать, что $\GSSA$ хуже отделяет от шума, но лучше компоненты между собой, основываясь по рисунку. Дописать, по каким группам производилось объединение.
+			}
 	\end{frame}
 	
 	
 	\begin{frame}{Сравнение SSA и GSSA. Пример, продолжение}
 		\begin{table}[H]
+			\caption{MSE разложений $\TS = \TS_{\sin} + \TS_{\cos}$}
 			\centering
 			\begin{tabular}{c|ccc}
 				\hline
 				Метод/Ошибка & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$ \\ 
 				\hline
 				SSA   & 5.15e-03 & 5.15e-03 & 6.01e-30\\ 
-				GSSA, $\alpha = \frac{1}{2}$  & 3.68e-04 & 3.68e-04 & 9.53e-30 \\ 
+				GSSA, $\alpha = 0.5$  & 3.68e-04 & 3.68e-04 & 9.53e-30 \\ 
 				\hline
 			\end{tabular}
-			\caption{MSE разложений ряда $\TS = \TS_{\sin} + \TS_{\cos}$ для $\SSA$ и $\GSSA$ с $\alpha = \frac{1}{2}$}
 			\label{tab:mse_ssa_gssa}
 		\end{table}
-		Добавим к $\TS$ шумовую компоненту: $\TS = \TS_{\sin} + \TS_{\cos} + \TS_{\mathrm{noise}} =
-		\sin\left(\frac{2\pi}{12}x\right) +
-		\frac{1}{2}\cos\left(\frac{2\pi}{19}x\right)+
-		\varepsilon_n$, 
-		где $\varepsilon_n \sim \mathrm N(0, 0.1^2)$.
+
 		\begin{table}[H]
+			\caption{MSE разложений $\TS = \TS_{\sin} + \TS_{\cos}+
+		\varepsilon_n$, $\varepsilon_n \sim \mathrm N(0, 0.1^2)$ }
 			\centering
 			\begin{tabular}{c|ccc}
 				\hline
 				Метод & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$ \\ 
 				\hline
 				SSA      & 5.68e-03 & 5.44e-03 & 7.48e-04  \\ 
-				GSSA, $\alpha = \frac{1}{2}$ & 1.21e-03 & 1.25e-03 & 1.04e-03 \\
+				GSSA, $\alpha = 0.5$ & 1.21e-03 & 1.25e-03 & 1.04e-03 \\
 				\hline
 			\end{tabular}
-			\caption{MSE разложений ряда $\TS = \TS_{\sin} + \TS_{\cos} + \TS_{\mathrm{noise}}$ для $\SSA$ и $\GSSA$ с $\alpha = \frac{1}{2}$}
 			\label{tab:errs_ssa_gssa}
 		\end{table}
+
+		\note{
+			\textcolor{red}{\textbf{TODO}} 
+			Подтвердить этими таблицами слова из предыдущего слайда про шум и разделимость компонент.
+		}
 	\end{frame}
 	
 	
 	
 	\begin{frame}{Сравнение SSA и GSSA. Выводы}
-		По теоретическим результатам и примерам можно сделать понять, что $\GSSA$ позволяет улучшить разделимость периодических компонент ряда. Однако, вместе с тем, разложение будет захватывать больше шума в сравнении с базовым $\SSA$.
+		\textcolor{red}{\textbf{TODO}} 
+		Применение $\SSA$ для выделения сигнала, затем $\GSSA$ для разделения компонент для того же примера. Написать, что получилось объединить лучшие свойства двух методов. Оформить это как вывод.
 	\end{frame}
 	
 	
@@ -339,57 +368,33 @@
 		\begin{equation*}
 			\begin{split}
 				&U_{k}=L^{-1/2}(u_{k,1\cdot}\cdot\cdot\cdot,u_{k,L}), \, \text{где} \, 
-				u_{k,j}=\exp\left(-\mathrm{i}2\pi\d(j-1)\frac{k-1}{L}\right), \\
+				u_{k,j}=\exp\left(-\mathrm{i}2\pi\mathrm{d}(j-1)\frac{k-1}{L}\right), \\
 				&\lambda_{L,k}=\sum_{m=0}^{L-1}\hat c_{m}\exp\left(i 2\pi m\frac{k-1}{L}\right), \, k = 1:L.
 			\end{split}
 		\end{equation*}
-		
+	
 		\note{
-			Модификация $\SSA$ на основе циркулярной матрицы \citep{bogalo2020}. Авторы метода называют её автоматизированной. Причем автоматизированная в том смысле, что компоненты ряда группируются по частотам самим алгоритмом.
+			\textcolor{red}{\textbf{TODO}} 
+			Полностью переписать алгоритм по аналогии того, как расписан $\SSA$. Написать, что группировка производится по частотам, указать, что из-за этого можно работать с $\CISSA$ только тогда, когда заранее знаем частоты.
+			Указать про фиксированный базис $\CISSA$
 		}
-		
 	\end{frame}
 	
 	
 	
-	\begin{frame}{Метод CiSSA. Алгоритм: восстановление}
-		Для каждой частоты $w_k = \frac{k-1}{L}$, $k = 2:\lfloor \frac{L+1}{2} \rfloor$, есть два собственных вектора: $U_k$ и $U_{L+2-k}$. За частоту $w_1$ отвечает один собственный вектор --- $U_1$. Если $L$ --- четное, то частоте $w_{\frac{L}{2} + 1}$ будет соответствовать один вектор $U_{\frac{L}{2}+1}$.
+	% \begin{frame}{Метод CiSSA. Алгоритм: восстановление}
+	% 	Для каждой частоты $w_k = \frac{k-1}{L}$, $k = 2:\lfloor \frac{L+1}{2} \rfloor$, есть два собственных вектора: $U_k$ и $U_{L+2-k}$. За частоту $w_1$ отвечает один собственный вектор --- $U_1$. Если $L$ --- четное, то частоте $w_{\frac{L}{2} + 1}$ будет соответствовать один вектор $U_{\frac{L}{2}+1}$.
 		
-		Следовательно, индексы разбиваются на элементарную группировку следующим образом:
-		\begin{equation*}
-			\begin{split}
-				&B_1 = \{1\}; \, B_k = \{k, L+2-k\}, \,  \text{для } k = 2:\lfloor \frac{L+1}{2}\rfloor; \\ \, 
-				&B_{\frac{L}{2} + 1} = \left\{ \frac{L}{2} + 1 \right\}, \, \text{если} \, L \mid  2.
-			\end{split}
-		\end{equation*}
-		$\mathbf X_{B_k} = \mathbf X_k + \mathbf X_{L+2-k} = U_k U_k^H \mathbf X + U_{L+2-k} U_{L+2-k}^H \mathbf X$, \\где $U^H$ --- это комплексное сопряжение и транспонирование вектора $U$. Далее идет группировка по диапазонам интересующих частот, после чего следует диагональное усреднение.
-		
-		\note{
-			Группировка будет производиться на непересекающиеся подгруппы по частотам от $0$ до $0.5$, поскольку частоты выше 0.5 представляют собой зеркальное отражение частот ниже 0.5. Именно поэтому объединяются матрицы $\mathbf X_{B_k} = \mathbf X_k + \mathbf X_{L+2-k}$.
-		}
-		
-	\end{frame}
+	% 	Следовательно, индексы разбиваются на элементарную группировку следующим образом:
+	% 	\begin{equation*}
+	% 		\begin{split}
+	% 			&B_1 = \{1\}; \, B_k = \{k, L+2-k\}, \,  \text{для } k = 2:\lfloor \frac{L+1}{2}\rfloor; \\ \, 
+	% 			&B_{\frac{L}{2} + 1} = \left\{ \frac{L}{2} + 1 \right\}, \, \text{если} \, L \mid  2.
+	% 		\end{split}
+	% 	\end{equation*}
+	% 	$\mathbf X_{B_k} = \mathbf X_k + \mathbf X_{L+2-k} = U_k U_k^H \mathbf X + U_{L+2-k} U_{L+2-k}^H \mathbf X$, \\где $U^H$ --- это комплексное сопряжение и транспонирование вектора $U$. Далее идет группировка по диапазонам интересующих частот, после чего следует диагональное усреднение.
+	% \end{frame}
 	
-	
-	
-	\begin{frame}{Метод CiSSA. Свойства: связь с разложением Фурье}
-		\begin{definition}
-			Разложение
-			\begin{equation}
-				\label{eq:fourier}
-				x_n = c_0 + \sum\limits_{k = 1}^{\lfloor \frac{N+1}{2} \rfloor}\left(c_k \cos(2\pi n k / N) + s_k \sin(2\pi n k / N) \right),
-			\end{equation}
-			где $1 \leq n \leq N$ и $s_{N/2} = 0 $ для четного N, называется разложением Фурье ряда $\TS$. 
-		\end{definition}
-		\begin{comment}
-			\label{comm:proector}
-			$U_k U_k^H + U_{L+2-k} U_{L+2-k}^H$ является оператором проектирования на подпространство, которое порождено синусами и косинусами с частотой $w_k = \frac{k-1}{L}$. То есть, воспроизводится разложение Фурье для $K$ векторов матрицы $\mathrm X$. Затем вычисляется диагональное усреднение.
-		\end{comment}
-		\note{
-			По замечанию \ref{comm:proector} видно, что при вычислении $\mathbf X_{B_k} = \mathbf X_k + \mathbf X_{L+2-k} = U_k U_k^H \mathbf X + U_{L+2-k} U_{L+2-k}^H \mathbf X$, воспроизводится разложение Фурье для $K$ векторов матрицы $\mathrm X$. Затем вычисляется диагональное усреднение $\mathbf *X_{B_k}$.
-		}
-		
-	\end{frame}
 	
 %	\begin{frame}{Метод CiSSA. Свойства: разделимость}
 %		\textbf{Точная разделимость.}
@@ -441,14 +446,36 @@
 		Так, алгоритм лучше выделяет нелинейную составляющую.
 		
 		\note{
-			Формальное определение стационарности ряда можно увидеть в отчёте данной работы \citep{spbu_cissa_coursework_github}. Стационарный ряд --- это такой временной ряд, в котором изменения происходят вокруг некоторого среднего значения, и это среднее остаётся более-менее постоянным на протяжении всего ряда.
-			
-			Сама процедура расширения ряда $\TS$ производится с использованием авторегрессионной (AR) модели.
+			\textcolor{red}{\textbf{TODO}} 
+			Написать алгоритм расширения ряда, сказать, что изначально алгоритм пригоден только для стационарных рядов.
 		}
 		
 		
 	\end{frame}
+
+	\begin{frame}{Метод CiSSA. Свойства: связь с разложением Фурье}
+		\begin{definition}
+			Разложение
+			\begin{equation}
+				\label{eq:fourier}
+				x_n = c_0 + \sum\limits_{k = 1}^{\lfloor \frac{N+1}{2} \rfloor}\left(c_k \cos(2\pi n k / N) + s_k \sin(2\pi n k / N) \right),
+			\end{equation}
+			где $1 \leq n \leq N$ и $s_{N/2} = 0 $ для четного N, называется разложением Фурье ряда $\TS$. 
+		\end{definition}
+		\begin{comment}
+			\label{comm:proector}
+			$U_k U_k^H + U_{L+2-k} U_{L+2-k}^H$ является оператором проектирования на подпространство, которое порождено синусами и косинусами с частотой $w_k = \frac{k-1}{L}$. То есть, воспроизводится разложение Фурье для $K$ векторов матрицы $\mathrm X$. Затем вычисляется диагональное усреднение.
+		\end{comment}
+		\note{
+			\textcolor{red}{\textbf{TODO}} 
+			Переписать замечание
+		}
+	\end{frame}
 	
+	\begin{frame}
+		\textcolor{red}{\textbf{TODO}} 
+		Написать, что будем сравнивать алгоритмы $\SSA$ и $\GSSA$ по разделимости компонент между собой, когда заранее знаем, на какие частоты будем разделять. Для этого нужны определения разделимости.
+	\end{frame}
 	
 	\begin{frame}{Сравнение SSA, Фурье, CiSSA. Разделимость}
 		\begin{definition}
@@ -464,18 +491,18 @@
 	
 	
 	\begin{frame}{Сравнение SSA, Фурье, CiSSA. Точная разделимость}
-		Фиксируем временной ряд $\TS = \TS_{1} + \TS_{2} =$ $= A_1 \exp(\alpha_1 n)\cos(2\pi w_1 n + \varphi_1) + A_2 \exp(\alpha_2 n)\cos(2\pi w_2 n + \varphi_2)$.
+		Фиксируем временной ряд $\TS = \TS_{1} + \TS_{2} =$ $= A_1 \cos(2\pi w_1 n + \varphi_1) + A_2 \cos(2\pi w_2 n + \varphi_2)$.
 		\newline \newline
 		Условия точной разделимости $\TS$ для разложения Фурье: \\
-		$Nw_1, Nw_2 \in \mathbb{N}$, $w_1 \not = w_2$, $\alpha_1  = \alpha_2 = 0$.
+		$Nw_1, Nw_2 \in \mathbb{N}$, $w_1 \not = w_2$.
 		
 		Условия точной разделимости $\TS$ для $\CISSA$: \\
-		$Lw_1, Lw_2 \in \mathbb{N}$, $w_1 \not = w_2$, $\alpha_1 = \alpha_2 = 0$.
+		$Lw_1, Lw_2 \in \mathbb{N}$, $w_1 \not = w_2$.
 		
 		Условия точной разделимости $\TS$ для $\SSA$: \\
-		$Lw_1, Lw_2, Kw_1, Kw_2 \in \mathbb{N}$, $w_1 \not = w_2$, $A_1 \not = A_2$, $\alpha_1 \not = \alpha_2$.
+		$Lw_1, Lw_2, Kw_1, Kw_2 \in \mathbb{N}$, $w_1 \not = w_2$, $A_1 \not = A_2$.
 		\newline \newline
-		Таким образом, условия на разделение косинусов, слабее у методов $\CISSA$ и Фурье, чем у $\SSA$. Однако $\SSA$ может точно отличать друг от друга больше классов функций.
+		Таким образом, условия на разделение косинусов, слабее у методов $\CISSA$ и Фурье, чем у $\SSA$.
 	\end{frame}
 	
 	
@@ -485,39 +512,60 @@
 			Для $\SSA$ существуют алгоритмы улучшения разделимости, например, EOSSA и FOSSA \cite{golyandina2023intelligent}. По заданному набору компонент, они позволяют более точно отделять компоненты.
 		\end{comment}
 		В алгоритме разложения $\CISSA$ (Фурье) увеличение длины окна $L$ ($N$) изменяет сетку частот. Это означает, что даже если не удастся подобрать такое $L$ ($N$), при котором косинус будет точно отделим, его постепенное увеличение позволит приблизить частоты сетки к частоте компоненты. В итоге, можно снизить ошибку выделения нужной компоненты, учитывая соседние частоты.
+
+		\note{
+			\textcolor{red}{\textbf{TODO}} 
+			Переформулировать с меньшим количеством слов, ссылки переделать 
+		}
 	\end{frame}
 	
 	
 	
 	
-	\begin{frame}{Сравнение SSA, Фурье, CiSSA. Выделение тренда}
-		Любая непериодическая компонента будет отвечать частотам, близким к нулю. Из-за этого алгоритмы $\CISSA$ и разложение Фурье не смогут отличить друг от друга две непериодики.
-		\newline \newline
-		\textbf{\large{Пример.}} Рассмотрим ряд $\TS = \TS_{c} + \TS_e + \TS_{\sin} + \TS_{\cos} = 1 + e^{\frac{x}{100}} + \sin{\frac{2\pi}{12}x} + \frac{1}{2}\cos{\frac{2\pi}{3}x}$.
-%		[width=0.75\textwidth]
-		\begin{table}[H]
-			\centering
-			\resizebox{0.95\textwidth}{!}{ % Масштабируем таблицу
-				\begin{tabular}{l|l|cccc}
-					\hline
-					Метод & Параметры & $\operatorname{MSE}(\TS_{c} + \TS_e)$ & $\operatorname{MSE}(\TS_{\sin})$ & $\operatorname{MSE}(\TS_{\cos})$ & $\operatorname{MSE}(\TS)$\\ 
-					\hline
-					SSA & $L = 96, K = 96$ & 5.0e-03 & 8.9e-07 & 5.2e-05 & 4.4e-03 \\ 
-					SSA EOSSA, $r = 7$ & $L = 96, K = 96$ & 1.7e-28 & 1.6e-29 & 8.7e-30 & 1.6e-28 \\ 
-					Fourier & $N = 96 \cdot 2$ & 1.1e-01 & 6.1e-04 & 6.8e-03 & 1.1e-01 \\ 
-					Fourier extended & $N = 96 \cdot 2$ & 1.4e-03 & 1.3e-03 & 8.4e-03 & 9.6e-03 \\ 
-					CiSSA & $L = 96$ & 5.3e-02 & 1.6e-05 & 4.9e-04 & 4.4e-02 \\ 
-					CiSSA extended & $L = 96$ & 5.0e-04 & 2.1e-04 & 1.1e-03 & 6.0e-04 \\ 
-					\hline
-				\end{tabular}
-			}
-			\caption{MSE разложений ряда $\TS = \TS_{c} + \TS_e + \TS_{\sin} + \TS_{\cos}$} 
-			\label{tab:errs_fourier_cissa_trend}
-		\end{table}
-		По таблице \ref{tab:errs_fourier_cissa_trend} видно, что расширение ряда негативно повлияло на выделение периодики и положительно на трендовую составляющую (непериодику).
+% 	\begin{frame}{Сравнение SSA, Фурье, CiSSA. Выделение тренда}
+% 		Любая непериодическая компонента будет отвечать частотам, близким к нулю. Из-за этого алгоритмы $\CISSA$ и разложение Фурье не смогут отличить друг от друга две непериодики.
+% 		\newline \newline
+% 		\textbf{\large{Пример.}} Рассмотрим ряд $\TS = \TS_{c} + \TS_e + \TS_{\sin} + \TS_{\cos} = 1 + e^{\frac{x}{100}} + \sin{\frac{2\pi}{12}x} + \frac{1}{2}\cos{\frac{2\pi}{3}x}$.
+% %		[width=0.75\textwidth]
+% 		\begin{table}[H]
+% 			\centering
+% 			\resizebox{0.95\textwidth}{!}{ % Масштабируем таблицу
+% 				\begin{tabular}{l|l|cccc}
+% 					\hline
+% 					Метод & Параметры & $\operatorname{MSE}(\TS_{c} + \TS_e)$ & $\operatorname{MSE}(\TS_{\sin})$ & $\operatorname{MSE}(\TS_{\cos})$ & $\operatorname{MSE}(\TS)$\\ 
+% 					\hline
+% 					SSA & $L = 96, K = 96$ & 5.0e-03 & 8.9e-07 & 5.2e-05 & 4.4e-03 \\ 
+% 					SSA EOSSA, $r = 7$ & $L = 96, K = 96$ & 1.7e-28 & 1.6e-29 & 8.7e-30 & 1.6e-28 \\ 
+% 					Fourier & $N = 96 \cdot 2$ & 1.1e-01 & 6.1e-04 & 6.8e-03 & 1.1e-01 \\ 
+% 					Fourier extended & $N = 96 \cdot 2$ & 1.4e-03 & 1.3e-03 & 8.4e-03 & 9.6e-03 \\ 
+% 					CiSSA & $L = 96$ & 5.3e-02 & 1.6e-05 & 4.9e-04 & 4.4e-02 \\ 
+% 					CiSSA extended & $L = 96$ & 5.0e-04 & 2.1e-04 & 1.1e-03 & 6.0e-04 \\ 
+% 					\hline
+% 				\end{tabular}
+% 			}
+% 			\caption{MSE разложений ряда $\TS = \TS_{c} + \TS_e + \TS_{\sin} + \TS_{\cos}$} 
+% 			\label{tab:errs_fourier_cissa_trend}
+% 		\end{table}
+% 		По таблице \ref{tab:errs_fourier_cissa_trend} видно, что расширение ряда негативно повлияло на выделение периодики и положительно на трендовую составляющую (непериодику).
 		
-	\end{frame}
+% 	\end{frame}
 	
+	\begin{frame}
+		\textcolor{red}{\textbf{TODO}} 
+		Пример, когда известны частоты, попадаем / не попадаем в решетку.
+	\end{frame}
+
+
+	\begin{frame}
+		\textcolor{red}{\textbf{TODO}} 
+		Пример, когда условия нарушаются (добавление тренда).
+	\end{frame}
+
+
+	\begin{frame}
+		\textcolor{red}{\textbf{TODO}} 
+		Пример, когда шум.
+	\end{frame}
 	
 	
 	
@@ -569,10 +617,14 @@
 	\begin{frame}{Сравнение SSA, Фурье, CiSSA. Выводы 2}
 		По полученным результатам, можно следующие выводы: 
 		\begin{enumerate}
-			\item Алгоритм $\CISSA$ работает лучше разложения Фурье;
 			\item Если понятно, что ряд состоит только из периодических компонент, стоит использовать $\CISSA$ без процедуры расширения, поскольку она делает ошибки разделений периодики больше. И напротив, если есть непериодичность, лучше расширять ряд;
-			\item Если данные зашумлены или имеется непериодичность, алгоритм $\SSA$ с улучшением разделимости справляется в среднеквадратичном лучше $\CISSA$ с расширением ряда или без. 
+			\item Если данные зашумлены или имеется непериодичность, алгоритм $\SSA$, чем $\CISSA$ с расширением ряда или без. 
 		\end{enumerate}
+
+		\note{
+			\textcolor{red}{\textbf{TODO}} 
+			Переписать выводы в соответствии с примерами.
+		}
 	\end{frame}
 	
 	
@@ -762,11 +814,6 @@
 		\small
 		\bibliographystyle{plain}
 		\bibliography{ref}
-		
-		\note{
-			На данном слайде представлен список основных источников, используемых в моей работе.
-			Спасибо за внимание.
-		}
 	\end{frame}
 	
 \end{document}
