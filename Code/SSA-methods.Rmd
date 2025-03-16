@@ -836,7 +836,7 @@ mse_table <- data.frame(
 print(mse_table)
 ```
 
-### sin + cos + шум  SSA потом GSSA
+### sin + cos + шум SSA потом GSSA
 
 ```{r}
 n <- 96*2-1
