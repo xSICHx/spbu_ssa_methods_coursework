@@ -1,0 +1,511 @@
+# Сравнение SSA, Fourier, CiSSA
+
+```{r}
+library(xtable)
+source("eossa_new.R")
+```
+
+## Только sin + cos
+
+### Цель
+
+Показать, что CiSSA может выделять периодические компоненты лучше в том смысле, что нужны меньшие требования на параметры алгоритма.
+
+### Дизайн эксперимента
+
+**Постановка задачи**: знаем, какие частоты нужно выделять.
+
+**Функция**: A1 sin(2 pi omega) + A2 cos(2 pi omega)
+
+**Эксперименты:**
+
+-   SSA, EOSSA\
+    A1 == A2\
+    A1 != A2
+
+-   CiSSA, ext
+
+-   Fourier, ext
+
+```{r}
+
+good_experiment <- function(
+    L,
+    n,
+    x,
+    t_series,
+    groups_ssa,
+    eossa_nested_groups,
+    groups_freqs,
+    table,
+    y = NULL
+  ){
+  if (is.null(y)){
+    y <- Reduce("+", t_series)
+  }
+  y_real <- Reduce("+", t_series)
+    
+  
+  #----------------
+  s_ssa <- ssa(y[1:(n-1)], L)
+  r_ssa <- reconstruct(s_ssa, groups = groups_ssa)
+  
+  #---
+  e_ssa <- eossa_new(s_ssa, nested.groups = eossa_nested_groups, clust_type = "distance")
+  g_sesonal_e <- grouping.auto(e_ssa, base = "eigen",
+                         freq.bins = groups_freqs,
+                         threshold = 0.5)
+  r_ssa_e <- reconstruct(e_ssa, groups=g_sesonal_e)
+  
+  #---
+  r_fft <- reconstruct_fft(x, y)
+  r_fft_grouped <- grouping_cissa(r_fft,
+                      groups = groups_freqs
+                      )$t_series
+  
+  #---
+  r_fft_extended <- reconstruct_fft(x, y, TRUE)
+  r_fft_grouped_extended <- grouping_cissa(r_fft_extended,
+                      groups = groups_freqs
+                      )$t_series
+  
+  #---
+  r_cissa <- circulant_SSA(y, L)
+  r_cissa_grouped <- grouping_cissa(r_cissa,
+                      groups = groups_freqs
+                      )$t_series
+  
+  #---
+  r_cissa_ext <- circulant_SSA(y, L, extend_flag = TRUE)
+  r_cissa_grouped_ext <- grouping_cissa(r_cissa_ext,
+                      groups = groups_freqs
+                      )$t_series
+  
+  #---------------
+  
+  ssa_sum <- 0
+  ssa_e_sum <- 0
+  fft_sum <- 0
+  fft_ext_sum <- 0
+  cissa_sum <- 0
+  cissa_ext_sum <- 0
+  for (i in 1:length(t_series)){
+    ts <- t_series[[i]]
+    # print(table[1, i+1])
+    
+    table[1, i+1] <- mse(ts[1:(n-1)], r_ssa[[i]])
+    ssa_sum <- ssa_sum + r_ssa[[i]]
+    
+    table[2, i+1] <- mse(ts[1:(n-1)], r_ssa_e[[i]])
+    ssa_e_sum <- ssa_e_sum + r_ssa_e[[i]]
+    
+    table[3, i+1] <- mse(ts, r_fft_grouped[[i]])
+    fft_sum <- fft_sum + r_fft_grouped[[i]]
+    
+    table[4, i+1] <- mse(ts, r_fft_grouped_extended[[i]])
+    fft_ext_sum <- fft_ext_sum + r_fft_grouped_extended[[i]]
+    
+    table[5, i+1] <- mse(ts, r_cissa_grouped[[i]])
+    cissa_sum <- cissa_sum + r_cissa_grouped[[i]]
+    
+    table[6, i+1] <- mse(ts, r_cissa_grouped_ext[[i]])
+    cissa_ext_sum <- cissa_ext_sum + r_cissa_grouped_ext[[i]]
+  }
+  
+  
+  table[1, length(t_series)+2] <- mse(y_real[1:(n-1)], ssa_sum)
+  
+  table[2, length(t_series)+2] <- mse(y_real[1:(n-1)], ssa_e_sum)
+  
+  table[3, length(t_series)+2] <- mse(y_real, fft_sum)
+  
+  table[4, length(t_series)+2] <- mse(y_real, fft_ext_sum)
+  
+  table[5, length(t_series)+2] <- mse(y_real, cissa_sum)
+  
+  table[6, length(t_series)+2] <- mse(y_real, cissa_ext_sum)
+  
+  return(table)
+}
+
+
+df_to_latex_print <- function(df){
+  # Функция для преобразования численных столбцов
+  df[] <- lapply(df, function(x) {
+    if (is.numeric(x)) {
+      formatC(x, format = "e", digits = 1)
+    } else {
+      x
+    }
+  })
+  
+  table_latex <- xtable(df, caption = "Example Table")
+
+  # Шаг 4: Вывод таблицы в LaTeX файл
+  print(table_latex, include.rownames = FALSE)
+}
+```
+
+#### 1 = A1 != A2 = 1/2
+
+```{r}
+
+n <- 96*2
+L <- 96
+x <- 0:(n-1)
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/3 * x)/2
+y <- y1 + y2
+X <- hankel(y, L = L)
+eps <- 1/(n+1)
+
+data <- data.frame(
+  Метод = c("SSA, \nLw, Kw in N",
+            "SSA EOSSA, \nLw, Kw in N",
+            "Fourier, Nw in N",
+            "Fourier extended, Nw in N",
+            "CiSSA, Lw in N",
+            "CiSSA extended, Lw in N"
+            ),
+  sin_err = c(1, 1, 1, 1, 1, 1),
+  cos_err = c(1, 1, 1, 1, 1, 1),
+  all_err = c(1, 1, 1, 1, 1, 1)
+)
+
+treshold <- (1/12 + 1/3)/2
+
+df<- good_experiment(L, n, x,
+                list(y1, y2),
+                list(
+                  F1 = c(1, 2),
+                  F2 = c(3, 4)
+                    ),
+                list(1:4),
+                list(
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(0, 1/12+treshold - eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-treshold, 1/2)
+                    ),
+                data
+) 
+
+print(df)
+
+df_to_latex_print(df)
+
+
+```
+
+#### A1 == A2 = 1
+
+```{r}
+
+n <- 96*2
+L <- 96
+x <- 0:(n-1)
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/3 * x)
+y <- y1 + y2
+X <- hankel(y, L = L)
+eps <- 1/(n+1)
+
+data <- data.frame(
+  Метод = c("SSA, \nLw, Kw in N a1= a2",
+            "SSA EOSSA, \nLw, Kw in N, a1 = a2",
+            "Fourier, Nw in N",
+            "Fourier extended, Nw in N",
+            "CiSSA, Lw in N",
+            "CiSSA extended, Lw in N"
+            ),
+  sin_err = c(1, 1, 1, 1, 1, 1),
+  cos_err = c(1, 1, 1, 1, 1, 1),
+  all_err = c(1, 1, 1, 1, 1, 1)
+)
+
+
+df <- good_experiment(L, n, x,
+                list(y1, y2),
+                list(
+                  F1 = c(1, 2),
+                  F2 = c(3, 4)
+                    ),
+                list(1:4),
+                list(
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(0, 1/12+treshold - eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-treshold, 1/2)
+                    ),
+                data
+)
+print(df)
+
+df_to_latex_print(df)
+
+
+```
+
+## trend + sin + cos
+
+### Цель
+
+Показать, что с добавлением тренда выделение CiSSA и Фурье для периодик получаются хуже (то есть, что нужно изначально удалять тренд). При этом, расширение улучшает ситуацию.
+
+Показать, что лучше выделять тренд с помощью SSA
+
+### Дизайн эксперимента
+
+**Постановка задачи**: знаем, какие частоты нужно выделять.
+
+**Функция**: 1 + exp(x/100) + A1 sin(2 pi omega) + A2 cos(2 pi omega)
+
+**Эксперименты:**
+
+-   SSA, EOSSA\
+    A1 == A2\
+    A1 != A2
+
+-   CiSSA, ext
+
+-   Fourier, ext
+
+```{r}
+n <- 96*2
+x <- 0:(n-1)
+L <- 96
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/3 * x)/2
+y3 <- exp(x/100) + 1
+y <- y1 + y2 + y3
+eps <- 1/(n+1)
+
+
+data <- data.frame(
+  Метод = c("SSA, \nLw, Kw in N",
+            "SSA EOSSA, \nLw, Kw in N",
+            "Fourier, Nw in N",
+            "Fourier extended, Nw in N",
+            "CiSSA, Lw in N",
+            "CiSSA extended, Lw in N"
+            ),
+  exp_err = c(1, 1, 1, 1, 1, 1),
+  sin_err = c(1, 1, 1, 1, 1, 1),
+  cos_err = c(1, 1, 1, 1, 1, 1),
+  all_err = c(1, 1, 1, 1, 1, 1)
+)
+
+df <- good_experiment(L, n, x,
+                list(y3, y1, y2),
+                list(
+                  e = c(1, 6),
+                  sesonal_sin = c(2, 3),
+                  sesonal_cos = c(4, 5)
+                    ),
+                list(1:6),
+                list(
+                      trend = c(0, 1/12 - 2*eps),
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(1/12-2*eps, 1/12+2*eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-2*eps, 1/2)
+                    ),
+                data
+)
+print(df)
+
+df_to_latex_print(df)
+```
+
+```{r}
+library(Rssa)
+library(signal)
+library(gsignal)
+
+n <- 96*2
+x <- 0:(n-1)
+L <- 12
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/3 * x)
+y3 <- exp(x/100) + 1
+y <- y1 + y2 + y3
+eps <- 1/(n+1)
+
+
+data <- data.frame(
+  Метод = c("SSA, \nLw, Kw in N, a1 = a2",
+            "SSA EOSSA, \nLw, Kw in N, a1 = a2",
+            "Fourier, Nw in N",
+            "Fourier extended, Nw in N",
+            "CiSSA, Lw in N",
+            "CiSSA extended, Lw in N"
+            ),
+  exp_err = c(1, 1, 1, 1, 1, 1),
+  sin_err = c(1, 1, 1, 1, 1, 1),
+  cos_err = c(1, 1, 1, 1, 1, 1),
+  all_err = c(1, 1, 1, 1, 1, 1)
+)
+
+df <- good_experiment(L, n, x,
+                list(y3, y1, y2),
+                list(
+                  e = c(1, 6),
+                  sesonal_sin = c(2, 5),
+                  sesonal_cos = c(3, 4)
+                    ),
+                list(1:6),
+                list(
+                      trend = c(0, 1/12 - 4*eps),
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(1/12-4*eps, 1/12+4*eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-4*eps, 1/2)
+                    ),
+                data
+)
+print(df)
+
+df_to_latex_print(df)
+```
+
+## ШУМ
+
+```{r}
+calculate_mean_across_tables <- function(tables_list) {
+  # Проверяем, что все таблички имеют одинаковую структуру
+  # if (length(unique(sapply(tables_list, dim))) != 1) {
+  #   print(unique(sapply(tables_list, dim)))
+  #   stop("Таблички имеют разную структуру")
+  # }
+  
+  # Создаем пустой data.frame для результата
+  result <- tables_list[[1]]
+  
+  # Проходим по каждому столбцу
+  for (col in colnames(result)) {
+    # Если столбец числовой, вычисляем среднее
+    if (is.numeric(result[[col]])) {
+      # Суммируем значения столбца по всем табличкам
+      sum_col <- Reduce(`+`, lapply(tables_list, function(df) df[[col]]))
+      # Делим на количество табличек, чтобы получить среднее
+      result[[col]] <- sum_col / length(tables_list)
+    }
+    # Если столбец строковый, оставляем значение из первой таблички
+    else if (is.character(result[[col]])) {
+      result[[col]] <- tables_list[[1]][[col]]
+    }
+  }
+  
+  return(result)
+}
+```
+
+### sin + cos + noise
+
+```{r}
+
+list_df <- list()
+
+for (i in 1:100){
+  n <- 96*2
+  L <- 96
+  x <- 0:(n-1)
+  y1 <- sin(2*pi/12 * x)
+  y2 <- cos(2*pi/3 * x)/2 
+  y <- y1 + y2 + rnorm(n, 0, 0.1)
+  X <- hankel(y, L = L)
+  eps <- 1/(n+1)
+  
+  data <- data.frame(
+    Метод = c("SSA, \nLw, Kw in N",
+              "SSA EOSSA, \nLw, Kw in N",
+              "Fourier, Nw in N",
+              "Fourier extended, Nw in N",
+              "CiSSA, Lw in N",
+              "CiSSA extended, Lw in N"
+              ),
+    sin_err = c(1, 1, 1, 1, 1, 1),
+    cos_err = c(1, 1, 1, 1, 1, 1),
+    all_err = c(1, 1, 1, 1, 1, 1)
+  )
+  
+  treshold <- (1/12 + 1/3)/2
+  
+  df<- good_experiment(L, n, x,
+                  list(y1, y2),
+                  list(
+                    F1 = c(1, 2),
+                    F2 = c(3, 4)
+                      ),
+                  list(1:4),
+                  list(
+                        sesonal_sin = c(1/12-eps, 1/12+eps),
+                        # sesonal_sin = c(1/12 - eps),
+                        sesonal_cos = c(1/3-eps, 1/3+eps)
+                        # sesonal_cos = c(1/3-treshold, 1/2)
+                      ),
+                  data,
+                  y
+  ) 
+  list_df[[i]] <- df
+}
+
+calculate_mean_across_tables(list_df) |> df_to_latex_print()
+
+
+```
+
+### trend + sin+ cos + noise
+
+```{r}
+list_df <- list()
+
+for (i in 1:10){
+  n <- 96*2
+  x <- 0:(n-1)
+  L <- 96
+  y1 <- sin(2*pi/12 * x)
+  y2 <- cos(2*pi/3 * x)/2
+  y3 <- exp(x/100) + 1
+  y <- y1 + y2 + y3 + rnorm(n, 0, 0.1)
+  eps <- 1/(n+1)
+  
+  
+  data <- data.frame(
+    Метод = c("SSA, \nLw, Kw in N",
+              "SSA EOSSA, \nLw, Kw in N",
+              "Fourier, Nw in N",
+              "Fourier extended, Nw in N",
+              "CiSSA, Lw in N",
+              "CiSSA extended, Lw in N"
+              ),
+    exp_err = c(1, 1, 1, 1, 1, 1),
+    sin_err = c(1, 1, 1, 1, 1, 1),
+    cos_err = c(1, 1, 1, 1, 1, 1),
+    all_err = c(1, 1, 1, 1, 1, 1)
+  )
+  
+  df <- good_experiment(L, n, x,
+                  list(y3, y1, y2),
+                  list(
+                    e = c(1, 6),
+                    sesonal_sin = c(2, 3),
+                    sesonal_cos = c(4, 5)
+                      ),
+                  list(1:6),
+                  list(
+                        trend = c(0, 1/12 - eps),
+                        # sesonal_sin = c(1/12-eps, 1/12+eps),
+                        sesonal_sin = c(1/12-eps, 1/12+eps),
+                        # sesonal_cos = c(1/3-eps, 1/3+eps)
+                        sesonal_cos = c(1/3-eps, 1/3 + eps)
+                      ),
+                  data,
+                  y
+  )
+  list_df[[i]] <- df
+}
+
+calculate_mean_across_tables(list_df) |> df_to_latex_print()
+
+```

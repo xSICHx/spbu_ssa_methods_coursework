@@ -1,0 +1,249 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global/global}
+    \entry{bogalo2020}{article}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=17eb12d7d3fbd96cca5d74d9480fb30b}{%
+           family={Bogalo},
+           familyi={B\bibinitperiod},
+           given={Juan},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=227977f267cc857583ccc850ab4acfd7}{%
+           family={Poncela},
+           familyi={P\bibinitperiod},
+           given={Pilar},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=a2662aa2b4f3b39b63ab4d6f83e8b5b6}{%
+           family={Senra},
+           familyi={S\bibinitperiod},
+           given={Eva},
+           giveni={E\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{1c5acc65a5e96f61e00ca2d58516560d}
+      \strng{fullhash}{1c5acc65a5e96f61e00ca2d58516560d}
+      \strng{fullhashraw}{1c5acc65a5e96f61e00ca2d58516560d}
+      \strng{bibnamehash}{1c5acc65a5e96f61e00ca2d58516560d}
+      \strng{authorbibnamehash}{1c5acc65a5e96f61e00ca2d58516560d}
+      \strng{authornamehash}{1c5acc65a5e96f61e00ca2d58516560d}
+      \strng{authorfullhash}{1c5acc65a5e96f61e00ca2d58516560d}
+      \strng{authorfullhashraw}{1c5acc65a5e96f61e00ca2d58516560d}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0165-1684}
+      \field{journaltitle}{Signal Processing}
+      \field{title}{Circulant singular spectrum analysis: A new automated procedure for signal extraction}
+      \field{volume}{177}
+      \field{year}{2020}
+      \verb{doi}
+      \verb 10.1016/j.sigpro.2020.107750
+      \endverb
+      \verb{urlraw}
+      \verb http://www.sciencedirect.com/science/article/pii/S0165168420303264
+      \endverb
+      \verb{url}
+      \verb http://www.sciencedirect.com/science/article/pii/S0165168420303264
+      \endverb
+    \endentry
+    \entry{golyandina2023intelligent}{article}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=28e214b90c5184dcc7187149f4a488fd}{%
+           family={Golyandina},
+           familyi={G\bibinitperiod},
+           given={Nina},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e0b8120d847bfa8fddcf05c464944abd}{%
+           family={Dudnik},
+           familyi={D\bibinitperiod},
+           given={Pavel},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=6b514c2e0dbbf6ffe53fa2f7f5d91218}{%
+           family={Shlemov},
+           familyi={S\bibinitperiod},
+           given={Alex},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{8a12b8eab58ae95df87b988496bf9a17}
+      \strng{fullhash}{8a12b8eab58ae95df87b988496bf9a17}
+      \strng{fullhashraw}{8a12b8eab58ae95df87b988496bf9a17}
+      \strng{bibnamehash}{8a12b8eab58ae95df87b988496bf9a17}
+      \strng{authorbibnamehash}{8a12b8eab58ae95df87b988496bf9a17}
+      \strng{authornamehash}{8a12b8eab58ae95df87b988496bf9a17}
+      \strng{authorfullhash}{8a12b8eab58ae95df87b988496bf9a17}
+      \strng{authorfullhashraw}{8a12b8eab58ae95df87b988496bf9a17}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Algorithms}
+      \field{number}{7}
+      \field{title}{Intelligent Identification of Trend Components in Singular Spectrum Analysis}
+      \field{volume}{16}
+      \field{year}{2023}
+      \field{pages}{353}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.3390/a16070353
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.3390/a16070353
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.3390/a16070353
+      \endverb
+    \endentry
+    \entry{golyandina2001analysis}{book}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=28e214b90c5184dcc7187149f4a488fd}{%
+           family={Golyandina},
+           familyi={G\bibinitperiod},
+           given={Nina},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=90ab4b7d73b9e0f73488b477902ba304}{%
+           family={Nekrutkin},
+           familyi={N\bibinitperiod},
+           given={Vladimir},
+           giveni={V\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ca5c1a7639cc44f7b0fd5735c4466f7a}{%
+           family={Zhigljavsky},
+           familyi={Z\bibinitperiod},
+           given={Anatoly},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{2}{%
+        {Chapman}%
+        {Hall/CRC}%
+      }
+      \strng{namehash}{f071a68b56b93b1f1adcb328062197d3}
+      \strng{fullhash}{f071a68b56b93b1f1adcb328062197d3}
+      \strng{fullhashraw}{f071a68b56b93b1f1adcb328062197d3}
+      \strng{bibnamehash}{f071a68b56b93b1f1adcb328062197d3}
+      \strng{authorbibnamehash}{f071a68b56b93b1f1adcb328062197d3}
+      \strng{authornamehash}{f071a68b56b93b1f1adcb328062197d3}
+      \strng{authorfullhash}{f071a68b56b93b1f1adcb328062197d3}
+      \strng{authorfullhashraw}{f071a68b56b93b1f1adcb328062197d3}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Analysis of Time Series Structure: SSA and Related Techniques}
+      \field{year}{2001}
+      \verb{urlraw}
+      \verb https://www.academia.edu/34626051/Analysis_of_Time_Series_Structure_-_SSA_and_Related_Techniques
+      \endverb
+      \verb{url}
+      \verb https://www.academia.edu/34626051/Analysis_of_Time_Series_Structure_-_SSA_and_Related_Techniques
+      \endverb
+    \endentry
+    \entry{gu2024generalized}{article}{}{}
+      \name{author}{7}{}{%
+        {{un=0,uniquepart=base,hash=657d3067053c16fac20a7536253f681b}{%
+           family={Gu},
+           familyi={G\bibinitperiod},
+           given={Jialiang},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=fe817ee08b7b7a288434815d4c4c0596}{%
+           family={Hung},
+           familyi={H\bibinitperiod},
+           given={Kevin},
+           giveni={K\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=850de84650b23a687101e82286c6b4cd}{%
+           family={Ling},
+           familyi={L\bibinitperiod},
+           given={Bingo\bibnamedelima Wing-Kuen},
+           giveni={B\bibinitperiod\bibinitdelim W\bibinithyphendelim K\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=f29e9b5fa7e40716b11bfdfc675e07b5}{%
+           family={Chow},
+           familyi={C\bibinitperiod},
+           given={Daniel\bibnamedelima Hung-Kay},
+           giveni={D\bibinitperiod\bibinitdelim H\bibinithyphendelim K\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=2ba74e19a950c5a40b85cc136538f42b}{%
+           family={Zhou},
+           familyi={Z\bibinitperiod},
+           given={Yang},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=54447e9262aa3e85780c2e9f46ce927e}{%
+           family={Fu},
+           familyi={F\bibinitperiod},
+           given={Yaru},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=9f954493ed77d80923d173d3f1dd8357}{%
+           family={Pun},
+           familyi={P\bibinitperiod},
+           given={Sio\bibnamedelima Hang},
+           giveni={S\bibinitperiod\bibinitdelim H\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{9c8772873ba0c0b4c62d5fef8d74b069}
+      \strng{fullhash}{77a52bacb28e16d0ec752826b36bbff2}
+      \strng{fullhashraw}{77a52bacb28e16d0ec752826b36bbff2}
+      \strng{bibnamehash}{9c8772873ba0c0b4c62d5fef8d74b069}
+      \strng{authorbibnamehash}{9c8772873ba0c0b4c62d5fef8d74b069}
+      \strng{authornamehash}{9c8772873ba0c0b4c62d5fef8d74b069}
+      \strng{authorfullhash}{77a52bacb28e16d0ec752826b36bbff2}
+      \strng{authorfullhashraw}{77a52bacb28e16d0ec752826b36bbff2}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0016-0032}
+      \field{journaltitle}{Journal of the Franklin Institute}
+      \field{title}{Generalized singular spectrum analysis for the decomposition and analysis of non-stationary signals}
+      \field{volume}{Accepted/In Press}
+      \field{year}{2024}
+      \verb{doi}
+      \verb 10.1016/j.jfranklin.2024.106696
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1016/j.jfranklin.2024.106696
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1016/j.jfranklin.2024.106696
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

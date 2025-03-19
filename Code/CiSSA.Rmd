@@ -1000,6 +1000,27 @@ plot(y |> extend(L), type="l", lwd = 4, ylab="Значения", xlab = "Инд�
 lines((x+L+1), y, type="l", col="red", lwd = 2)
 ```
 
+```{r}
+# Увеличиваем размер графического окна
+dev.new(width = 8, height = 10)  # Ширина 8 дюймов, высота 10 дюймов
+
+# Устанавливаем макет для двух графиков: один под другим
+par(mfrow = c(2, 1), mar = c(5, 5, 4, 2) + 0.1, oma = c(0, 0, 2, 0))
+
+# Первый график: Расширение временного ряда IP values
+IP_values_slice |> extend(192) |>
+  plot(type="l", lwd = 3, ylab="Значения", xlab = "Индексы", main="Расширение временного ряда IP values")
+lines((192:(length(IP_values_slice) + 192 -1)) + 1, IP_values_slice, type="l", col="red")
+
+# Второй график: Расширение временного ряда sin
+n <- 96*2 + 6
+x <- 0:(n-1)
+y <- sin(2*pi/12 * x)
+L <- 96+6
+plot(y |> extend(L), type="l", lwd = 4, ylab="Значения", xlab = "Индексы", main="Расширение временного ряда sin")
+lines((x+L+1), y, type="l", col="red", lwd = 2)
+```
+
 ## CiSSA через Фурье
 
 ### IP_values
@@ -1216,8 +1237,8 @@ interesting_sin(1:50) |> plot(type="l")
 n <- 96*2
 L <- 96
 x <- 0:(n-1)
-# y1 <- sin(2*pi/12 * x)
-y1 <- interesting_sin(x)
+y1 <- sin(2*pi/12 * x)
+# y1 <- interesting_sin(x)
 y2 <- cos(2*pi/3 * x)/2
 y <- y1 + y2
 X <- hankel(y, L = L)
@@ -2328,6 +2349,8 @@ table_latex <- xtable(data, caption = "Example Table")
 print(table_latex, include.rownames = FALSE)
 ```
 
+# ПРИМЕРЫ ПЛОХИЕ ХОРОШИЕ
+
 # Точная разделимость. Примеры
 
 ```{r}
@@ -2374,22 +2397,40 @@ r_ssa_e <- reconstruct(e_ssa, groups=g_sesonal_e)
 # plot(x, r_ssa_e$sesonal_cos)
 
 
+treshold <- (1/3+1/12)/2
+
 
 r_fft <- reconstruct_fft(x, y)
 r_fft_grouped <- grouping_cissa(r_fft,
                     groups = list(
-                      sesonal_sin = c(1/12-eps, 1/12+eps),
-                      sesonal_cos = c(1/3-eps, 1/3+eps)
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(0, 1/12+treshold - eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-treshold, 1/2)
                     )
                     )$t_series
 
 r_fft_extended <- reconstruct_fft(x, y, TRUE)
 r_fft_grouped_extended <- grouping_cissa(r_fft_extended,
                     groups = list(
-                      sesonal_sin = c(1/12-eps, 1/12+eps),
-                      sesonal_cos = c(1/3-eps, 1/3+eps)
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(0-eps, 1/12+treshold),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-treshold, 1/2 + eps),
+                      all = c(-10, 10)
                     )
                     )$t_series
+
+
+# grouping_cissa(r_fft_extended,
+#                     groups = list(
+#                       # sesonal_sin = c(1/12-eps, 1/12+eps),
+#                       sesonal_sin = c(0-eps, 1/12+treshold),
+#                       # sesonal_cos = c(1/3-eps, 1/3+eps)
+#                       sesonal_cos = c(1/3-treshold, 1/2 + eps),
+#                       all = c(-10, 10)
+#                     )
+#                     )  |> print()
 
 # r_fft_grouped$sesonal_sin |> length()
 
@@ -2401,8 +2442,10 @@ r_fft_grouped_extended <- grouping_cissa(r_fft_extended,
 r_cissa <- circulant_SSA(y, L)
 r_cissa_grouped <- grouping_cissa(r_cissa,
                     groups = list(
-                      sesonal_sin = c(1/12-eps, 1/12+eps),
-                      sesonal_cos = c(1/3-eps, 1/3+eps)
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(0, 1/12+treshold - eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-treshold, 1/2)
                     )
                     )$t_series
 
@@ -2410,8 +2453,11 @@ r_cissa_grouped <- grouping_cissa(r_cissa,
 r_cissa_ext <- circulant_SSA(y, L, extend_flag = TRUE)
 r_cissa_grouped_ext <- grouping_cissa(r_cissa_ext,
                     groups = list(
-                      sesonal_sin = c(1/12-eps, 1/12+eps),
-                      sesonal_cos = c(1/3-eps, 1/3+eps)
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(0, 1/12+treshold - eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-treshold, 1/2),
+                      all = c(-10, 10)
                     )
                     )$t_series
 
@@ -2428,8 +2474,19 @@ library(xtable)
 
 # Шаг 2: Создание примера данных
 data <- data.frame(
-  Метод = c("SSA, \nLw, Kw in N", "SSA EOSSA, \nLw, Kw in N","Fourier, Nw in N", "CiSSA, Lw in N", "CiSSA extended, Lw in N", "Fourier extended, Nw in N",
-            "SSA, \nLw in N, Kw not in N", "SSA EOSSA, \nLw in N, Kw not in N","Fourier, Nw not in N", "CiSSA, Lw not in N", "CiSSA extended, Lw not in N", "Fourier extended, Nw not in N"),
+  Метод = c("SSA, \nLw, Kw in N",
+            "SSA EOSSA, \nLw, Kw in N",
+            "Fourier, Nw in N",
+            "CiSSA, Lw in N",
+            "CiSSA extended, Lw in N",
+            "Fourier extended, Nw in N",
+            
+            "SSA, \nLw in N, Kw not in N",
+            "SSA EOSSA, \nLw in N, Kw not in N",
+            "Fourier, Nw not in N",
+            "CiSSA, Lw not in N",
+            "CiSSA extended, Lw not in N",
+            "Fourier extended, Nw not in N"),
   sin_err = c (1, 20, 20, 1, 1, 1, 1, 20, 20, 1, 1, 1),
   cos_err = c(1, 1, 1, 1, 1, 1, 1, 20, 20, 1, 1, 1),
   all_err = c(1, 1, 1, 1, 1, 1, 1, 20, 20, 1, 1, 1)
@@ -2477,6 +2534,7 @@ data$sin_err[5] <- mse(y2, r_cissa_grouped_ext$sesonal_cos) |>
   formatC(format = "e", digits = 1)
 data$all_err[5] <- mse(y1 + y2,
                        r_cissa_grouped_ext$sesonal_sin + r_cissa_grouped_ext$sesonal_cos
+                       # r_cissa_grouped_ext$all
                        ) |>
   formatC(format = "e", digits = 1)
 
@@ -2487,6 +2545,7 @@ data$sin_err[6] <- mse(y2, r_fft_grouped_extended$sesonal_cos) |>
   formatC(format = "e", digits = 1)
 data$all_err[6] <- mse(y1 + y2,
                        r_fft_grouped_extended$sesonal_sin + r_fft_grouped_extended$sesonal_cos
+                       # r_fft_grouped_extended$all
                        ) |>
   formatC(format = "e", digits = 1)
 
@@ -2494,7 +2553,7 @@ data$all_err[6] <- mse(y1 + y2,
 
 #------------------
 
-eps <- eps*2
+eps <- eps*20
 
 s_ssa <- ssa(y, L)
 r_ssa <- reconstruct(s_ssa, groups = list(
@@ -2524,16 +2583,20 @@ r_ssa_e <- reconstruct(e_ssa, groups=g_sesonal_e)
 r_fft <- reconstruct_fft(x[1:(n-1)], y[1:(n-1)])
 r_fft_grouped <- grouping_cissa(r_fft,
                     groups = list(
-                      sesonal_sin = c(1/12-eps, 1/12+eps),
-                      sesonal_cos = c(1/3-eps, 1/3+eps)
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(0, 1/12+treshold - eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-treshold, 1/2)
                     )
                     )$t_series
 
 r_fft_extended <- reconstruct_fft(x[1:(n-1)], y[1:(n-1)], TRUE)
 r_fft_grouped_extended <- grouping_cissa(r_fft_extended,
                     groups = list(
-                      sesonal_sin = c(1/12-eps, 1/12+eps),
-                      sesonal_cos = c(1/3-eps, 1/3+eps)
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(0, 1/12+treshold - eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-treshold, 1/2)
                     )
                     )$t_series
 
@@ -2547,8 +2610,10 @@ r_fft_grouped_extended <- grouping_cissa(r_fft_extended,
 r_cissa <- circulant_SSA(y, L+1)
 r_cissa_grouped <- grouping_cissa(r_cissa,
                     groups = list(
-                      sesonal_sin = c(1/12-eps, 1/12+eps),
-                      sesonal_cos = c(1/3-eps, 1/3+eps)
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(0, 1/12+treshold - eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-treshold, 1/2)
                     )
                     )$t_series
 
@@ -2556,8 +2621,10 @@ r_cissa_grouped <- grouping_cissa(r_cissa,
 r_cissa_ext <- circulant_SSA(y, L+1, extend_flag = TRUE)
 r_cissa_grouped_ext <- grouping_cissa(r_cissa_ext,
                     groups = list(
-                      sesonal_sin = c(1/12-eps, 1/12+eps),
-                      sesonal_cos = c(1/3-eps, 1/3+eps)
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sesonal_sin = c(0, 1/12+treshold - eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      sesonal_cos = c(1/3-treshold, 1/2)
                     )
                     )$t_series
 
@@ -2616,7 +2683,8 @@ data$cos_err[12] <- mse(y1[1:(n-1)], r_fft_grouped_extended$sesonal_sin) |>
 data$sin_err[12] <- mse(y2[1:(n-1)], r_fft_grouped_extended$sesonal_cos) |>
   formatC(format = "e", digits = 1)
 data$all_err[12] <- mse(y1[1:(n-1)] + y2[1:(n-1)],
-                       r_fft_grouped_extended$sesonal_sin + r_fft_grouped_extended$sesonal_cos
+                        Reduce("+", r_fft_grouped_extended)
+                       # r_fft_grouped_extended$sesonal_sin + r_fft_grouped_extended$sesonal_cos
                        ) |>
   formatC(format = "e", digits = 1)
 

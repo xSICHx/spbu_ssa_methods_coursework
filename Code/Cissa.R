@@ -175,3 +175,73 @@ grouping_cissa <- function(cissa_res, groups){
   result[["residuals"]] <- residuals
   result
 }
+
+
+reconstruct_fft <- function(x_init, y_init, extend_flag = FALSE) {
+  x <- x_init
+  y <- y_init
+  N <- length(y_init)
+  H <- 0
+  if (extend_flag == TRUE){
+    H <- length(y) %/% 2
+    y <- extend(y, H)
+    x <- 0:(length(y) - 1)
+  }
+  
+  frequencies <- (0:(length(x)-1)) / length(x)
+  fft_y <- fft(y)
+  
+  amplitudes <- Mod(fft_y)
+  phases <- Arg(fft_y)
+  
+  reconstructed <- matrix(0, length(amplitudes), length(x))
+  n <- length(amplitudes)
+  L <- n
+  for (i in 1:(length(amplitudes))) {
+    reconstructed[i, ] <-
+      amplitudes[i] * 
+      cos(2 * pi * frequencies[i] * (x) + phases[i]) /
+      n
+  }
+  
+  
+  
+  
+  group_by_elementary_freq_foureir <- function(res_averaged){
+    nf2 <- 0
+    if (L %% 2) {
+      nf2 <- (L + 1) / 2 - 1
+    } else {
+      nf2 <- L / 2 - 1
+    }
+    nft <- nf2 + abs((L %% 2) - 2)
+    
+    Z <- matrix(0, ncol = nft, nrow = n)
+    
+    # print(Z |> dim())
+    # print(res_averaged |> dim())
+    
+    Z[, 1] <- res_averaged[1, ]
+    for (k in 1:nf2) {
+      Z[, k + 1] <- res_averaged[k + 1, ] + res_averaged[L + 2 - (k + 1), ]
+    }
+    if (L %% 2 != 0) {
+      Z[, nft] <- res_averaged[nft, ]
+    }
+    
+    
+    return(list(
+      t_series = Z[(H+1):(N+H), ],
+      freq = (0:(dim(Z)[2]-1))/L
+    ))
+  }
+  
+  
+  rs <- group_by_elementary_freq_foureir(reconstructed)
+  
+  
+  return(list(
+    t_series = rs$t_series,
+    freq = rs$freq
+  ))
+}

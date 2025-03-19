@@ -1022,6 +1022,33 @@ $$
 	\label{tab:precise_separability_example1}
 \end{table}
 
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{llll}
+	  \hline
+	Метод & sin\_err & cos\_err & all\_err \\ 
+	  \hline
+	SSA, 
+	Lw, Kw in N & 6.8e-30 & 1.5e-29 & 1.8e-29 \\ 
+	  SSA EOSSA, 
+	Lw, Kw in N & 1.5e-29 & 7.5e-30 & 2.0e-29 \\ 
+	  Fourier, Nw in N & 9.8e-29 & 3.4e-28 & 4.0e-28 \\ 
+	  CiSSA, Lw in N & 6.5e-30 & 1.1e-29 & 7.8e-30 \\ 
+	  CiSSA extended, Lw in N & 5.5e-06 & 1.6e-06 & 3.7e-06 \\ 
+	  Fourier extended, Nw in N & 1.4e-06 & 8.4e-07 & 5.9e-07 \\ 
+	  SSA, 
+	Lw in N, Kw not in N & 2.2e-06 & 2.2e-06 & 2.0e-29 \\ 
+	  SSA EOSSA, 
+	Lw in N, Kw not in N & 1.3e-29 & 8.8e-30 & 1.7e-29 \\ 
+	  Fourier, Nw not in N & 7.9e-04 & 4.9e-04 & 2.4e-04 \\ 
+	  CiSSA, Lw not in N & 1.7e-03 & 1.4e-03 & 2.5e-04 \\ 
+	  CiSSA extended, Lw not in N & 1.0e-05 & 5.8e-06 & 3.1e-06 \\ 
+	  Fourier extended, Nw not in N & 1.2e-05 & 2.3e-06 & 1.4e-05 \\ 
+	   \hline
+	\end{tabular}
+	\caption{Example Table} 
+	\end{table}
+
 Таблица \ref{tab:precise_separability_example1} подтверждает теоретические результаты. Кроме того, можно заметить, что разложение Фурье справляется лучше при невыполнении условий точной разделимости, чем $\CISSA$. Это объяснимо тем, что для разложения Фурье частоты делятся на $N$ частей, а для $\CISSA$ на $L$. В данном примере, разбиение сетки частот у разложения Фурье в два раза меньше, чем у $\CISSA$ ($N = 96 \cdot 2, L = 96$). В условиях точной разделимости результаты примерно одинаковы.
 
 Таким образом, условия на разделение синусов, слабее у методов $\CISSA$ и Фурье, чем у $\SSA$. Однако $\SSA$ может точно отличать друг от друга больше классов функций.
