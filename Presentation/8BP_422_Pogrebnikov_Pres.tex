@@ -6,6 +6,7 @@
 \setbeamertemplate{theorems}[numbered]
 \setbeamertemplate{caption}[numbered]
 
+
 \mode<handout> {
 	\usepackage{pgfpages}
 	\setbeameroption{show notes}
@@ -13,6 +14,8 @@
 	\setbeamercolor{note title}{bg=gray!10}
 	\setbeamercolor{note date}{fg=gray!10}
 }
+
+\setbeameroption{hide notes}
 
 \usepackage[utf8x]{inputenc}
 \usepackage[T2A]{fontenc}
@@ -46,6 +49,7 @@
 \newcommand{\norm}[1]{\left\|#1\right\|}
 
 \newcommand{\SSA}{\textbf{SSA}}
+\newcommand{\EOSSA}{\textbf{EOSSA}}
 \newcommand{\GSSA}{\textbf{GSSA}}
 \newcommand{\CISSA}{\textbf{CiSSA}}
 \newcommand{\TS}{\mathsf{X}}
@@ -64,7 +68,7 @@
 	Вычислительная стохастика и статистические модели\\
 	\vspace{1cm}
 %	4 курс (бак.) <<Производственная практика (научно-исследовательская работа)>>\\(Семестр 6)
-	Научный руководитель:  д. ф.-м. н., доц. Голяндина Н. Э.
+	Научный руководитель:  д. ф.-м. н., проф. Голяндина Н. Э.
 }
 	
 
@@ -77,7 +81,7 @@
 	\begin{frame}[plain]
 		\titlepage
 		
-		% \note{Научный руководитель  д.\,ф.-м.\,н., доц. Голяндина Нина Эдуардовна,\\
+		% \note{Научный руководитель  д.\,ф.-м.\,н., проф. Голяндина Нина Эдуардовна,\\
 		% 	кафедра статистического моделирования}
 	\end{frame}
 	
@@ -99,7 +103,7 @@
 		\textbf{\structure{Методы}:}
 		$\SSA$ -- метод, позволяющий раскладывать временной ряда в сумму интерпретируемых компонент \parencite{golyandina2001analysis}; 
 		$\GSSA$ -- модификация $\SSA$ на основе добавления весов \parencite{gu2024generalized}; 
-		$\CISSA$ -- модификация $\CISSA$ на основе циркулярной матрицы \parencite{bogalo2020}.
+		$\CISSA$ -- модификация $\SSA$ на основе циркулярной матрицы \parencite{bogalo2020}.
 
 		\textbf{\structure{Задача}:} 
 		Описание модификаций в контексте теории $\SSA$, сравнение алгоритмов, реализация их на языке R.
@@ -109,33 +113,34 @@
 		% 	}
 	\end{frame}
 
-	\begin{frame}{По чему будем сравнивать?}
+	\begin{frame}{Критерии сравнения методов}
 		% \textcolor{red}{\textbf{TODO}} Оформить слайд
 
 		\textbf{\structure{Пример}} 
-		$\TS = \TS_{1} + \TS_{2} + \TS_{\mathrm{Noise}}=e^{A{n}}
+
+		$\TS = \mathsf{S} + \TS_{\mathrm{Noise}}=
+		\mathsf{S}^{(1)} + \mathsf{S}^{(2)} + \TS_{\mathrm{Noise}}= 
+		e^{A{n}}
 		\sin\left({2\pi\omega_1 n}\right) + 
 		\cos\left({2\pi\omega_2 n}\right) + \varepsilon_n$.
 
 		$\omega_1, \omega_2$ -- частоты;
 		$\varepsilon_n \sim \mathrm N(0, \sigma^2)$ -- шум; 
 
-		$e^{A{n}}
-		\sin\left({2\pi\omega_1 n}\right) + 
-		\cos\left({2\pi\omega_2 n}\right)$ -- сигнал.
+		$\mathsf{S}$ -- сигнал.
 
-		$\hat{\TS}$ -- оценка выделения сигнала методом.
+		$\hat{\mathsf{S}}$ -- оценка выделения сигнала методом.
 
-		$\hat{\TS}_{1}, 
-		\hat{\TS}_{2}$ -- оценки разделения компонент $\TS_1, \TS_2$
+		$\hat{\mathsf{S}}^{(1)}, 
+		\hat{\mathsf{S}}^{(2)}$ -- оценки разделения компонент $\mathsf{S}^{(1)}, \mathsf{S}^{(2)}$.
 
 		\bigskip
 
 		\textbf{\structure{Критерии сравнения методов:}}
 		\begin{itemize}
-			\item Постановка задачи (для CiSSA она другая, решаем только с заранее заданными частотами)
-			\item Выделение сигнала
-			\item Разделимость
+			\item Выделение сигнала;
+			\item Разделимость;
+			\item Постановка задачи (для CiSSA частоты предполагаются известными).
 		\end{itemize}
 		
 	\end{frame}
@@ -144,11 +149,15 @@
 	\begin{frame}{Разделимость}
 		\begin{definition}
 			\label{def:exact}
-			Есть метод разделения ряда на компоненты с параметрами \( \Theta \), ряд \( \TS = \TS^{(1)} + \TS^{(2)} \). $\exists$ набор параметров \( \hat{\Theta} \), \( L \), \( N\), что при разделении ряда на компоненты этим методом, \( \hat{\TS}^{(1)} \) является оценкой \( \TS^{(1)} \), при этом, \( \mathrm{MSE}\left(\TS^{(1)}, \hat{\TS}^{(1)}\right) = 0 \). Тогда ряды \( \TS^{(1)} \) и \( \TS^{(2)} \) точно разделимы данным методом.
+			Пусть $\mathrm M$ --  метод разделения ряда на компоненты с параметрами \( \Theta \), ряд \( \TS_N = \TS^{(1)}_N + \TS^{(2)}_N \). 
+			Ряды \( \TS^{(1)}_N \) и \( \TS^{(2)}_N \) точно разделимы методом $\mathrm M$, если существует \( \hat{\Theta} \), что \( \hat{\TS}^{(1)}_N \) является оценкой \( \TS^{(1)}_N \) методом $\mathrm M$. 
+			При этом, \( \mathrm{MSE}\left(\TS^{(1)}, \hat{\TS}^{(1)}\right) = 0 \).
 		\end{definition}
 		\begin{definition}
 			\label{def:asymp}
-			Есть метод разделения ряда на компоненты с параметрами \( \Theta \), ряд \( \TS = \TS^{(1)} + \TS^{(2)} \). $\exists$ набор параметров \( \hat{\Theta} \) и \( L = L(N) \), \( N \rightarrow \infty \), что при разделении ряда на компоненты этим методом, \( \hat{\TS}^{(1)} \) является оценкой \( \TS^{(1)} \), при этом, \( \mathrm{MSE}\left(\TS^{(1)}, \hat{\TS}^{(1)}\right) \rightarrow 0 \). Тогда ряды \( \TS^{(1)} \) и \( \TS^{(2)} \) называются асимптотически \( L(N) \)-разделимыми данным методом.
+			Пусть $\mathrm M$ --  метод разделения ряда на компоненты с параметрами \( \Theta \), ряд \( \TS_N = \TS^{(1)}_N + \TS^{(2)}_N \). 
+			Ряды \( \TS^{(1)}_N \) и \( \TS^{(2)}_N \) асимптотически разделимы методом $\mathrm M$, если существует последовательность \( \hat{\Theta}(N)\), \( N \rightarrow \infty \), что \( \hat{\TS}^{(1)}_N \) является оценкой \( \TS^{(1)}_N \) методом $\mathrm M$. 
+			При этом, \( \mathrm{MSE}\left(\TS^{(1)}_N, \hat{\TS}^{(1)}_N\right) \rightarrow 0 \).
 		\end{definition}
 
 		\note{Какое из оформлений лучше?}
@@ -164,7 +173,7 @@
 			\item \textbf{Построение траекторной матрицы:}  
 			
 			$
-			\mathbf X = \mathcal{H}(\TS) = [\TS_1 : \ldots : \TS_K], \, \TS_i = (x_i, \ldots, x_{i+L-1})^T, \,$
+			\mathbf X = \mathcal{T}_L(\TS) = [\TS_1 : \ldots : \TS_K], \, \TS_i = (x_i, \ldots, x_{i+L-1})^T, \,$
 
 			$
 			1 \leq i \leq K, \quad K = N - L + 1.
@@ -190,7 +199,7 @@
 
 			\item \textbf{Восстановление:}  
 			$\tilde \TS_{I_k} 
-			= \mathcal{H}^{-1} ( \mathbf{X}_{I_k} )$, 
+			= \mathcal{T}_L^{-1} \circ \mathcal{H}(  \mathbf{X}_{I_k} )$, 
 			$\TS = \tilde \TS_{I_1}  + \dots + \tilde \TS_{I_m}$.
 		\end{enumerate}
 		\note{Какое из оформлений лучше?}
@@ -199,16 +208,19 @@
 
 	\begin{frame}{Вложенный вариант SSA. EOSSA}
 		% \textcolor{red}{\textbf{TODO}} Указать, что такое вложенный вариант, сказать, что таким образом улучшается разделимость. Так получается лучше разделять компоненты между собой
+		$\TS = \mathsf{S} + \TS_{\mathrm{Noise}}=
+		\mathsf{S}^{(1)} + \mathsf{S}^{(2)} + \TS_{\mathrm{Noise}}$
+		
 
 		\begin{definition}[\cite{ssa2018withR}]
 			\textbf{Вложенный вариант SSA} — двухэтапный метод:
 			\begin{enumerate}
-				\item Выделение сигнала с помощью базового $\SSA$: $\tilde{\mathbf{X}} = \mathbf{X} - \mathbf{X}_{\mathrm{Noise}}$ (отделение от шума).
-				\item Применение другого метода к $\tilde{\mathbf{X}}$ для уточнения анализа: $\tilde{\mathbf{X}} = \tilde{\mathbf{X}}_1 + \tilde{\mathbf{X}}_2$.
+				\item Задается $r$. $\tilde {\mathbf{S}}$ -- сумма первых $r$ слагаемых SVD разложения траекторной матрицы сигнала $\mathbf S$ с помощью базового $\SSA$ .
+				\item Применение другого метода к $\tilde{\mathbf{S}}$ для улучшения разделимости: $\tilde{\mathbf{S }} = \tilde{\mathbf{S}}_1 + \tilde{\mathbf{S } }_2$.
 			\end{enumerate}
 		\end{definition}
 		\bigskip
-		EOSSA \parencite{golyandina2023intelligent} является вложенным вариантом $\SSA$. Для заданного набора компонент позволяет улучшить разделимость. Можно задать параметр $r$, тогда алгоритм будет улучшать разделимость для первых $r$ наиболее значимых компонент (по SVD).
+		$\EOSSA$ \parencite{golyandina2023intelligent} является вложенным вариантом $\SSA$.
 	\end{frame}
 
 	
@@ -218,21 +230,29 @@
 
 		$	{\boldsymbol{w}}^{(a)} = (w_{1}, w_{2}, \ldots, w_{L}) = \left( \left| \sin\left(\frac{\pi n}{L+1}\right) \right| \right)^\alpha,  \quad n = 1, 2, \dots, L$.
 
-		% \begin{figure}[H]
-		% 	\centering
-		% 	\includegraphics[width=0.5\textwidth]{../Text/img/weights.png}
-		% \end{figure}
+
+		\bigskip
 
 		\textbf{\structure{Шаг 1 алгорима $\GSSA$}}:
 
-		$\mathbf{X}^{(\alpha)} = \mathcal{H}^{(\alpha)}(\TS) = [\TS_1^{\alpha} : \ldots : \TS_K^{\alpha}]$,
+		$\mathbf{X}^{(\alpha)} = \mathcal{T}_L^{(\alpha)}(\TS) = [\TS_1^{\alpha} : \ldots : \TS_K^{\alpha}]$,
 		$\TS_i^{(\alpha)} = ( w_1 x_{i-1}, \ldots, w_L x_{i+L-2})^{\mathrm{T}}$,
 		$1 \leq i \leq K$. 
 		
+		\medskip
+
 		\textbf{\structure{Шаги 2-4}}: аналогичны $\SSA$.
 		
+		\bigskip
+
 		\begin{comment}
 			При $\alpha = 0$, $\GSSA$ --- в точности базовый алгоритм $\SSA$.
+		\end{comment}
+
+		\medskip
+
+		\begin{comment}
+			${\boldsymbol{w}}^{(a)}$ называются степенными синусными весами. Они могут иметь другой вид.
 		\end{comment}
 
 		
@@ -256,7 +276,7 @@
 		\end{definition}
 		
 
-		\textbf{\structure{Пример.}} При применении фильтра $\Phi$ на $\TS_{\cos} = \cos{2\pi \omega n}$, получается ряд
+		\textbf{\structure{Пример.}} При применении фильтра $\Phi$ к $x_j = \cos{2\pi \omega j}$, получается ряд
 		$y_j = A_{\Phi}(\omega) \cos\left(2\pi\omega j + \phi_{\Phi}(\omega) \right)$.
 
 		$\phi_{\Phi}(\omega)$ -- фазово-частотная характеристика (ФЧХ).
@@ -274,7 +294,7 @@
 	
 	\begin{frame}{Сравнение SSA и GSSA. Линейные фильтры 2}
 		$\TS = (x_1, \dots, x_{N})$, $(\sqrt{\lambda},\,U,\,V)$ -- собственная тройка $\SSA$. $U = (u_1, \dots, u_L)$.
-		$\widetilde \TS = \mathcal{H}^{-1} ( \sqrt{\lambda} U V^T )$. 
+		$\widetilde \TS = \mathcal{T}_L \circ \mathcal{H} ( \sqrt{\lambda} U V^T )$. 
 
 		\textbf{\structure{Запись $\SSA$ через линейный фильтр}}:
 		\begin{equation*}
@@ -297,25 +317,22 @@
 	
 	\begin{frame}{Сравнение SSA и GSSA. Пример}
 		$\TS = \TS_{\sin} + \TS_{\cos} = \sin\left(\frac{2\pi}{12} n \right) + \frac{1}{2}\cos\left(\frac{2\pi}{19} n \right)$. $N = 96 \cdot 2 - 1$, $L = 48$.
-		\begin{figure}[H]
+		
+		$\TS_{\sin}$: 1-2 SVD-компоненты, $\TS_{\cos}$: 3-4 SVD-компоненты.
+		\begin{figure}[ht]
 			\centering
 			\includegraphics[width=0.8\textwidth]{../Text/img/various_alphas_sin_cos.png}
 			\label{fig:various_alphas_sin_cos}
 		\end{figure}
-		При \(\alpha = 0.5\) АЧХ без волн, но с широкой областью около частоты синуса, что ухудшает отделение от шума, но улучшает разделение компонентов.
-
-		% \note{
-		% 	\textcolor{red}{\textbf{TODO}} 
-		% 	Расписать, что $\GSSA$ хуже отделяет от шума, но лучше компоненты между собой, основываясь по рисунку. Дописать, по каким группам производилось объединение.
-		% 	}
+		\(\alpha = 0.5\): шире полоса пропускания фильтра, чем при $\alpha = 0 $, но нет волнообразного поведения на краях. 
 	\end{frame}
 	
 	
 	\begin{frame}{Сравнение SSA и GSSA. Пример, продолжение}
 		\begin{table}[H]
-			\caption{MSE разложений $\TS = \TS_{\sin} + \TS_{\cos}$}
+			\caption{$\TS_{\sin} + \TS_{\cos}$, MSE оценок}
 			\centering
-			\begin{tabular}{c|ccc}
+			\begin{tabular}{l|ccc}
 				\hline
 				Метод/Ошибка & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$ \\ 
 				\hline
@@ -328,12 +345,12 @@
 		Без шума $\GSSA$ выдает результаты на порядок лучше $\SSA$.
 
 		\begin{table}[H]
-			\caption{MSE разложений $\TS = \TS_{\sin} + \TS_{\cos}+
-		\varepsilon_n$, $\varepsilon_n \sim \mathrm N(0, 0.1^2)$ }
+			\caption{$\TS_{\sin} + \TS_{\cos}+
+		\varepsilon_n$, $\varepsilon_n \sim \mathrm N(0, 0.1^2)$, MSE оценок }
 			\centering
-			\begin{tabular}{c|ccc}
+			\begin{tabular}{l|ccc}
 				\hline
-				Метод & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$ \\ 
+				Метод/Ошибка & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$ \\ 
 				\hline
 				$\SSA$      & 5.68e-03 & 5.44e-03 & \textbf{7.48e-04}  \\ 
 				$\GSSA$, $\alpha = 0.5$ & \textbf{1.21e-03} & \textbf{1.25e-03} & 1.04e-03 \\
@@ -358,9 +375,12 @@
 		\begin{table}[H]
 			\label{tab:errs_ssa_gssa_united}
 			\centering
-			\begin{tabular}{c|ccc}
+			\begin{tabular}{l|ccc}
 				\hline
-				Метод & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$ \\ 
+				Метод/Ошибка & $\TS_{\sin}$ & $\TS_{\cos}$ & $\TS$ \\ 
+				\hline
+				$\SSA$      & 5.68e-03 & 5.44e-03 & \textbf{7.48e-04}  \\ 
+				$\GSSA$, $\alpha = 0.5$ & \textbf{1.21e-03} & \textbf{1.25e-03} & 1.04e-03 \\
 				\hline
 				$\SSA$ + $\GSSA$, $\alpha = 0.5$ & \textbf{1.06e-03} & \textbf{1.12e-03} & \textbf{7.15e-04} \\ 
 				\hline
@@ -441,60 +461,42 @@
 	
 	
 	\begin{frame}{Метод CiSSA. Алгоритм}
-		% Как и в $\SSA$ считается $\mathbf X$, по которой строится $\hat{\mathrm{C}}_{L}$:
-		% $\hat c_m = \frac{L-m}{L}\hat{\gamma}_m + \frac{m}{L}\hat{\gamma}_{L-m}$, $ \hat{\gamma}_m = \frac{1}{N-m} \sum \limits_{t = 1}^{N-m}x_t x_{t+m}$, $ \, m = 0:L-1$.
-		% \begin{equation*}
-		% 	\label{eq:circ_mat}
-		% 	\hat{\mathrm{C}}_{L}=\left(\begin{array}{cccc}
-		% 		\hat c_{1} & \hat c_{2} & \ldots & \hat c_{L} \\
-		% 		\hat c_{2} & \hat c_{1} & \ldots & \hat c_{L-1} \\
-		% 		\vdots & \vdots & \vdots & \vdots \\
-		% 		\hat c_{L} & \hat c_{L-1} & \hdots & \hat c_{1}
-		% 	\end{array}\right).
-		% \end{equation*}
-		% Собственные числа и вектора матрицы $\hat{\mathrm{C}}_{L}$, задаются по формулам:
-		% \begin{equation*}
-		% 	\begin{split}
-		% 		&U_{k}=L^{-1/2}(u_{k,1\cdot}\cdot\cdot\cdot,u_{k,L}), \, \text{где} \, 
-		% 		u_{k,j}=\exp\left(-\mathrm{i}2\pi\mathrm{d}(j-1)\frac{k-1}{L}\right), \\
-		% 		&\lambda_{L,k}=\sum_{m=0}^{L-1}\hat c_{m}\exp\left(i 2\pi m\frac{k-1}{L}\right), \, k = 1:L.
-		% 	\end{split}
-				% \end{equation*}
 		\( \TS = (x_1, \ldots, x_N) \) — временной ряд.  \( 1 < L < N \) --  длина окна.
 		\textbf{\structure{Алгоритм $\CISSA$}}:
 		\begin{enumerate}
 			\item \textbf{Построение траекторной матрицы:} как в $\SSA$.
 			
 			\item $l = 1:L$, ${U}_{l}=L^{-1/2}(u_{l,1},\dots,u_{l,L}), \, u_{l,j}=\exp\left(-\mathrm{i}2\pi(j-1)\frac{l-1}{L}\right).$
-			\textbf{Элементарное разложение:} $w_k = \frac{k-1}{L}$, $k = 1:\lfloor \frac{L+1}{2} \rfloor$
+			\textbf{Элементарное разложение:} $\omega_k = \frac{k-1}{L}$, $k = 1:\lfloor \frac{L+1}{2} \rfloor$
 			\begin{align*}
-				&\mathbf X_{w_k}  = U_k U_k^H \mathbf X + U_{L+2-k} U_{L+2-k}^H \mathbf X;\\
-				&\mathbf X_{w_{\frac{L}{2} + 1}}  = 
+				&\mathbf X_{\omega_k}  = U_k U_k^H \mathbf X + U_{L+2-k} U_{L+2-k}^H \mathbf X;\\
+				&\mathbf X_{\omega_{\frac{L}{2} + 1}}  = 
 				U_{\frac{L}{2} + 1} U_{\frac{L}{2} + 1}^H \mathbf X, \, \text{если} \, L \mod 2 = 0,
 			\end{align*}
 			\textbf{Разложение:}
 			$
-			\mathbf{X} = \sum\limits_{k=1}^d \mathbf{X}_{w_k}, \, d = \lfloor \frac{L+1}{2} \rfloor \, (\text{или} \, \frac{L}{2} + 1).
+			\mathbf{X} = \sum\limits_{k=1}^d \mathbf{X}_{\omega_k}, \, d = \lfloor \frac{L+1}{2} \rfloor \, (\text{или} \, \frac{L}{2} + 1).
 			$
 
 			\item \textbf{Группировка} по частотам:
-			$\bigsqcup \limits_{i=1}^m I_i = 
-			\bigsqcup \limits_{i=1}^m 
-			\left[ w_i^{(l)}, w_i^{(r)} \right] =
-			[0, 0.5]$.
+			$\bigsqcup \limits_{j=1}^m I_j = 
+			\bigsqcup \limits_{j=1}^m 
+			\left[ \omega_j^{(l)}, \omega_j^{(r)} \right] =
+			[0, 0.5]$. $\mathbf X = \mathbf X_{I_1} + \dots + \mathbf X_{I_m}$.
 
 			\item \textbf{Диагональное усреднение:} как в $\SSA$.
 		\end{enumerate}
 
 	\end{frame}
 
-	\begin{frame}
-		\textbf{\structure{Замечания:}}
+	\begin{frame}{Метод CiSSA. Особенности}
 		\bigskip
 		\begin{itemize}
-			\item В отличие от $\SSA$, базис подпространства которого зависит от $\TS, L, N$ (адаптивный), базис в $\CISSA$ зависит только от $L, N$ (фиксированный).
+			\item $\SSA$: базис подпространства которого зависит от $\TS, L, N$ (адаптивный).
+			
+			$\CISSA$: базис зависит от $L, N$ (фиксированный).
 			\bigskip
-			\item Поскольку группировка производится по частотам, а частоты зависят от $L$, то алгоритм применим только в случае, когда заранее известны интересующие частоты.
+			\item В $\CISSA$ группировка производится по диапазонам частот, поэтому алгоритм применим только в случае, когда заранее известны частоты интересующих компонент.
 		\end{itemize}
 	\end{frame}
 	
@@ -502,23 +504,17 @@
 	\begin{frame}{Метод CiSSA. Свойства: связь с разложением Фурье}
 		\begin{definition}
 			Разложение
-			\begin{equation}
+			\begin{equation*}
 				\label{eq:fourier}
 				x_n = c_0 + \sum\limits_{k = 1}^{\lfloor \frac{N+1}{2} \rfloor}\left(c_k \cos(2\pi n k / N) + s_k \sin(2\pi n k / N) \right),
-			\end{equation}
+			\end{equation*}
 			где $1 \leq n \leq N$ и $s_{N/2} = 0 $ для четного N, называется разложением Фурье ряда $\TS$. 
 		\end{definition}
-		\begin{comment}
-			\label{comm:proector}
-			Разложение Фурье -- проекции всего ряда на пространства, порожденные синусами и косинусами.
-			$\CISSA$ -- разложения Фурье для $K$ векторов матрицы $\mathrm X$ +  усреднение соответствующих элементов.
-		\end{comment}
-		\note{
-			% \textcolor{red}{\textbf{TODO}} 
-			% Переписать замечание (частично сделано)
+			\textbf{Разложение Фурье ряда} -- разложение по базису из синусов и косинусов.
 
-			Словами сказать, что один из вопросов моего исследования является рассмотрение того, чем cissa лучше Фурье
-		}
+			\medskip
+			$\CISSA$ -- разложения Фурье для $K$ векторов матрицы $\mathbf X$ с последующим диагональным усреднением слагаемых.
+		
 	\end{frame}
 
 	
@@ -550,17 +546,21 @@
 	
 	\begin{frame}{Сравнение SSA, Фурье, CiSSA. Точная разделимость}
 		Фиксируем временной ряд $\TS = \TS_{1} + \TS_{2} =$ $= A_1 \cos(2\pi w_1 n + \varphi_1) + A_2 \cos(2\pi w_2 n + \varphi_2)$.
-		\newline \newline
-		Условия точной разделимости $\TS$ для разложения Фурье: \\
+
+		\bigskip
+		Условия точной разделимости $\TS$ для \textbf{разложения Фурье}: \\
 		$Nw_1, Nw_2 \in \mathbb{N}$, $w_1 \not = w_2$.
-		
+
+		\medskip
 		Условия точной разделимости $\TS$ для $\CISSA$: \\
 		$Lw_1, Lw_2 \in \mathbb{N}$, $w_1 \not = w_2$.
 		
+		\medskip
 		Условия точной разделимости $\TS$ для $\SSA$: \\
 		$Lw_1, Lw_2, Kw_1, Kw_2 \in \mathbb{N}$, $w_1 \not = w_2$, $A_1 \not = A_2$.
-		\newline \newline
-		Таким образом, условия на разделение косинусов, слабее у методов $\CISSA$ и Фурье, чем у $\SSA$.
+
+		\bigskip
+		Таким образом, условия на разделение косинусов, слабее у методов $\CISSA$ и \textbf{Фурье}, чем у $\SSA$.
 	\end{frame}
 	
 	\begin{frame}{Пример. Точная разделимость}
@@ -570,7 +570,7 @@
 		\begin{table}[ht]
 			\centering
 			\resizebox{0.95\textwidth}{!}{ % Масштабируем таблицу
-			\begin{tabular}{l|l|lll}
+			\begin{tabular}{l|l|ccc}
 				\hline
 				\textbf{Метод} & \textbf{Параметры} & $\MSE\left(\TS_{\sin}\right)$ & $\MSE\left(\TS_{\cos}\right)$ & $\MSE\left(\TS\right)$ \\ 
 				\hline
@@ -587,7 +587,9 @@
 			\end{tabular}
 			}
 		\end{table}
-		По таблице видно, что при нарушении условий точной разделимости, результаты значительно ухудшаются. При этом, EOSSA исправляет ситуацию.
+		По таблице видно, что при нарушении условий точной разделимости, результаты значительно ухудшаются. 
+		
+		$\EOSSA$ исправляет ситуацию для $\SSA$.
 
 		\note{
 			Длину N ряда сложно подбирать, поэтому будем рассматривать случаи, когда N хорошее и плохое. А L всегда можем изменить, поэтому все L подобраны наилучшим образом. $w_1$, $w_2$ фиксированы
@@ -596,9 +598,15 @@
 	
 
 	\begin{frame}{Сравнение SSA, Фурье, CiSSA. Асимптотическая разделимость}
-		Асимптотически разделимы в методе $\SSA$ полиномы, гармонические функции \parencite{golyandina2001analysis}.
+		Асимптотически разделимы в методе $\SSA$ полиномы, гармонические, экспоненциально-модулированные функции \parencite{golyandina2001analysis}.
 		
-		В алгоритме разложения $\CISSA$ (Фурье) увеличение длины окна $L$ ($N$) изменяет сетку частот. Это означает, что даже если не удастся подобрать такое $L$ ($N$), при котором косинус будет точно отделим, его постепенное увеличение позволит приблизить частоты сетки к частоте компоненты. В итоге, можно снизить ошибку выделения нужной компоненты, учитывая соседние частоты.
+		\medskip
+
+		Для \textbf{разложения Фурье} асимптотически разделимы только гармонические функции.
+
+		\medskip
+
+		Для $\CISSA$ асимптотически разделимы гармонические, экспоненциально-модулированные функции.
 
 		\note{
 			\textcolor{red}{\textbf{TODO}} 
@@ -615,7 +623,7 @@
 		\begin{table}[ht]
 			\centering
 			\resizebox{0.95\textwidth}{!}{ % Масштабируем таблицу
-			\begin{tabular}{l|l|lll}
+			\begin{tabular}{l|l|ccc}
 				\hline
 				\textbf{Метод} & \textbf{Параметры} & $\MSE\left(\TS_{e \cdot \sin}\right)$ & $\MSE\left(\TS_{e \cdot \cos}\right)$ & $\MSE\left(\TS\right)$ \\ 
 				\hline
@@ -632,7 +640,7 @@
 			}
 		\end{table}
 
-		При домножении на экспоненты периодик, все результаты ухудшились кроме EOSSA. Фурье и $\CISSA$ значительно ухудшились в точности разделения.
+		При домножении на экспоненты периодик, все результаты ухудшились кроме $\EOSSA$. \textbf{Фурье} и $\CISSA$ значительно ухудшились в точности разделения.
 	\end{frame}
 
 
