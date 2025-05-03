@@ -20,3 +20,6 @@
 *.snm
 *.bcf
 *.run.xml
+*.bbl-SAVE-ERROR
+
+filter_frames

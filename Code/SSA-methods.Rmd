@@ -16,7 +16,7 @@ afc <- function(filter, omega) {
   abs(sapply(omega, h))
 }
 
-freq <- seq(0, pi, 0.001)
+freq <- seq(0, pi, 0.00001)
 
 filt <- rep(1, 100)
 # filt <- c(-1,1)
@@ -461,6 +461,138 @@ axis(1, at = 1/19, labels = "1/19")
 axis(1, at = c(0, 0.1, 0.15, 0.2), labels = c("0", "0.1", "0.15", "0.2"))
 ```
 
+#### Ошибка только для средних точек
+
+```{r}
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+w1 <- 1/19
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi*w1 * x)/2
+y <- y1 + y2
+alpha <- 1/2
+filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
+
+  
+s <- ssa(y, L)
+r <- reconstruct(s, groups = list(
+  s1 = 1:2,
+  s2 = 3:4
+))
+
+sw <- ssa(y, L, col.oblique = filt, row.oblique = rep(1, n-L+1))
+rw <- reconstruct(sw, groups = list(
+  s1 = 1:2,
+  s2 = 3:4
+))
+
+mse <- function(f_true, f_reconstructed){
+   mean((f_true - f_reconstructed)^2) 
+}
+
+
+r_gssa <- gssa(y, L, alpha = alpha)
+
+# mse(rw$e, r_gssa$ts[[1]])
+# mse(r$s1, y1)
+# mse(rw$s1, y1)
+# mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)
+
+
+# Create a data frame to store MSE values
+mse_table <- data.frame(
+  Method = c("SSA", "rw", "GSSA"),
+  MSE_y1 = c(mse(r$s1[L:(n - L + 1)], y1[L:(n - L + 1)]),
+             mse(rw$s1[L:(n - L + 1)], y1[L:(n - L + 1)]),
+             mse(r_gssa$ts[[1]][L:(n - L + 1)] + r_gssa$ts[[2]][L:(n - L + 1)], y1[L:(n - L + 1)])),
+  MSE_y2 = c(mse(r$s2[L:(n - L + 1)], y2[L:(n - L + 1)]),
+             mse(rw$s2[L:(n - L + 1)], y2[L:(n - L + 1)]),
+             mse(r_gssa$ts[[3]][L:(n - L + 1)] + r_gssa$ts[[4]][L:(n - L + 1)], y2[L:(n - L + 1)])),
+  MSE_y = c(mse(r$s1[L:(n - L + 1)] + r$s2[L:(n - L + 1)], y1[L:(n - L + 1)] + y2[L:(n - L + 1)]),
+                     mse(rw$s1[L:(n - L + 1)] + rw$s2[L:(n - L + 1)], y1[L:(n - L + 1)] + y2[L:(n - L + 1)]),
+                     mse(r_gssa$ts[[1]][L:(n - L + 1)] +
+                           r_gssa$ts[[2]][L:(n - L + 1)] +
+                           r_gssa$ts[[3]][L:(n - L + 1)] +
+                           r_gssa$ts[[4]][L:(n - L + 1)], y1[L:(n - L + 1)] + y2[L:(n - L + 1)]))
+)
+
+mse_table |> print()
+
+
+#------------------------------------------------------------
+library(xtable)
+df <- mse_table
+df[, sapply(df, is.numeric)] <- lapply(df[, sapply(df, is.numeric)], formatC, format = "e", digits = 2)
+print(xtable(df, scientific = TRUE), type = "latex")
+
+#------------------------------------------------------------
+
+freq <- seq(0, pi, 0.001)
+omega <- freq/2/pi
+
+filters <- get_middle_point_filters(y1+y2, L, alpha = 0)
+filt <- filters[[1]] + filters[[2]]
+
+# print(afc(filt, freq), digits = 1)
+
+plot(afc(filt, freq) ~ omega, type = "l")
+abline(v = 1/12, col = "red")
+
+
+# abline(v = 1/12 + 4.3/(12*12))
+abline(v = 1/18)
+
+filters <- get_middle_point_filters(y1+y2, L, alpha = alpha)
+filt <- filters[[1]] + filters[[2]]
+
+lines(afc(filt, freq) ~ omega, col ="blue")
+
+
+library(ggplot2)
+
+alphas <- c(0, 1/2)
+freq <- seq(0, pi, 0.001)
+omega <- freq / (2 * pi)
+
+# Определяем цвета (черный для 0, остальные разные)
+colors <- c("black", "blue")
+
+# Создаем пустой график
+plot(NULL, xlim = c(0, 0.2), ylim = c(0, 1), xlab = "Частота", 
+     ylab = "АЧХ", main = "АЧХ для суммы фильтров собственных троек синуса"
+     , xaxt = "n"
+     )
+
+alpha <- alphas[1]
+filters <- get_middle_point_filters(y, L, alpha = alpha)
+filt <- filters[[1]] + filters[[2]]
+
+lines(omega, afc(filt, freq), col = colors[1], lwd = 2)
+
+# Рисуем графики для каждого alpha
+for (i in seq_along(alphas)) {
+  alpha <- alphas[i]
+  filters <- get_middle_point_filters(y, L, alpha = alpha)
+  filt <- filters[[1]] + filters[[2]]
+  
+  lines(omega, afc(filt, freq), col = colors[i], lwd = 2)
+}
+
+# Добавляем вертикальную линию
+abline(v = 1/12, col = "red", lty = 2)
+# Добавляем подпись на оси X
+axis(1, at = 1/12, labels = "1/12")
+
+# Добавляем легенду с LaTeX-обозначением α
+legend("topright", legend = sapply(alphas, function(a) bquote(alpha == .(a))),
+       col = colors, lwd = 2)
+
+abline(v = 1/19, col = "red", lty = 2)
+axis(1, at = 1/19, labels = "1/19")
+axis(1, at = c(0, 0.1, 0.15, 0.2), labels = c("0", "0.1", "0.15", "0.2"))
+```
+
 #### sin + cos + плохое L
 
 ```{r}
@@ -633,6 +765,7 @@ library(xtable)
 df <- mse_table
 df[, sapply(df, is.numeric)] <- lapply(df[, sapply(df, is.numeric)], formatC, format = "e", digits = 2)
 print(xtable(df, scientific = TRUE), type = "latex")
+
 ```
 
 Проверка значимости:
@@ -1042,6 +1175,7 @@ get_point_filters_test <- function(ts, L, alpha = 0){
     # print((D %*% W_w %*% W) %*% ts)
     
     (D %*% W_w %*% W) %*% ts
+    # print(dim((D %*% W_w %*% W)))
     
   }
   lapply(1:d, get_filter_i)
@@ -1073,7 +1207,361 @@ plot(y, type = "l")
 Reduce("+", filters)|> lines(col = "blue")
 ```
 
-```         
+## Функция фильтра для любой точки
+
+```{r}
+get_all_point_filters <- function(ts, L, alpha = 0){
+  N <- length(ts)
+  tmp <- 1:(L)
+  w <- sqrt(sin(pi*tmp/(L+1))^2)^alpha
+  X <- diag(w) %*% hankel(ts, L)
+  K <- dim(X)[2] 
+  X_t <- t(X)
+  S <- X %*% X_t
+  
+  tmp <- eigen(S)
+  lambda <- tmp$values
+  lambda <- lambda[lambda > 0]
+  d <- length(lambda)
+  U <- tmp$vectors[, 1:d]
+  
+  weight <- sum(w)
+  
+  get_filter_i <- function(i){
+    filt <- c()
+    u <- U[, i]
+    
+    W <- matrix(0, nrow = K, ncol = length(ts))
+    W_w <- matrix(0, nrow = K, ncol = length(ts))
+    for (i in 1:K){
+      W[i, i:(i+L-1)] <- u * w
+      W_w[i, i:(i+L-1)] <- u 
+    }
+    W_w <- t(W_w)
+    
+    D <- c()
+    cm_sm <- 0
+    for (i in 1:L){
+      cm_sm <- cm_sm + w[i]
+      D <- c(D, cm_sm)
+    }
+    for (i in (L+1):K){
+      D<- c(D, cm_sm)
+    }
+    for (i in (K+1):length(ts)){
+      cm_sm <- cm_sm - w[i-K]
+      D <- c(D, cm_sm)
+    }
+    
+    D <- diag(D)
+    D <- solve(D)
+    
+    # print((D %*% W_w %*% W) %*% ts)
+    
+    (D %*% W_w %*% W)
+    
+  }
+  lapply(1:d, get_filter_i)
+}
+
+
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+y1 <- sin(2*pi/12 * x)
+y <- y1
+
+filts <- get_all_point_filters(y, L, alpha = 1/2)
+filt <- (filts[[1]]+filts[[2]])[1, ]
+
+
+
+# filters <- get_middle_point_filters(y1, L, alpha = 0)
+# filt <- filters[[1]] + filters[[2]]
+# 
+afс <- function(filt, freq) {
+  abs(fft(filt)) / length(filt)
+}
+plot(afс(filt, freq) ~ omega, type = "l")
+abline(v = 1/12, col = "red")
+
+```
+
+### Гифка
+
+```{r}
+library(ggplot2)
+library(gganimate)
+library(magick)
+
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/19 * x)/2
+y <- y1 + y2
+
+
+# # Функция для создания амплитудно-фазовой характеристики (АФЧ)
+# afс <- function(filt, freq) {
+#   abs(fft(filt)) / length(filt)
+# }
+afc <- function(filter, omega) {
+  k <- seq_along(filter) - 1 #значения от 0 до length(filter) - 1
+  h <- function(o) sum(rev(filter) * exp(-k*1i * o))
+  abs(sapply(omega, h))
+}
+
+# Получаем фильтры
+filts <- get_all_point_filters(y, L, alpha = 1/2)
+
+filts_ssa <- get_all_point_filters(y, L, alpha = 0)
+
+# Папка для сохранения кадров
+dir.create("filter_frames", showWarnings = FALSE)
+
+
+afc <- function(filter, omega) {
+  k <- seq_along(filter) - 1 #значения от 0 до length(filter) - 1
+  h <- function(o) sum(rev(filter) * exp(-k*1i * o))
+  abs(sapply(omega, h))
+}
+
+# Создаем кадры для GIF
+for (i in c(1, 10, 25, 50)) {
+  filt <- (filts[[1]] + filts[[2]])[i, ]
+  filt_ssa <- (filts_ssa[[1]] + filts_ssa[[2]])[i, ]
+  omega <- seq(0, 1/2, length.out = length(filt))
+  freq <- seq(0, pi, 0.01)
+  omega <- freq/2/pi
+  afc_values <- afc(filt, freq)
+  afc_vals_ssa <-afc(filt_ssa, freq)
+  
+  
+  # Создаем датафрейм для ggplot
+  plot_data <- data.frame(
+    omega = omega,
+    afc_values = afc_values,
+    afc_vals_ssa = afc_vals_ssa
+  )
+  
+  # Основной график
+  p <- ggplot(plot_data) +
+    # Линии АЧХ
+    geom_line(aes(x = omega, y = afc_values), color = "black", linewidth = 1) +
+    geom_line(aes(x = omega, y = afc_vals_ssa), color = "blue", linewidth = 1) +
+    
+    # Вертикальные линии и подписи
+    geom_vline(xintercept = 1/12, color = "red", linetype = "dashed") +
+    geom_vline(xintercept = 1/19, color = "red", linetype = "dashed") +
+    
+    # Оси и заголовок
+    labs(
+      x = "Частота", 
+      y = "АЧХ", 
+      title = paste("АЧХ для точки", i)
+    ) +
+    
+    # Настройка осей (как в вашем примере)
+    scale_x_continuous(
+      limits = c(0, 0.2),
+      breaks = c(0, 1/19, 1/12, 0.1, 0.15, 0.2),
+      labels = c("0", "1/19", "1/12", "0.1", "0.15", "0.2")
+    ) +
+    scale_y_continuous(limits = c(0, 1.1)) +
+    
+    theme_bw() 
+    print(p)
+  
+}
+
+```
+
+### Хороший график
+
+```{r}
+library(ggplot2)
+
+# Частоты
+freq <- seq(0, pi, 0.001)
+omega <- freq / (2 * pi)
+
+# Список точек
+points_to_plot <- c(1, 10, 20, 50)
+
+# Собираем данные в датафрейм
+plot_data_all <- do.call(rbind, lapply(points_to_plot, function(i) {
+  filt <- (filts[[1]] + filts[[2]])[i, ]
+  filt_ssa <- (filts_ssa[[1]] + filts_ssa[[2]])[i, ]
+  
+  data.frame(
+    omega = omega,
+    value = afc(filt, freq),
+    method = "alpha = 1/2",
+    point = paste0("Точка ", i)
+  ) |> 
+    rbind(data.frame(
+      omega = omega,
+      value = afc(filt_ssa, freq),
+      method = "alpha = 0",
+      point = paste0("Точка ", i)
+    ))
+}))
+
+# Построение графика
+p <- ggplot(plot_data_all, aes(x = omega, y = value, color = method)) +
+   geom_line(size = 0.8) +  # <-- увеличение толщины линий
+  geom_line() +
+  facet_wrap(~ point, ncol = 2) +
+  geom_vline(xintercept = c(1/12, 1/19), color = "red", linetype = "dashed") +
+  scale_x_continuous(
+    limits = c(0, 0.2),
+    breaks = c(0, 1/19, 1/12, 0.1, 0.15, 0.2),
+    labels = c("0", "1/19", "1/12", "0.1", "0.15", "0.2")
+  ) +
+   scale_color_manual(
+    values = c("alpha = 1/2" = "black", "alpha = 0" = "blue")
+  ) +
+  scale_y_continuous(limits = c(0, 1.1)) +
+  labs(x = "Частота", y = "АЧХ", title = "АЧХ для разных точек") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+
+# Сохранение с высоким разрешением
+ggsave("afc_4_points.png", plot = p, 
+       width = 10, height = 6, dpi = 300, 
+       units = "in", bg = "white")
+p
+
+```
+
+### График зависимости mse от времени
+
+```{r}
+# Load necessary library
+library(Rssa)
+library(xtable)
+
+# Define parameters
+n <- 96 * 2 - 1  # Длина временного ряда = 191
+x <- 0:(n - 1)
+L <- 48
+y1 <- sin(2 * pi / 12 * x)
+y2 <- cos(2 * pi / 19 * x) / 2
+y <- y1 + y2
+alpha <- 1
+filt <- sqrt(sin(pi * 1:L / (L + 1))^2)^alpha
+
+# Define parameters for experiments
+n_experiment <- 100
+sigma <- 0.1
+n_t <- 96 * 2 - 1  # Ограничиваем до 100 временных индексов
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Initialize matrices to store squared errors for each t and each experiment
+mse_r_y1_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rw_y1_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rgssa_y1_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_r_y2_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rw_y2_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rgssa_y2_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_r_y_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rw_y_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rgssa_y_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+
+# Perform experiments
+for (i in 1:n_experiment) {
+  # Add noise to y
+  noisy_y <- y + rnorm(n, mean = 0, sd = sigma)
+  
+  # Perform SSA
+  s <- ssa(noisy_y, L)
+  r <- reconstruct(s, groups = list(s1 = 1:2, s2 = 3:4))
+  
+  # Perform SSA with oblique filtering
+  sw <- ssa(noisy_y, L, col.oblique = filt, row.oblique = rep(1, n - L + 1))
+  rw <- reconstruct(sw, groups = list(s1 = 1:2, s2 = 3:4))
+  
+  # Perform gSSA (предполагается, что gssa - это ваша функция)
+  r_gssa <- gssa(noisy_y, L, alpha = alpha)
+  
+  # Calculate squared errors for each t (только первые 100 элементов)
+  mse_r_y1_t[, i] <- (r$s1[1:n_t] - y1[1:n_t])^2
+  mse_rw_y1_t[, i] <- (rw$s1[1:n_t] - y1[1:n_t])^2
+  mse_rgssa_y1_t[, i] <- (r_gssa$ts[[1]][1:n_t] + r_gssa$ts[[2]][1:n_t] - y1[1:n_t])^2
+  
+  mse_r_y2_t[, i] <- (r$s2[1:n_t] - y2[1:n_t])^2
+  mse_rw_y2_t[, i] <- (rw$s2[1:n_t] - y2[1:n_t])^2
+  mse_rgssa_y2_t[, i] <- (r_gssa$ts[[3]][1:n_t] + r_gssa$ts[[4]][1:n_t] - y2[1:n_t])^2
+  
+  mse_r_y_t[, i] <- (r$s1[1:n_t] + r$s2[1:n_t] - y[1:n_t])^2
+  mse_rw_y_t[, i] <- (rw$s1[1:n_t] + rw$s2[1:n_t] - y[1:n_t])^2
+  mse_rgssa_y_t[, i] <- (r_gssa$ts[[1]][1:n_t] + r_gssa$ts[[2]][1:n_t] + 
+                         r_gssa$ts[[3]][1:n_t] + r_gssa$ts[[4]][1:n_t] - y[1:n_t])^2
+}
+
+# Compute mean MSE for each t across experiments
+mean_mse_r_y1_t <- rowMeans(mse_r_y1_t)
+mean_mse_rw_y1_t <- rowMeans(mse_rw_y1_t)
+mean_mse_rgssa_y1_t <- rowMeans(mse_rgssa_y1_t)
+
+mean_mse_r_y2_t <- rowMeans(mse_r_y2_t)
+mean_mse_rw_y2_t <- rowMeans(mse_rw_y2_t)
+mean_mse_rgssa_y2_t <- rowMeans(mse_rgssa_y2_t)
+
+mean_mse_r_y_t <- rowMeans(mse_r_y_t)
+mean_mse_rw_y_t <- rowMeans(mse_rw_y_t)
+mean_mse_rgssa_y_t <- rowMeans(mse_rgssa_y_t)
+# 
+# # Plot MSE for y1
+# plot(1:n_t, mean_mse_r_y1_t, type = "l", col = "black", 
+#      ylim = range(c(mean_mse_r_y1_t, mean_mse_rw_y1_t, mean_mse_rgssa_y1_t)),
+#      xlab = "Время", ylab = "MSE", 
+#      main = "Средний MSE по времени для синуса")
+# lines(1:n_t, mean_mse_rw_y1_t, col = "blue")
+# lines(1:n_t, mean_mse_rgssa_y1_t, col = "black")
+# legend("topright", legend = c("alpha = 0", "alpha = 1/2"), col = c("blue", "black"), lty = 1)
+
+
+# Подготовка данных для графика
+plot_data_y1 <- data.frame(
+  time = rep(1:n_t, 3),
+  mse = c(mean_mse_r_y1_t, mean_mse_rw_y1_t, mean_mse_rgssa_y1_t),
+  method = rep(c("r", "rw", "r_gssa"), each = n_t)
+)
+
+# Построение графика
+p <- ggplot(plot_data_y1, aes(x = time, y = mse, color = method)) +
+  geom_line(size = 0.8) +  # Увеличение толщины линий
+  scale_color_manual(
+    values = c("rw" = "black", "r_gssa" = "blue"),
+    labels = c("r_gssa" = "alpha = 1/2", "rw" = "alpha = 0")
+  ) +
+  scale_x_continuous(
+    breaks = seq(0, n_t, by = 20),
+    labels = seq(0, n_t, by = 20)
+  ) +
+  scale_y_continuous(
+    limits = range(c(mean_mse_r_y1_t, mean_mse_rw_y1_t, mean_mse_rgssa_y1_t)) * c(0.9, 1.1)
+  ) +
+  labs(
+    x = "Время",
+    y = "MSE",
+    title = "Средний MSE по времени для синусоиды"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+# Сохранение графика с высоким разрешением
+ggsave("mse_y1_time.png", plot = p, 
+       width = 10, height = 6, dpi = 300, 
+       units = "in", bg = "white")
+
+# Вывод графика
+print(p)
 ```
 
 #### Проверка на совпадение middle filter и GSSA
@@ -1229,3 +1717,211 @@ plot(afc(filt, freq) ~ omega, type = "l")
 ```
 
 Чем выше частота, тем сильнее она гасится
+
+# --------
+
+## FOSSA
+
+```{r}
+library(Rfssa)   # Функции для Функционального SSA и класс funts
+library(fda)     # Работа с функциональными данными (базисы, сглаживание)
+library(Rssa)    # Дополнительные инструменты SSA (при необходимости)
+
+set.seed(123)    # для воспроизводимости
+
+# -------------------------
+# 1. Генерация функциональных данных
+# -------------------------
+N <-  50       # Число временных наблюдений (длина ФТС)
+n <- 100       # Число точек на оси s (значения аргумента)
+s <- seq(0, 1, length.out = n)
+omega <- 0.1   # Частота, используемая в формуле
+sigma <- 0.1   # Уровень шума
+
+# Функция для вычисления детерминированной части m_t(s)
+m_t <- function(t, s) {
+  exp(s^2) * cos(2 * pi * omega * t) + cos(4 * pi * s) * sin(2 * pi * omega * t)
+}
+
+# Генерация набора функций: для каждого момента времени t создаем вектор значений по сетке s с добавлением шума.
+Y_list <- vector("list", N)
+for (t in 1:N) {
+  noise_t <- rnorm(n, mean = 0, sd = sigma)
+  Y_list[[t]] <- m_t(t, s) + noise_t
+}
+
+# Объединим список векторов в матрицу, где строки соответствуют точкам на сетке s, а столбцы – наблюдениям по времени.
+# Размер матрицы: n x N
+Y_matrix <- do.call(cbind, Y_list)
+
+# -------------------------
+# 2. Создание объекта funts
+# -------------------------
+# Создадим B-сплайн базис для интервала [0, 1]
+nbasis <- 15
+basis <- create.bspline.basis(rangeval = c(0, 1), nbasis = nbasis)
+
+# Создаем объект функционального временного ряда (funts) с использованием функции funts из пакета Rfssa.
+fts_obj <- funts(X = Y_matrix, 
+                 basisobj = basis, 
+                 argval = s, 
+                 method = "data", 
+                 start = 1, 
+                 end = N)
+# Y_matrix
+# -------------------------
+# 3. Применение FSSA
+# -------------------------
+# Выбираем длину окна L (например, L = 10; можно подбирать экспериментально).
+L <- 10
+
+# Выполняем разложение ФТС с помощью fssa.
+# Поскольку данные одномерные, указываем type = "ufssa" (univariate fssa).
+res_fssa <- fssa(fts_obj, L = L, ntriples = 20, type = "ufssa")
+
+# Просмотр сингулярных значений (первые 10 значений):
+plot(res_fssa, type = "values", d = 10, main = "Сингулярные значения FSSA")
+
+# Просмотр правых сингулярных векторов (вариация по времени, берем 4 компоненты):
+plot(res_fssa, type = "vectors", d = 4, main = "Правые сингулярные векторы")
+
+# Просмотр w-корреляций (для помощи группировке):
+plot(res_fssa, type = "wcor", d = 10, main = "w-корреляция")
+
+# -------------------------
+# 4. Реконструкция с помощью freconstruct
+# -------------------------
+# В качестве примера выберем группировку:
+# Пусть первая извлеченная компонента отвечает за тренд, 2-3 компоненты – за сезонность, 4-5 – за остаточный шум.
+group_list <- list(
+  1,       # Группа 1: тренд
+  2:3,     # Группа 2: сезонные компоненты
+  4:5      # Группа 3: шум
+)
+
+# Выполняем реконструкцию, используя функцию freconstruct.
+res_rec <- freconstruct(res_fssa, groups = group_list)
+
+# res_rec – это именованный список объектов класса funts (реконструированные компоненты).
+# Визуализируем реконструкцию:
+plot(res_rec[[1]], main = "Группа 1: Тренд")
+plot(res_rec[[2]], main = "Группа 2: Сезонность")
+plot(res_rec[[3]], main = "Группа 3: Остаточный шум")
+
+
+
+```
+
+```{r}
+library(Rfssa)  
+library(fda)    
+library(Rssa)   
+
+
+set.seed(123)   
+
+# Параметры моделирования
+N <- 100        # число временных рядов 
+grid_n <- 100  # (значения s)
+s <- seq(0, 1, length.out = grid_n)
+sigma <- (0.1)   # уровень шума (GWN)
+omega <- 0.1   # значение ω 
+
+# Функция для детерминированной части m_t(s)
+m_t <- function(t, s, omega) {
+  exp(s^2) * cos(2 * pi * omega * t) + cos(4 * pi * s) * sin(2 * pi * omega * t)
+}
+
+# Генерируем истинное значение функции без шума
+true_matrix <- sapply(1:N, function(t) m_t(t, s, omega))
+# true_matrix имеет размер grid_n x N (строки - значения s, столбцы - временные наблюдения)
+
+# Генерируем зашумлённые данные: для каждого t от 1 до N добавляем белый шум
+Y_list <- vector("list", N)
+for (t in 1:N) {
+  noise_t <- rnorm(grid_n, mean = 0, sd = sigma)
+  Y_list[[t]] <- m_t(t, s, omega) + noise_t
+}
+
+# Объединяем список в матрицу наблюдений Y_matrix (размер grid_n x N)
+Y_matrix <- do.call(cbind, Y_list)
+
+# НАстоящий Y
+Y_list <- vector("list", N)
+for (t in 1:N) {
+  Y_list[[t]] <- m_t(t, s, omega)
+}
+
+Y_true <- do.call(cbind, Y_list)
+
+# Создаём объект funts с использованием B-сплайнов (nbasis = 15)
+nbasis <- 15
+basis <- create.bspline.basis(rangeval = c(0, 1), nbasis = nbasis)
+fts_obj <- funts(X = Y_matrix,
+                 basisobj = basis,
+                 argval = s,
+                 method = "data",
+                 start = 1,
+                 end = N)
+
+# Функция для преобразования объекта funts в матрицу временных рядов
+# (из funts извлекается произведение базисной матрицы и коэффициентов)
+funts2mat <- function(funts_obj) {
+  if (!inherits(funts_obj, "funts")) {
+    stop("Input must be a funts object.")
+  }
+  nvar <- length(funts_obj$B_mat)
+  result_list <- vector("list", nvar)
+  for (i in seq_len(nvar)) {
+    result_list[[i]] <- funts_obj$B_mat[[i]] %*% funts_obj$coefs[[i]]
+  }
+  if (nvar == 1) {
+    return(result_list[[1]])
+  } else {
+    return(result_list)
+  }
+}
+
+# Функция для реконструкции с помощью FSSA:
+# Здесь мы используем fssa() и freconstruct(), а затем извлекаем матричное представление через funts2mat().
+reconstruct_FSSA <- function(fts_obj, L) {
+  res_fssa <- fssa(fts_obj, L = L)
+  
+  rec_obj <- freconstruct(res_fssa, groups = list(1:2))
+  # plot(rec_obj[[1]])
+  funts2mat(rec_obj[[1]])
+}
+
+
+
+L <- 30
+
+# Получим реконструированную матрицу через FSSA
+Y_recon <- reconstruct_FSSA(fts_obj, L)
+
+# Вычислим RMSE между реконструкцией и истинным сигналом
+RMSE_FSSA <- mean((Y_true - Y_recon)^2) |> sqrt()
+
+cat("RMSE для FSSA относительно истинного сигнала:", RMSE_FSSA, "\n")
+
+```
+
+```{r}
+library(Rssa)
+
+# Преобразуем Y_matrix (grid_n x N) в формат изображения
+# Применим 2D SSA
+ssa_2d <- ssa(Y_matrix, kind = "2d-ssa", L = c(3, 30))  # размер окна можно настроить
+
+# Реконструкция по первым 2 компонентам, аналогично FSSA
+recon_2d <- reconstruct(ssa_2d, groups = list(1:2))
+
+# Достаём восстановленное изображение (матрицу)
+Y_recon_2d <- recon_2d$F1
+
+# Вычислим RMSE между реконструкцией 2D SSA и истинным сигналом
+RMSE_2DSSA <- sqrt(mean((Y_true - Y_recon_2d)^2))
+
+cat("RMSE для 2D SSA относительно истинного сигнала:", RMSE_2DSSA, "\n")
+
+```

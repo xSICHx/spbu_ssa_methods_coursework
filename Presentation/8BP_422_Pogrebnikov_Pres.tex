@@ -117,6 +117,21 @@
 		% \textcolor{red}{\textbf{TODO}} Оформить слайд
 
 		\textbf{\structure{Пример}} 
+			$\TS = \mathsf{S} + \TS_{\mathrm{Noise}}=
+			\mathsf{S}^{(1)} + \mathsf{S}^{(2)} + \TS_{\mathrm{Noise}}= 
+			e^{A{n}}
+			\sin\left({2\pi\omega_1 n}\right) + 
+			\cos\left({2\pi\omega_2 n}\right) + \varepsilon_n$.
+
+			$\omega_1, \omega_2$ -- частоты;
+			$\varepsilon_n \sim \mathrm N(0, \sigma^2)$ -- шум; 
+
+			$\mathsf{S}$ -- сигнал.
+
+			$\hat{\mathsf{S}}$ -- оценка выделения сигнала методом.
+
+			$\hat{\mathsf{S}}^{(1)}, 
+			\hat{\mathsf{S}}^{(2)}$ -- оценки разделения компонент $\mathsf{S}^{(1)}, \mathsf{S}^{(2)}$.
 
 		$\TS = \mathsf{S} + \TS_{\mathrm{Noise}}=
 		\mathsf{S}^{(1)} + \mathsf{S}^{(2)} + \TS_{\mathrm{Noise}}= 
@@ -213,7 +228,7 @@
 		\mathsf{S}^{(1)} + \mathsf{S}^{(2)} + \TS_{\mathrm{Noise}}$
 		
 
-		\begin{definition}[\cite{ssa2018withR}]
+		\begin{definition}[\cite{Golyandina_2015}]
 			\textbf{Вложенный вариант SSA} — двухэтапный метод:
 			\begin{enumerate}
 				\item Задается $r$. $\tilde {\mathbf{S}}$ -- сумма первых $r$ слагаемых SVD разложения траекторной матрицы сигнала $\mathbf S$ с помощью базового $\SSA$ .
@@ -273,7 +288,7 @@
 			\begin{equation*}
 				y_j = \sum_{i = -r_1}^{r_2} h_i x_{j-i}, \quad j \in \mathbb{Z},
 			\end{equation*}
-			где $r_1 + r_2$ — ширина фильтра, $h_i \in \mathbb{R}$ — коэффициенты.
+			где $r_1 + r_2 + 1$ — ширина фильтра, $h_i \in \mathbb{R}$ — коэффициенты.
 		\end{definition}
 		
 
@@ -484,10 +499,10 @@
 			$
 
 			\item \textbf{Группировка} по частотам:
-			$\bigsqcup \limits_{j=1}^m I_j = 
+			$\bigsqcup \limits_{j=1}^m \Omega_j = 
 			\bigsqcup \limits_{j=1}^m 
 			\left[ \omega_j^{(l)}, \omega_j^{(r)} \right] =
-			[0, 0.5]$. $\mathbf X = \mathbf X_{I_1} + \dots + \mathbf X_{I_m}$.
+			[0, 0.5]$. $\mathbf X_{\Omega_j} =\sum\limits_{\omega_k \in \Omega_j} \mathbf{X}_{\omega_k}$.
 
 			\item \textbf{Диагональное усреднение:} как в $\SSA$.
 		\end{enumerate}
@@ -563,6 +578,10 @@
 		\medskip
 		Условия точной разделимости $\TS$ для $\SSA$: \\
 		$L\omega_1, L\omega_2, K\omega_1, K\omega_2 \in \mathbb{N}$, $\omega_1 \not = \omega_2$, $A_1 \not = A_2$.
+
+		\medskip
+		Условия точной разделимости $\TS$ для $\SSA$ $\EOSSA$: \\
+		$\omega_1 \not = \omega_2$.
 
 		\bigskip
 		Таким образом, условия на разделение косинусов, слабее у методов $\CISSA$ и \textbf{Фурье}, чем у $\SSA$.
@@ -796,7 +815,7 @@
 		\textbf{\structure{Последующие действия:}}
 		\begin{itemize}
 			\item Рассмотрение других модификаций;
-			\item Добавление к списку примеров ряды с трендом;
+			\item Добавление к списку примеров рядов с трендом;
 			\item Реализация вложенного варианта с $\CISSA$.
 		\end{itemize}
 	\end{frame}
