@@ -464,6 +464,140 @@
 \end{frame}
 
 
+\begin{frame}{Пример 1. Гармоничесикие функции}
+	\textbf{\structure{Пример 1: }}
+	$\TS = \TS_{\sin} + \TS_{\cos} = A_1 \sin(2\pi \omega_1 n ) + A_2 \cos(2\pi \omega_2 n )$.
+
+	Группировка: $\delta = 1/L$,  
+
+	для $\TS_{\sin}$ 1-2 SVD или $(\omega_1 \pm 2 \delta)$; 
+	для $\TS_{\cos}$ 3-4 SVD или $(\omega_2 \pm 2 \delta)$; 
+	
+	\begin{table}[ht]
+		\centering
+		\resizebox{0.95\textwidth}{!}{ % Масштабируем таблицу
+		\begin{tabular}{l|l|ccc}
+			\hline
+			\textbf{Метод} & \textbf{Параметры} & $\MSE\left(\TS_{\sin}\right)$ & $\MSE\left(\TS_{\cos}\right)$ & $\MSE\left(\TS\right)$ \\ 
+			\hline
+			SSA & \( L\omega_i \in \mathbb{N}, K\omega_i \in \mathbb{N} \), \( A_1 \neq A_2 \) & \textbf{6.8e-30} & \textbf{1.5e-29} & \textbf{1.8e-29} \\ 
+			SSA EOSSA & \( L\omega_i \in \mathbb{N}, K\omega_i \in \mathbb{N} \), \( A_1 \neq A_2 \), \( r = 4 \) & \textbf{8.2e-30} & \textbf{6.5e-30} & \textbf{5.5e-30} \\ 
+			Fourier & \( N\omega_i \in \mathbb{N} \) & \textbf{3.4e-28} & \textbf{9.8e-29} & \textbf{4.0e-28} \\ 
+			CiSSA & \( L\omega_i \in \mathbb{N} \), \( A_1 \neq A_2 \) & \textbf{1.1e-29} & \textbf{6.5e-30} & \textbf{7.8e-30} \\ 
+			\hline
+			SSA & \( L\omega_i \in \mathbb{N}, K\omega_i \in \mathbb{N} \), \( A_1 = A_2 \) & 3.8e-04 & 3.8e-04 & \textbf{6.0e-29} \\ 
+			SSA & \( L\omega_i \in \mathbb{N} \), \( K\omega_i \notin \mathbb{N} \), \( A_1 = A_2 \) & 4.9e-03 & 3.4e-03 & \textbf{5.9e-29} \\ 
+			SSA EOSSA & \( L\omega_i \in \mathbb{N} \), \( K\omega_i \notin \mathbb{N} \), \( A_1 = A_2 \), \( r = 4 \) & \textbf{1.4e-29} & \textbf{2.9e-29} & \textbf{1.1e-29} \\ 
+			Fourier & \( N\omega_i \notin \mathbb{N} \) & 7.6e-03 & 3.3e-03 & 5.6e-03 \\ 
+			\hline
+		\end{tabular}
+		}
+	\end{table}
+	По таблице видно, что при нарушении условий точной разделимости, результаты значительно ухудшаются. 
+	
+	$\SSA$ $\EOSSA$ исправляет ситуацию для $\SSA$.
+
+	\note{
+		Длину N ряда сложно подбирать, поэтому будем рассматривать случаи, когда N хорошее и плохое. А L всегда можем изменить, поэтому все L подобраны наилучшим образом. $w_1$, $w_2$ фиксированы
+	}
+\end{frame}
+
+
+\begin{frame}{Пример 1. Шум}
+	\textbf{\structure{Пример 1: }}
+	$\TS = \TS_{\sin} + \TS_{\cos} + \TS_{\mathrm{Noise}} =$ $ = A_1 \sin(2\pi \omega_1 n ) + A_2 \cos(2\pi \omega_2 n ) + \varepsilon_n$, $\varepsilon_n \sim \mathrm N(0, 0.1^2) $
+
+	Группировка: $\delta = 1/L$,  
+
+	для $\TS_{\sin}$ 1-2 SVD или $(\omega_1 \pm 2 \delta)$; 
+	для $\TS_{\cos}$ 3-4 SVD или $(\omega_2 \pm 2 \delta)$; 
+
+	\begin{table}[ht]
+		\centering
+		\resizebox{0.95\textwidth}{!}{ % Масштабируем таблицу
+		\begin{tabular}{l|l|ccc}
+			\hline
+			\textbf{Метод} & \textbf{Параметры} & $\MSE\left(\TS_{\sin}\right)$ & $\MSE\left(\TS_{\cos}\right)$ & $\MSE\left(\TS\right)$ \\ 
+			\hline
+			SSA & \( L\omega_i \in \mathbb{N}, K\omega_i \in \mathbb{N} \) & \textbf{2.7e-04} & \textbf{3.3e-04} & \textbf{6.0e-04} \\ 
+			SSA EOSSA & \( L\omega_i \in \mathbb{N}, K\omega_i \in \mathbb{N} \) & \textbf{2.7e-04} & \textbf{3.3e-04} & \textbf{6.0e-04} \\ 
+			Fourier & \( N\omega_i \in \mathbb{N} \) & \textbf{1.5e-04} & \textbf{2.1e-04} & \textbf{3.6e-04} \\ 
+			CiSSA & \( L\omega_i \in \mathbb{N} \) & \textbf{1.6e-04} & \textbf{2.8e-04} & \textbf{4.3e-04} \\ 
+			\hline
+			SSA & \( L\omega_i \in \mathbb{N}, K\omega_i \in \mathbb{N}, A_1 = A_2 \) & \textbf{2.5e-04} & \textbf{3.3e-04} & \textbf{6.0e-04} \\ 
+			SSA & \( L\omega_i \in \mathbb{N}, K\omega_i \notin \mathbb{N}, A_1 = A_2 \) & 4.9e-03 & 3.4e-03 & \textbf{6.0e-04} \\ 
+			SSA EOSSA & \( L\omega_i \in \mathbb{N}, K\omega_i \notin \mathbb{N}, A_1 = A_2 \) & \textbf{2.7e-04} & \textbf{3.4e-04} & \textbf{6.0e-04} \\ 
+			Fourier & \( N\omega_i \notin \mathbb{N} \) & 2.6e-02 & 7.3e-02 & 9.8e-02 \\ 
+			\hline
+		\end{tabular}
+		}
+	\end{table}
+	Результаты ухудшились.
+\end{frame}
+
+
+
+\begin{frame}{Пример 2. Экспоненциально-модулированные функции}
+	\textbf{\structure{Пример 2: }}
+	$\TS = \TS_{e\cdot\sin} + \TS_{e\cdot\cos} = e^{A_1 n } \sin(2\pi \omega_1 n ) + e^{A_2 n} \cos(2\pi \omega_2 n ) $.
+
+	Группировка: $\delta = 1/L$,  
+
+	для $\TS_{\sin}$ 1-2 SVD или $(\omega_1 \pm 2 \delta)$; 
+	для $\TS_{\cos}$ 3-4 SVD или $(\omega_2 \pm 2 \delta)$; 
+
+	\begin{table}[ht]
+		\centering
+		\resizebox{0.95\textwidth}{!}{ % Масштабируем таблицу
+		\begin{tabular}{l|l|ccc}
+			\hline
+			\textbf{Метод} & \textbf{Параметры} & $\MSE\left(\TS_{e \cdot \sin}\right)$ & $\MSE\left(\TS_{e \cdot \cos}\right)$ & $\MSE\left(\TS\right)$ \\ 
+			\hline
+			SSA & \( L\omega_i \in \mathbb{N}, K\omega_i \in \mathbb{N} \) & 5.3e-05 & 5.3e-05 & \textbf{1.2e-27} \\ 
+			SSA EOSSA & \( L\omega_i \in \mathbb{N}, K\omega_i \in \mathbb{N}, r = 4 \) & \textbf{3.0e-28} & \textbf{4.4e-28} & \textbf{7.4e-29} \\ 
+			Fourier & \( N\omega_i \in \mathbb{N} \) & 6.7e-02 & 1.4e-02 & 4.9e-02 \\ 
+			CiSSA & \( L\omega_i \in \mathbb{N} \) & 3.8e-03 & 2.6e-02 & 1.5e-02 \\ 
+			\hline
+			SSA & \( L\omega_i \in \mathbb{N}, K\omega_i \notin \mathbb{N} \) & 4.8e-04 & 4.8e-04 & \textbf{1.1e-27} \\ 
+			SSA EOSSA & \( L\omega_i \in \mathbb{N}, K\omega_i \notin \mathbb{N}, r = 4 \) & \textbf{2.8e-28} & \textbf{4.2e-28} & \textbf{7.5e-29} \\ 
+			Fourier & \( N\omega_i \notin \mathbb{N} \) & 3.7e-02 & 1.1e-01  & 1.1e-01 \\ 
+			\hline
+		\end{tabular}
+		}
+	\end{table}
+
+	При домножении на экспоненты периодик, все результаты ухудшились кроме $\SSA$ $\EOSSA$. \textbf{Фурье} и $\CISSA$ значительно ухудшились в точности разделения.
+\end{frame}
+
+
+
+\begin{frame}{Пример 2. Шум}
+	\textbf{\structure{Пример 2: }}
+	$\TS = \TS_{e\cdot\sin} + \TS_{e\cdot\cos} + \TS_{\mathrm{Noise}}= $ $=e^{A_1 n } \sin(2\pi w_1 n ) + e^{A_2 n} \cos(2\pi w_2 n ) + \varepsilon_n$, $\varepsilon_n \sim \mathrm N(0, 0.1^2) $
+	\begin{table}[ht]
+		\centering
+		\resizebox{1\textwidth}{!}{ % Масштабируем таблицу
+		\begin{tabular}{l|l|ccc}
+			\hline
+			\textbf{Метод} & \textbf{Параметры} & $\MSE\left(\TS_{e \cdot \sin}\right)$ & $\MSE\left(\TS_{e \cdot \cos}\right)$ & $\MSE\left(\TS\right)$ \\ 
+			\hline
+			SSA & \( Lw \in \mathbb{N}, Kw \in \mathbb{N} \) &\textbf{3.1e-04} & \textbf{3.6e-04} & \textbf{5.6e-04} \\ 
+			SSA EOSSA & \( Lw \in \mathbb{N}, Kw \in \mathbb{N} \) & \textbf{2.2e-04} & \textbf{3.4e-04} & \textbf{5.6e-04} \\ 
+			Fourier & \( Nw \in \mathbb{N} \) & 1.5e-02 & 7.2e-02 & 7.2e-02 \\ 
+			CiSSA & \( Lw \in \mathbb{N} \) & 5.2e-03 & 3.4e-02 & 3.3e-02   \\ 
+			\hline
+			SSA & \( L\omega_i \in \mathbb{N}, K\omega_i \notin \mathbb{N} \) & \textbf{7.7e-04} & \textbf{8.7e-04} & \textbf{5.6e-04} \\ 
+			SSA EOSSA & \( L\omega_i \in \mathbb{N}, K\omega_i \notin \mathbb{N}, r = 4 \) & \textbf{5.8e-04} & \textbf{5.6e-04} & \textbf{7.1e-04} \\ 
+			Fourier & \( N\omega_i \notin \mathbb{N} \) & 4.2e-02 & 3.3e-01 & 3.5e-01 \\ 
+			\hline
+		\end{tabular}
+		}
+	\end{table}
+	
+	Результаты ухудшились.
+\end{frame}
+
+
 \begin{frame}{Применения CiSSA}
 	\textbf{\structure{Когнитивная нагрузка \parencite{cognitive}}}\\
 	- Разложили сигналы ЭЭГ (наборы MAT, STEW) с помощью CiSSA на частотно-временные компоненты для отслеживания мозговой активности. \\
@@ -476,10 +610,6 @@
 	- Применили CiSSA (\(L=10\)) к стратиграфии кернов для разделения долгосрочных трендов и сезонных сигналов (пыль, соль).\\
 
 	\bigskip
-
-
-
-
 \end{frame}
 
 \begin{frame}{Сравнение SSA, Фурье, CiSSA. Выводы}
@@ -500,16 +630,16 @@
 
 
 \begin{frame}{Последующие действия. FSSA}
-  \textbf{FSSA} -- метод разложения функциональных временных рядов, совмещающий подходы функционального PCA, SSA. \\
-  \vspace{0.2cm}
-  \textbf{Вход}: \\
-  \begin{itemize}
-	\item \( \{y_t(s)\}_{t=1}^N \), \( y_t(s) \in \mathcal{L}^2([0,1]) \). 
-	\item Длина окна \( L \), базис.
-  \end{itemize}
-  \vspace{0.2cm}
-  
-  Сравним с \textbf{2d-SSA}, \textbf{MSSA}.
+	\textbf{FSSA} -- метод разложения функциональных временных рядов, совмещающий подходы функционального PCA, $\SSA$. \\
+	\vspace{0.2cm}
+	\textbf{Вход}: \\
+	\begin{itemize}
+		\item \( \{y_t(s)\}_{t=1}^N \), \( y_t(s) \in \mathcal{L}^2([0,1]) \).
+		\item Длина окна \( L \), базис.
+	\end{itemize}
+	\vspace{0.2cm}
+
+	Сравним с \textbf{2d-SSA}, \textbf{MSSA}.
 
 \end{frame}
 
