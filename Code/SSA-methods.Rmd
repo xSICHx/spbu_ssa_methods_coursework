@@ -1265,25 +1265,25 @@ get_all_point_filters <- function(ts, L, alpha = 0){
 }
 
 
-n <- 96*2-1
-x <- 0:(n-1)
-L <- 48
-y1 <- sin(2*pi/12 * x)
-y <- y1
-
-filts <- get_all_point_filters(y, L, alpha = 1/2)
-filt <- (filts[[1]]+filts[[2]])[1, ]
-
-
-
-# filters <- get_middle_point_filters(y1, L, alpha = 0)
-# filt <- filters[[1]] + filters[[2]]
+# n <- 96*2-1
+# x <- 0:(n-1)
+# L <- 48
+# y1 <- sin(2*pi/12 * x)
+# y <- y1
 # 
-afс <- function(filt, freq) {
-  abs(fft(filt)) / length(filt)
-}
-plot(afс(filt, freq) ~ omega, type = "l")
-abline(v = 1/12, col = "red")
+# filts <- get_all_point_filters(y, L, alpha = 1/2)
+# filt <- (filts[[1]]+filts[[2]])[1, ]
+# 
+# 
+# 
+# # filters <- get_middle_point_filters(y1, L, alpha = 0)
+# # filt <- filters[[1]] + filters[[2]]
+# #
+# afс <- function(filt, freq) {
+#   abs(fft(filt)) / length(filt)
+# }
+# plot(afс(filt, freq) ~ omega, type = "l")
+# abline(v = 1/12, col = "red")
 
 ```
 
@@ -1446,9 +1446,9 @@ library(xtable)
 # Define parameters
 n <- 96 * 2 - 1  # Длина временного ряда = 191
 x <- 0:(n - 1)
-L <- 48
-y1 <- sin(2 * pi / 12 * x)
-y2 <- cos(2 * pi / 19 * x) / 2
+L <- 48*2
+y1 <- sin(2 * pi / 6 * x)
+y2 <- cos(2 * pi / 12 * x) / 2
 y <- y1 + y2
 alpha <- 1
 filt <- sqrt(sin(pi * 1:L / (L + 1))^2)^alpha
@@ -1516,14 +1516,6 @@ mean_mse_r_y_t <- rowMeans(mse_r_y_t)
 mean_mse_rw_y_t <- rowMeans(mse_rw_y_t)
 mean_mse_rgssa_y_t <- rowMeans(mse_rgssa_y_t)
 # 
-# # Plot MSE for y1
-# plot(1:n_t, mean_mse_r_y1_t, type = "l", col = "black", 
-#      ylim = range(c(mean_mse_r_y1_t, mean_mse_rw_y1_t, mean_mse_rgssa_y1_t)),
-#      xlab = "Время", ylab = "MSE", 
-#      main = "Средний MSE по времени для синуса")
-# lines(1:n_t, mean_mse_rw_y1_t, col = "blue")
-# lines(1:n_t, mean_mse_rgssa_y1_t, col = "black")
-# legend("topright", legend = c("alpha = 0", "alpha = 1/2"), col = c("blue", "black"), lty = 1)
 
 
 # Подготовка данных для графика
@@ -1562,6 +1554,12 @@ ggsave("mse_y1_time.png", plot = p,
 
 # Вывод графика
 print(p)
+```
+
+### Зависимость ошибки от L
+
+```{r}
+
 ```
 
 #### Проверка на совпадение middle filter и GSSA
@@ -1736,7 +1734,7 @@ N <-  50       # Число временных наблюдений (длина 
 n <- 100       # Число точек на оси s (значения аргумента)
 s <- seq(0, 1, length.out = n)
 omega <- 0.1   # Частота, используемая в формуле
-sigma <- 0.1   # Уровень шума
+sigma <- 0.0   # Уровень шума
 
 # Функция для вычисления детерминированной части m_t(s)
 m_t <- function(t, s) {
@@ -1818,7 +1816,6 @@ library(fda)
 library(Rssa)   
 
 
-set.seed(123)   
 
 # Параметры моделирования
 N <- 100        # число временных рядов 
@@ -1831,6 +1828,8 @@ omega <- 0.1   # значение ω
 m_t <- function(t, s, omega) {
   exp(s^2) * cos(2 * pi * omega * t) + cos(4 * pi * s) * sin(2 * pi * omega * t)
 }
+
+
 
 # Генерируем истинное значение функции без шума
 true_matrix <- sapply(1:N, function(t) m_t(t, s, omega))
@@ -1888,6 +1887,7 @@ reconstruct_FSSA <- function(fts_obj, L) {
   res_fssa <- fssa(fts_obj, L = L)
   
   rec_obj <- freconstruct(res_fssa, groups = list(1:2))
+  plot(rec_obj[[1]])
   # plot(rec_obj[[1]])
   funts2mat(rec_obj[[1]])
 }
@@ -1911,17 +1911,40 @@ library(Rssa)
 
 # Преобразуем Y_matrix (grid_n x N) в формат изображения
 # Применим 2D SSA
-ssa_2d <- ssa(Y_matrix, kind = "2d-ssa", L = c(3, 30))  # размер окна можно настроить
+ssa_2d <- ssa(t(Y_matrix), kind = "2d-ssa", L = c(30, 3))  # размер окна можно настроить
 
 # Реконструкция по первым 2 компонентам, аналогично FSSA
 recon_2d <- reconstruct(ssa_2d, groups = list(1:2))
+
+plot(recon_2d)
 
 # Достаём восстановленное изображение (матрицу)
 Y_recon_2d <- recon_2d$F1
 
 # Вычислим RMSE между реконструкцией 2D SSA и истинным сигналом
-RMSE_2DSSA <- sqrt(mean((Y_true - Y_recon_2d)^2))
+RMSE_2DSSA <- sqrt(mean((t(Y_true) - Y_recon_2d)^2))
 
 cat("RMSE для 2D SSA относительно истинного сигнала:", RMSE_2DSSA, "\n")
+
+```
+
+```{r}
+library(Rssa)
+
+# Преобразуем Y_matrix (grid_n x N) в формат изображения
+# Применим 2D SSA
+ssa_2d <- ssa(t(Y_matrix), kind = "mssa", L = L)  # размер окна можно настроить
+
+# Реконструкция по первым 2 компонентам, аналогично FSSA
+recon_2d <- reconstruct(ssa_2d, groups = list(1:2))
+
+Y_recon_2d <- recon_2d$F1
+
+plot(recon_2d)
+
+# Вычислим RMSE между реконструкцией 2D SSA и истинным сигналом
+RMSE_2DSSA <- sqrt(mean((t(Y_true) - Y_recon_2d)^2))
+
+cat("RMSE для MSSA относительно истинного сигнала:", RMSE_2DSSA, "\n")
 
 ```
