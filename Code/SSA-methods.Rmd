@@ -1447,7 +1447,7 @@ library(xtable)
 n <- 96 * 2 - 1  # Длина временного ряда = 191
 x <- 0:(n - 1)
 L <- 48*2
-y1 <- sin(2 * pi / 6 * x)
+y1 <- sin(2 * pi / 19 * x)
 y2 <- cos(2 * pi / 12 * x) / 2
 y <- y1 + y2
 alpha <- 1
@@ -1554,12 +1554,6 @@ ggsave("mse_y1_time.png", plot = p,
 
 # Вывод графика
 print(p)
-```
-
-### Зависимость ошибки от L
-
-```{r}
-
 ```
 
 #### Проверка на совпадение middle filter и GSSA
@@ -1721,87 +1715,69 @@ plot(afc(filt, freq) ~ omega, type = "l")
 ## FOSSA
 
 ```{r}
-library(Rfssa)   # Функции для Функционального SSA и класс funts
-library(fda)     # Работа с функциональными данными (базисы, сглаживание)
-library(Rssa)    # Дополнительные инструменты SSA (при необходимости)
+library(Rfssa)   
+library(fda)     
+library(Rssa)    
 
-set.seed(123)    # для воспроизводимости
+set.seed(123)    
 
-# -------------------------
-# 1. Генерация функциональных данных
-# -------------------------
-N <-  50       # Число временных наблюдений (длина ФТС)
-n <- 100       # Число точек на оси s (значения аргумента)
+N <-  50       
+n <- 100       
 s <- seq(0, 1, length.out = n)
-omega <- 0.1   # Частота, используемая в формуле
-sigma <- 0.0   # Уровень шума
+omega <- 0.1   
+sigma <- 0.0   
 
-# Функция для вычисления детерминированной части m_t(s)
+
+
 m_t <- function(t, s) {
   exp(s^2) * cos(2 * pi * omega * t) + cos(4 * pi * s) * sin(2 * pi * omega * t)
 }
 
-# Генерация набора функций: для каждого момента времени t создаем вектор значений по сетке s с добавлением шума.
+
+
 Y_list <- vector("list", N)
 for (t in 1:N) {
   noise_t <- rnorm(n, mean = 0, sd = sigma)
   Y_list[[t]] <- m_t(t, s) + noise_t
 }
 
-# Объединим список векторов в матрицу, где строки соответствуют точкам на сетке s, а столбцы – наблюдениям по времени.
-# Размер матрицы: n x N
 Y_matrix <- do.call(cbind, Y_list)
 
-# -------------------------
-# 2. Создание объекта funts
-# -------------------------
-# Создадим B-сплайн базис для интервала [0, 1]
+
+# Создание объекта funts
 nbasis <- 15
 basis <- create.bspline.basis(rangeval = c(0, 1), nbasis = nbasis)
 
-# Создаем объект функционального временного ряда (funts) с использованием функции funts из пакета Rfssa.
+
+
 fts_obj <- funts(X = Y_matrix, 
                  basisobj = basis, 
                  argval = s, 
                  method = "data", 
                  start = 1, 
                  end = N)
-# Y_matrix
-# -------------------------
-# 3. Применение FSSA
-# -------------------------
-# Выбираем длину окна L (например, L = 10; можно подбирать экспериментально).
+
+
 L <- 10
 
-# Выполняем разложение ФТС с помощью fssa.
-# Поскольку данные одномерные, указываем type = "ufssa" (univariate fssa).
+
 res_fssa <- fssa(fts_obj, L = L, ntriples = 20, type = "ufssa")
 
-# Просмотр сингулярных значений (первые 10 значений):
 plot(res_fssa, type = "values", d = 10, main = "Сингулярные значения FSSA")
 
-# Просмотр правых сингулярных векторов (вариация по времени, берем 4 компоненты):
 plot(res_fssa, type = "vectors", d = 4, main = "Правые сингулярные векторы")
 
-# Просмотр w-корреляций (для помощи группировке):
 plot(res_fssa, type = "wcor", d = 10, main = "w-корреляция")
 
-# -------------------------
-# 4. Реконструкция с помощью freconstruct
-# -------------------------
-# В качестве примера выберем группировку:
-# Пусть первая извлеченная компонента отвечает за тренд, 2-3 компоненты – за сезонность, 4-5 – за остаточный шум.
+
 group_list <- list(
-  1,       # Группа 1: тренд
-  2:3,     # Группа 2: сезонные компоненты
-  4:5      # Группа 3: шум
+  1,       
+  2:3,     
+  4:5      
 )
 
-# Выполняем реконструкцию, используя функцию freconstruct.
 res_rec <- freconstruct(res_fssa, groups = group_list)
 
-# res_rec – это именованный список объектов класса funts (реконструированные компоненты).
-# Визуализируем реконструкцию:
 plot(res_rec[[1]], main = "Группа 1: Тренд")
 plot(res_rec[[2]], main = "Группа 2: Сезонность")
 plot(res_rec[[3]], main = "Группа 3: Остаточный шум")
@@ -1809,6 +1785,8 @@ plot(res_rec[[3]], main = "Группа 3: Остаточный шум")
 
 
 ```
+
+#### FOSSA на m_t
 
 ```{r}
 library(Rfssa)  
@@ -1887,7 +1865,7 @@ reconstruct_FSSA <- function(fts_obj, L) {
   res_fssa <- fssa(fts_obj, L = L)
   
   rec_obj <- freconstruct(res_fssa, groups = list(1:2))
-  plot(rec_obj[[1]])
+  # plot(rec_obj[[1]])
   # plot(rec_obj[[1]])
   funts2mat(rec_obj[[1]])
 }
@@ -1906,45 +1884,225 @@ cat("RMSE для FSSA относительно истинного сигнала
 
 ```
 
+#### 2d-SSA на m_t
+
 ```{r}
 library(Rssa)
 
 # Преобразуем Y_matrix (grid_n x N) в формат изображения
 # Применим 2D SSA
-ssa_2d <- ssa(t(Y_matrix), kind = "2d-ssa", L = c(30, 3))  # размер окна можно настроить
+ssa_2d <- ssa(t(Y_matrix), kind = "2d-ssa", L = c(30, 50))  # размер окна можно настроить
 
 # Реконструкция по первым 2 компонентам, аналогично FSSA
-recon_2d <- reconstruct(ssa_2d, groups = list(1:2))
+recon_2d <- reconstruct(ssa_2d, groups = list(1:8))
 
-plot(recon_2d)
+# plot(recon_2d)
 
-# Достаём восстановленное изображение (матрицу)
 Y_recon_2d <- recon_2d$F1
 
-# Вычислим RMSE между реконструкцией 2D SSA и истинным сигналом
+# Вычислим RMSE между реконструкцией 2D SSA и истинным сигнало
 RMSE_2DSSA <- sqrt(mean((t(Y_true) - Y_recon_2d)^2))
 
 cat("RMSE для 2D SSA относительно истинного сигнала:", RMSE_2DSSA, "\n")
 
 ```
 
+#### MSSA на m_t
+
 ```{r}
 library(Rssa)
 
 # Преобразуем Y_matrix (grid_n x N) в формат изображения
 # Применим 2D SSA
-ssa_2d <- ssa(t(Y_matrix), kind = "mssa", L = L)  # размер окна можно настроить
+ssa_mssa <- ssa(t(Y_matrix), kind = "mssa", L = L)  # размер окна можно настроить
 
 # Реконструкция по первым 2 компонентам, аналогично FSSA
-recon_2d <- reconstruct(ssa_2d, groups = list(1:2))
+recon_mssa <- reconstruct(ssa_mssa, groups = list(1:2))
 
-Y_recon_2d <- recon_2d$F1
+Y_recon_mssa <- recon_mssa$F1
 
-plot(recon_2d)
+# plot(recon_2d)
 
 # Вычислим RMSE между реконструкцией 2D SSA и истинным сигналом
-RMSE_2DSSA <- sqrt(mean((t(Y_true) - Y_recon_2d)^2))
+RMSE_mssa <- sqrt(mean((t(Y_true) - Y_recon_mssa)^2))
 
-cat("RMSE для MSSA относительно истинного сигнала:", RMSE_2DSSA, "\n")
+cat("RMSE для MSSA относительно истинного сигнала:", RMSE_mssa, "\n")
 
+```
+
+### Таблица с FSSA, MSSA, 2d-SSA
+
+```{r}
+library(fda)    # для create.bspline.basis
+library(Rssa)   # для fssa, ssa, freconstruct, reconstruct
+library(dplyr)  # для группировки и summarize
+
+
+set.seed(100)
+
+
+run_ssa_benchmarks <- function(N_tests,
+                               L_vals,
+                               N_vals,
+                               omega_vals,
+                               sigma = 0.1,
+                               grid_n = 100,
+                               nbasis = 15) {
+  # вспомогательная функция для одного прогона
+  single_test <- function(N, L, omega) {
+    s <- seq(0, 1, length.out = grid_n)
+    
+    # детермин. функция
+    m_t <- function(t, s, omega) {
+      exp(s^2) * cos(2 * pi * omega * t) +
+        cos(4 * pi * s) * sin(2 * pi * omega * t)
+    }
+    
+    # истина и шум
+    true_mat <- sapply(1:N, function(t) m_t(t, s, omega))
+    Y_mat   <- true_mat + matrix(rnorm(grid_n * N, 0, sigma),
+                                 nrow = grid_n, ncol = N)
+    
+    # объект funts
+    basis   <- create.bspline.basis(rangeval = c(0,1), nbasis = nbasis)
+    fts_obj <- funts(X = Y_mat,
+                     basisobj = basis,
+                     argval   = s,
+                     method   = "data",
+                     start    = 1,
+                     end      = N)
+    
+    # вспомог. для извлечения матрицы из funts
+    funts2mat <- function(o) {
+      B   <- o$B_mat[[1]]
+      coefs <- o$coefs[[1]]
+      B %*% coefs
+    }
+    
+    # FSSA
+    res_fssa <- fssa(fts_obj, L = L)
+    rec_fssa <- freconstruct(res_fssa, groups = list(1:2))[[1]]
+    Yf <- funts2mat(rec_fssa)
+    rmse_fssa <- sqrt(mean((true_mat - Yf)^2))
+    
+    # 2D-SSA (на "изображении" t(Y_mat))
+    ssa2 <- ssa(t(Y_mat), kind = "2d-ssa", L = c(L, 50))
+    rec2 <- reconstruct(ssa2, groups = list(1:8))$F1
+    rmse_2d  <- sqrt(mean((t(true_mat) - rec2)^2))
+    
+    # MSSA
+    ssam <- ssa(t(Y_mat), kind = "mssa", L = L)
+    recm <- reconstruct(ssam, groups = list(1:2))$F1
+    rmse_mssa <- sqrt(mean((t(true_mat) - recm)^2))
+    
+    c(RMSE_FSSA = rmse_fssa,
+      RMSE_2DSSA = rmse_2d,
+      RMSE_MSSA  = rmse_mssa)
+  }
+  
+  # создаём сетку параметров
+  params <- expand.grid(L     = L_vals,
+                        N     = N_vals,
+                        omega = omega_vals,
+                        KEEP.OUT.ATTRS = FALSE,
+                        stringsAsFactors = FALSE)
+  
+  # для каждого набора параметров многократно запускаем single_test
+  results <- params %>%
+    rowwise() %>%
+    do({
+      comb <- .
+      # матрица N_tests x 3
+      rmse_mat <- replicate(N_tests,
+                            single_test(comb$N, comb$L, comb$omega),
+                            simplify = "matrix")
+      # средние по каждому метода
+      avg_rmse <- rowMeans(rmse_mat)
+      data.frame(L        = comb$L,
+                 N        = comb$N,
+                 omega    = comb$omega,
+                 RMSE_FSSA  = avg_rmse["RMSE_FSSA"],
+                 RMSE_2DSSA = avg_rmse["RMSE_2DSSA"],
+                 RMSE_MSSA  = avg_rmse["RMSE_MSSA"])
+    }) %>%
+    ungroup()
+  
+  return(results)
+}
+
+# Пример использования:
+# пусть L_vals = c(20,30), N_vals = c(100,200), omega_vals = c(0.05,0.1)
+# и N_tests = 10
+benchmark_df <- run_ssa_benchmarks(
+  N_tests   = 10,
+  L_vals    = c(20, 30, 40),
+  N_vals    = c(50, 100, 150, 200),
+  omega_vals= c(0, 0.1, 0.25)
+)
+
+print(benchmark_df)
+
+```
+
+```{r}
+library(dplyr)
+
+generate_latex_table <- function(df) {
+  # Sort the data frame by omega, N, and L
+  df <- df %>% arrange(omega, N, L)
+  
+  # Print the table header
+  cat("\\multicolumn{1}{c|}{$\\omega$} & \\multicolumn{1}{c|}{$N$} & \\multicolumn{3}{c|}{$L=20$} & \\multicolumn{3}{c|}{$L=30$} & \\multicolumn{3}{c}{$L=40$} \\\\\n")
+  cat(" & & 2D-SSA & MSSA & FSSA & 2D-SSA & MSSA & FSSA & 2D-SSA & MSSA & FSSA \\\\\n")
+  cat("\\midrule\n")
+  
+  # Get unique omega values
+  unique_omega <- sort(unique(df$omega))
+  
+  # Loop over each omega
+  for (k in 1:length(unique_omega)) {
+    omega <- unique_omega[k]
+    # Get unique N values for this omega
+    unique_N <- sort(unique(df$N[df$omega == omega]))
+    n_N <- length(unique_N)
+    
+    # Loop over each N
+    for (i in 1:n_N) {
+      N_val <- unique_N[i]
+      # Filter and sort subset for this omega and N
+      df_subset <- df %>% filter(omega == !!omega, N == !!N_val) %>% arrange(L)
+      # Extract RMSE values in the desired order: 2DSSA, MSSA, FSSA
+      rmse_matrix <- df_subset[, c("RMSE_2DSSA", "RMSE_MSSA", "RMSE_FSSA")]
+      rmse_values <- as.vector(t(rmse_matrix))
+      # Format RMSE values to three decimal places
+      formatted_values <- sprintf("%.3f", rmse_values)
+      
+      if (i == 1) {
+        # First row of omega block with multirow
+        cat(paste0("\\multirow{", n_N, "}{*}{", sprintf("%.2f", omega), "} & ", N_val, " & ", paste(formatted_values, collapse = " & "), " \\\\\n"))
+      } else {
+        # Subsequent rows
+        cat(paste0(" & ", N_val, " & ", paste(formatted_values, collapse = " & "), " \\\\\n"))
+      }
+    }
+    
+    # Add midrule or bottomrule
+    if (k < length(unique_omega)) {
+      cat("\\midrule\n")
+    } else {
+      cat("\\bottomrule\n")
+    }
+  }
+}
+
+
+# \begin{table}[h]
+# \centering
+# \begin{tabular}{c|cccccccccc}
+# \toprule
+# % Paste the output of generate_latex_table here
+# \end{tabular}
+# \caption{Результаты сравнения методов 2d-SSA, MSSA и FSSA при различных параметрах $\omega$ и $N$}
+# \end{table}
+generate_latex_table(benchmark_df)
 ```

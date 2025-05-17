@@ -1,209 +1,12 @@
 # Сравнение SSA, Fourier, CiSSA
 
 ```{r}
-
-library(Rssa)
-
-
-
-mse <- function(f_true, f_reconstructed){
-   mean((f_true - f_reconstructed)^2) 
-}
-
-
-library(Rssa)
-library(signal)
-library(gsignal)
-
-
-
-
-# CISSA
-library(Rssa)
-library(signal)
-library(gsignal)
-
-
-dftmtx <- function(n) {
-  y <- stats::mvfft(diag(1, n))
-  y
-}
-
-diag_averaging <- function(A){
-  B <- A[nrow(A):1, ] |> Re()
-  lapply(split(B, -(row(B) - col(B)) ), mean) |> as.numeric()
-}
-
-shift_vector <- function(vec) {
-  last_element <- tail(vec, 1)
-  vec <- vec[-length(vec)]
-  shifted_vec <- c(last_element, vec)
-  return(shifted_vec)
-}
-
-extend <- function(x, H){
-  # Вычисление коэффициентов AR модели для дифференцированного ряда
-  N <- length(x)
-  p <- floor(N / 3)
-  dx <- diff(x)
-  # A <- ar(dx, order.max = p, method = "yule-walker")$ar
-  A <- aryule(dx, p)$a
-  
-  # Правое расширение
-  y <- x
-  dy <- diff(y)
-  er <- signal::filter(A, 1, dy)
-  dy <- signal::filter(1, A, c(er, rep(0, H)))
-  y <- y[1] + c(0, cumsum(dy))
-  
-  # Левое расширение
-  y <- rev(y)
-  dy <- diff(y)
-  er <- signal::filter(A,1,dy)
-  dy <- signal::filter(1,A,c(er, rep(0, H)))
-  y <- y[1] + c(0, cumsum(dy))
-  
-  # Расширенный ряд
-  xe <- rev(y)
-  
-  # Вывод результатов
-  xe 
-}
-
-
-circulant_SSA <- function(ts, L = NULL, extend_flag = FALSE){
-  time_series <- ts
-  # Construct trajectory matrix
-  N <- length(time_series)
-  if (is.null(L)){
-    L <- (N + 1)%/%2
-  }
-  # Проверка на расширения ряда
-  if (extend_flag == FALSE){
-    H <- 0
-    time_series <- ts
-  }
-  else{
-    H <- L
-    time_series <- extend(ts, H)
-  }
-  
-  X <- hankel(time_series, L)
-  
-  # Number of symmetric frequency pairs around 1/2
-  if (L %% 2) {
-    nf2 <- (L + 1) / 2 - 1
-  } else {
-    nf2 <- L / 2 - 1
-  }
-  
-  # Number of frequencies <= 1/2
-  nft <- nf2 + abs((L %% 2) - 2)
-  
-  # Decomposition
-  # Estimate autocovariance     OK
-  autocov <- numeric(L)
-  for (m in 0:(L-1)){
-    autocov[[m+1]] <- sum(time_series[1:(N-m)] * time_series[(1+m):N]) / (N-m)
-  }
-  
-  # First row of circulant matrix
-  circ_first_row <- numeric(L)
-  for (m in 0:(L-1)){
-    circ_first_row[[m+1]] <- (L-m)/L * autocov[[m+1]] + (m)/L * autocov[[L-m]]
-  }
-  
-  # Build circulant matrix
-  S_C <- matrix(circ_first_row, nrow = 1)
-  shifted_vector <- circ_first_row
-  for (i in 2:(L)) {
-    shifted_vector <- shift_vector(shifted_vector)
-    # S_C <- rbind(S_C, as.vector(shifted_vector))
-    S_C <- rbind(as.vector(shifted_vector), S_C)
-  }
-  
-  # Eigenvectors of circulant matrix (unitary base)
-  U <- dftmtx(L)/sqrt(L)
-  
-  # Real eigenvectors (orthonormal base)
-  U[, 1] <- Re(U[, 1])
-  for (k in 1:nf2) {
-    u_k <- U[, k + 1]
-    U[, k + 1] <- sqrt(2) * Re(u_k)
-    U[, L + 2 - (k + 1)] <- sqrt(2) * Im(u_k)
-  }
-  if (L %% 2 != 0) {
-    U[, nft] <- Re(U[, nft])
-  }
-  
-  # Eigenvalues of circulant matrix: estimated power spectral density
-  psd <- abs(diag(t(U) %*% S_C %*% U))
-  
-  # Principal components
-  W <- t(U) %*% X
-  # Reconstruction
-  # Elementary reconstructed series
-  R <- matrix(0, nrow = N+2*H, ncol = L)
-  for (k in 1:L) {
-    R[, k] <- U[ ,k] %*% t(W[k, ]) |> diag_averaging()
-  }
-  
-  # Grouping by frequency
-  # Elementary reconstructed series by frequency
-  Z <- matrix(0, nrow = N+2*H, ncol = nft)
-  Z[, 1] <- R[, 1]
-  # Importance of component
-  imp <- numeric(nft)
-  lambda_sm <- sum(psd)
-  imp[1] <- psd[1]/lambda_sm
-  for (k in 1:nf2) {
-    Z[, k + 1] <- R[, k + 1] + R[, L + 2 - (k + 1)]
-    imp[k+1] <- (psd[k+1] + psd[ L + 2 - (k + 1)])/lambda_sm
-  }
-  if (L %% 2 != 0) {
-    Z[, nft] <- R[, nft]
-    imp[nft] <- psd[nft] / lambda_sm
-  }
-  
-  list(t_series = Z[(H+1):(N+H),],
-       importance = imp,
-       freq = (0:(length(imp) -1))/L
-  )
-}
-
-
-# groups - list of frequencies
-grouping_cissa <- function(cissa_res, groups){
-  freq <- cissa_res$freq
-  t_series <- cissa_res$t_series
-  
-  residuals <- 0
-  result <- setNames(as.list(rep(0, length(groups))), names(groups))
-  for (i in 1:length(cissa_res$freq)){
-    flag <- FALSE
-    for (name in names(groups)){
-      if (groups[[name]][1] <= freq[i] & freq[i] <= groups[[name]][2]){
-        flag <- TRUE
-        result[[name]] <- result[[name]] + t_series[, i]
-      }
-    }
-    
-    if (flag == FALSE){
-      residuals <- residuals + t_series[, i]
-    }
-  }
-  
-  result[["residuals"]] <- residuals
-  result
-}
-```
-
-```{r}
 library(Rssa)
 library(signal)
 library(gsignal)
 library(xtable)
 source("eossa_new.R")
+source("CiSSA_all_functions.R")
 ```
 
 ## Только sin + cos
@@ -229,7 +32,7 @@ source("eossa_new.R")
 -   Fourier, ext
 
 ```{r}
-
+# Применяет сразу все алгоитмы разделения рядов и
 good_experiment <- function(
     L,
     n,
@@ -333,6 +136,7 @@ good_experiment <- function(
 }
 
 
+# преобразовывает в latex результат good_experiment
 df_to_latex_print <- function(df){
   # Функция для преобразования численных столбцов
   df[] <- lapply(df, function(x) {
@@ -1126,4 +930,173 @@ df <- good_experiment(L, n, x,
 print(df)
 
 df_to_latex_print(df)
+```
+
+# Сравнение CiSSA с разным L
+
+```{r}
+good_experiment_cissa <- function(
+  L_vec,           # вектор значений L
+  n,               # длина ряда + 1
+  x,               # вектор, необходимый для совместимого интерфейса
+  t_series,        # список компонент временного ряда
+  groups_freqs,    # именованный (или неименованный) список групп для grouping_cissa
+  y = NULL,         # (опционально) суммарный ряд
+  extend_flags = FALSE
+) {
+  # если y не задан, суммируем компоненты
+  if (is.null(y)) {
+    y <- Reduce("+", t_series)
+  }
+  y_real <- Reduce("+", t_series)
+  
+  K <- length(t_series)
+  
+  # Определяем имена компонент по names(groups_freqs)
+  grp_names <- names(groups_freqs)
+  if (is.null(grp_names) || any(grp_names == "")) {
+    # если имён нет или есть пустые — дефолтные
+    grp_names <- paste0("comp", seq_len(K))
+  }
+  # Все колонки результата
+  all_cols <- c("L", "method", grp_names, "total")
+  
+  # Заготовка пустого data.frame
+  results <- data.frame(matrix(NA, nrow = 0, ncol = length(all_cols)),
+                        stringsAsFactors = FALSE)
+  colnames(results) <- all_cols
+  
+  # вспомогательная MSE
+  mse <- function(a, b) mean((a - b)^2)
+  
+  # Главный цикл по L и двум флагам extend
+  for (L in L_vec) {
+    for (extend_flag in extend_flags) {
+      # 1) делаем CiSSA
+      cissa_obj <- circulant_SSA(y, L, extend_flag = extend_flag)
+      rec_list  <- grouping_cissa(cissa_obj, groups = groups_freqs)$t_series
+      
+      # 2) считаем MSE для каждой компоненты
+      comp_errs <- numeric(K)
+      for (i in seq_len(K)) {
+        comp_errs[i] <- mse(t_series[[i]], rec_list[[i]])
+      }
+      # 3) MSE для суммарного
+      total_err <- mse(y_real, Reduce("+", rec_list))
+      
+      # 4) имя метода
+      method_name <- if (extend_flag) "CiSSA_ext" else "CiSSA"
+      
+      # 5) формируем строку и добавляем в results
+      row <- c(L, method_name, comp_errs, total_err)
+      results <- rbind(results, setNames(as.list(row), all_cols))
+    }
+  }
+  
+  # Приводим типы
+  results$L      <- as.integer(results$L)
+  results$method <- as.character(results$method)
+  for (nm in grp_names) {
+    results[[nm]] <- as.numeric(results[[nm]])
+  }
+  results$total  <- as.numeric(results$total)
+  
+  rownames(results) <- NULL
+  return(results)
+}
+
+
+
+
+plot_cissa_combined <- function(df_errors) {
+  # Проверяем и загружаем пакеты
+  for (pkg in c("ggplot2", "tidyr", "dplyr")) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      stop(sprintf("Установите пакет %s: install.packages('%s')", pkg, pkg))
+    }
+  }
+  library(ggplot2)
+  library(tidyr)
+  library(dplyr)
+  
+  # Переводим в длинный формат
+  df_long <- df_errors %>%
+    pivot_longer(
+      cols = -c(L, method),
+      names_to  = "series",
+      values_to = "mse"
+    )
+  
+  # Получаем все уникальные L
+  L_values <- sort(unique(df_long$L))
+  
+  # Строим график
+  p <- ggplot(df_long, aes(x = L, y = mse, color = series, linetype = method)) +
+    geom_line(size = 1) +
+    geom_point(size = 2) +
+    scale_x_continuous(breaks = L_values) +
+    labs(
+      title = "CiSSA: MSE по всем компонентам и total",
+      x     = "Окно L",
+      y     = "MSE",
+      color = "Серия",
+      linetype = "Метод"
+    ) +
+    theme_minimal() +
+    theme(
+      plot.title   = element_text(hjust = 0.5, face = "bold"),
+      legend.position = "bottom"
+    )
+  
+  # print(p)
+  invisible(p)
+}
+
+
+
+
+```
+
+```{r}
+n <- 96*2
+L <- c(12, 24, 36, 48, 60, 72, 84, 96, 96*2)
+x <- 0:(n)
+y1 <- exp(x/200)*sin(2*pi/12 * x)
+y2 <- exp(x/100)*cos(2*pi/3 * x)
+y <- y1 + y2
+X <- hankel(y, L = L)
+eps <- 1/(n+1)
+plot(y, type="l")
+
+
+treshold <- (1/12 + 1/3)/2
+
+df<- good_experiment_cissa(L, n, x,
+                list(y1, y2),
+                list(
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sin = c(0, 1/12+treshold - eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      cos = c(1/3-treshold, 1/2)
+                    )
+) 
+
+print(df)
+
+
+
+p <- plot_cissa_combined(df) +
+     # scale_x_continuous(breaks = c(30, 50, 100)) +
+     theme(legend.position = "bottom")
+print(p)
+
+ggsave(
+  filename = "cissa_errors_plot.png",
+  plot = p,
+  width = 10,       # ширина в дюймах
+  height = 6,       # высота в дюймах
+  dpi = 600        # dots per inch — высокая детализация
+)
+
+
 ```
