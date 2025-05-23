@@ -1,0 +1,122 @@
+#### FSSA на m_t
+
+```{r}
+library(Rfssa)  
+library(fda)    
+library(Rssa)   
+```
+
+```{r}
+### Таблица с FSSA, MSSA, 2d-SSA
+library(fda)    # для create.bspline.basis
+library(Rssa)   # для fssa, ssa, freconstruct, reconstruct
+library(dplyr)  # для группировки и summarize
+
+
+set.seed(100)
+
+
+run_ssa_benchmarks <- function(N_tests,
+                               L_vals,
+                               N_vals,
+                               omega_vals,
+                               sigma = 0.1,
+                               grid_n = 100,
+                               nbasis = 15) {
+  # вспомогательная функция для одного прогона
+  single_test <- function(N, L, omega) {
+    s <- seq(0, 1, length.out = grid_n)
+    
+    # детермин. функция
+    m_t <- function(t, s, omega) {
+      exp(s^2) * cos(2 * pi * omega * t) +
+        cos(4 * pi * s) * sin(2 * pi * omega * t)
+    }
+    
+    # истина и шум
+    true_mat <- sapply(1:N, function(t) m_t(t, s, omega))
+    Y_mat   <- true_mat + matrix(rnorm(grid_n * N, 0, sigma),
+                                 nrow = grid_n, ncol = N)
+    
+    # объект funts
+    basis   <- create.bspline.basis(rangeval = c(0,1), nbasis = nbasis)
+    fts_obj <- funts(X = Y_mat,
+                     basisobj = basis,
+                     argval   = s,
+                     method   = "data",
+                     start    = 1,
+                     end      = N)
+    
+    # вспомог. для извлечения матрицы из funts
+    funts2mat <- function(o) {
+      B   <- o$B_mat[[1]]
+      coefs <- o$coefs[[1]]
+      B %*% coefs
+    }
+    
+    # FSSA
+    res_fssa <- fssa(fts_obj, L = L)
+    rec_fssa <- freconstruct(res_fssa, groups = list(1:2))[[1]]
+    Yf <- funts2mat(rec_fssa)
+    rmse_fssa <- sqrt(mean((true_mat - Yf)^2))
+    
+    # 2D-SSA (на "изображении" t(Y_mat))
+    ssa2 <- ssa(t(Y_mat), kind = "2d-ssa", L = c(L, 50))
+    rec2 <- reconstruct(ssa2, groups = list(1:8))$F1
+    rmse_2d  <- sqrt(mean((t(true_mat) - rec2)^2))
+    
+    # MSSA
+    ssam <- ssa(t(Y_mat), kind = "mssa", L = L)
+    recm <- reconstruct(ssam, groups = list(1:2))$F1
+    rmse_mssa <- sqrt(mean((t(true_mat) - recm)^2))
+    
+    c(RMSE_FSSA = rmse_fssa,
+      RMSE_2DSSA = rmse_2d,
+      RMSE_MSSA  = rmse_mssa)
+  }
+  
+  # создаём сетку параметров
+  params <- expand.grid(L     = L_vals,
+                        N     = N_vals,
+                        omega = omega_vals,
+                        KEEP.OUT.ATTRS = FALSE,
+                        stringsAsFactors = FALSE)
+  
+  # для каждого набора параметров многократно запускаем single_test
+  results <- params %>%
+    rowwise() %>%
+    do({
+      comb <- .
+      # матрица N_tests x 3
+      rmse_mat <- replicate(N_tests,
+                            single_test(comb$N, comb$L, comb$omega),
+                            simplify = "matrix")
+      # средние по каждому метода
+      avg_rmse <- rowMeans(rmse_mat)
+      data.frame(L        = comb$L,
+                 N        = comb$N,
+                 omega    = comb$omega,
+                 RMSE_FSSA  = avg_rmse["RMSE_FSSA"],
+                 RMSE_2DSSA = avg_rmse["RMSE_2DSSA"],
+                 RMSE_MSSA  = avg_rmse["RMSE_MSSA"])
+    }) %>%
+    ungroup()
+  
+  return(results)
+}
+
+# Пример использования:
+# пусть L_vals = c(20,30), N_vals = c(100,200), omega_vals = c(0.05,0.1)
+# и N_tests = 10
+benchmark_df <- run_ssa_benchmarks(
+  N_tests   = 3,
+  L_vals    = c(20, 30, 40),
+  N_vals    = c(50, 100, 150, 200),
+  omega_vals= c(0, 0.1, 0.25)
+)
+
+print(benchmark_df)
+
+
+```
+

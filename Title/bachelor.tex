@@ -1,0 +1,99 @@
+\documentclass[specialist,
+substylefile = spbu.rtx,
+               subf,href,colorlinks=true, 12pt]{disser}
+
+\usepackage[a4paper,
+            mag=1000, includefoot,
+            left=3cm, right=1.5cm, top=2cm, bottom=2cm, headsep=1cm, footskip=1cm]{geometry}
+\usepackage[T2A]{fontenc}
+\usepackage[cp1251]{inputenc}
+\usepackage[english,russian]{babel}
+\ifpdf\usepackage{epstopdf}\fi
+
+% Точка с запятой в качестве разделителя между номерами цитирований
+%\setcitestyle{semicolon}
+
+% Использовать полужирное начертание для векторов
+\let\vec=\mathbf
+
+% Включать подсекции в оглавление
+\setcounter{tocdepth}{2}
+
+\graphicspath{{fig/}}
+
+%----------------------------------------------------------------
+\begin{document}
+
+%
+% Титульный лист на русском языке
+%
+
+% Название организации
+\institution{%
+    Санкт-Петербургский государственный университет
+}
+
+\title{Выпускная квалификационная работа}
+
+% Тема
+\topic{Модификации метода анализа сингулярного спектра для анализа временных рядов}
+
+% Автор
+\author{\textsc{Погребников} Николай Вадимович}
+
+\group{%
+    Уровень образования: бакалавриат\\
+    Направление 01.03.02 <<Прикладная математика и информатика>>\\
+    Основная образовательная программа 21.Б04-мм <<Прикладная математика и информатика>>
+}
+
+% Научный руководитель
+\sa       {Н.\,Э.~Голяндина}
+\sastatus {Профессор кафедры статистического моделирования\,\\
+           д.\,ф.-м.\,н.}
+
+% Рецензент
+\rev      {А.\,Н.~Пепелышев}
+\revstatus{Лектор, университет Кардиффа\\
+           }
+
+% Город и год
+\city{Санкт-Петербург}
+\date{\number\year}
+
+\maketitle
+
+%%
+%% Titlepage in English
+%%
+%
+\institution{%
+    Saint Petersburg State University \\
+    Applied Mathematics and Computer Science
+}
+%
+\title{Graduation Project}
+%
+%% Topic
+\topic{Modifications of singular spectrum analysis for time series analysis}
+%
+%% Author
+\author{\textsc{Pogrebnikov} Nikolay Vadimovich} % Full Name
+\group{}
+
+%% Scientific Advisor
+\sa       {N.\,E.~Golyandina}
+\sastatus {Professor, Department of Statistical Modelling}
+%
+%% Reviewer
+\rev      {A.\,N.~Pepelyshev}
+\revstatus{Lecturer, University of Cardiff}
+%
+%% City & Year
+\city{Saint Petersburg}
+\date{\number\year}
+
+\maketitle[en]
+
+\end{document}
+

@@ -1,0 +1,307 @@
+# Примеры использования модификаций SSA
+
+
+## CiSSA
+
+Рассмотрим применение CiSSA на реальном наборе данных IP_values
+```{r}
+library(Rssa)
+library(signal)
+library(gsignal)
+library(xtable)
+source("methods/eossa_new.R")
+source("methods/CiSSA.R")
+source("methods/time_series_functions.R")
+```
+
+
+```{r}
+library(readxl)
+data <- read_excel("Data/International_Financial_Statistics_.xlsx")
+
+
+# отрисовка данных 
+dates <- seq(as.Date("1970-01-01"), as.Date("2018-1-30"), by = "month")
+IP_values <- data[2, -c(1, 2)] |> as.double() 
+plot(dates, IP_values, type="l")
+```
+
+Отрисовка трендовой составляющей чёрным цветом, основной временной ряд — красным
+
+```{r}
+data_slice <- 1:537
+dates_slice <- dates[data_slice]
+IP_values_slice <- IP_values[data_slice]
+eps <- 1/160
+
+# применяем CiSSA
+c <- circulant_SSA(IP_values_slice, L = 192, extend_flag = TRUE)
+r <- c$t_series
+# восстанавливаем в соответствии с дипломной работой
+r <- grouping_cissa(c,
+                    groups = list(
+                      trend = c(0, 1/192),
+                      cycle = c(1/97, 5/95),
+                      sesonal = c(1/13, 1/2+0.0001)
+                    )
+                    )$t_series
+r_sesonal <-  grouping_cissa(c,
+                             groups = list(
+                              s1 = c(16/192 - eps, 16/192 + eps),
+                              s2 = c(32/192 - eps, 32/192 + eps),
+                              s3 = c(48/192 - eps, 48/192 + eps),
+                              s4 = c(64/192 - eps, 64/192 + eps),
+                              s5 = c(80/192 - eps, 80/192 + eps),
+                              s6 = c(96/192 - eps, 96/192 + eps)
+                             )
+                             )$t_series
+
+
+# Получаем результаты группировки 
+cissa_trend <- r$trend
+cissa_cycle <- r$cycle
+cissa_sesonal <- Reduce("+", r_sesonal |> within(rm(residuals)))
+cissa_residuals <- IP_values_slice - (cissa_trend + cissa_cycle + cissa_sesonal)
+
+
+plot(dates_slice, IP_values_slice,
+     type="l", col = "black")
+lines(dates_slice, cissa_trend,
+      type="l", col = "red")
+
+plot(dates_slice, cissa_cycle,
+     type="l", col = "red")
+
+plot(dates_slice, cissa_sesonal,
+     type="l", col = "red")
+
+plot(dates_slice, cissa_residuals,
+     type="l", col = "red")
+
+plot(dates_slice, IP_values_slice,
+     type="l", col = "black")
+lines(dates_slice, cissa_trend+cissa_cycle+cissa_sesonal,
+      type="l", col = "red")
+```
+
+## GSSA
+
+```{r}
+source("methods/GSSA.R")
+```
+
+Рассмотрим на примере ряда sin(2*pi/12 * x) + cos(2*pi/19 * x)/2
+
+```{r}
+
+# введение временного ряда 
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/19 * x)/2
+y <- y1 + y2
+# задание весов
+alpha <- 1/2
+filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
+
+# применение обычного ssa
+s <- ssa(y, L)
+r <- reconstruct(s, groups = list(
+  s1 = 1:2,
+  s2 = 3:4
+))
+
+# применение gssa
+r_gssa <- gssa(y, L, alpha = alpha)
+
+
+# отрисовка результатов gssa и ssa как линейных фильтров для синуса
+freq <- seq(0, pi, 0.001)
+omega <- freq/2/pi
+
+filters <- get_middle_point_filters(y1, L, alpha = 0)
+filt <- filters[[1]] + filters[[2]]
+
+plot(afc(filt, freq) ~ omega, type = "l")
+abline(v = 1/12, col = "red")
+
+filters <- get_middle_point_filters(y1, L, alpha = alpha)
+filt <- filters[[1]] + filters[[2]]
+
+lines(afc(filt, freq) ~ omega, col ="blue")
+```
+
+## FSSA
+
+Для FSSA рассмотрим пример из дипломной работы 
+
+```{r}
+library(Rfssa)   
+library(fda)     
+library(Rssa)    
+
+set.seed(123)    
+
+N <-  50       # количество точек во времени
+n <- 100       # количество s 
+s <- seq(0, 1, length.out = n)
+omega <- 0.1   
+sigma <- 0.0   
+
+
+# вид временного ряда 
+m_t <- function(t, s) {
+  exp(s^2) * cos(2 * pi * omega * t) + cos(4 * pi * s) * sin(2 * pi * omega * t)
+}
+
+
+# создание матрицы временного ряда 
+Y_list <- vector("list", N)
+for (t in 1:N) {
+  noise_t <- rnorm(n, mean = 0, sd = sigma)
+  Y_list[[t]] <- m_t(t, s) + noise_t
+}
+
+Y_matrix <- do.call(cbind, Y_list)
+
+
+# Создание объекта funts по базису b-spline
+nbasis <- 15
+basis <- create.bspline.basis(rangeval = c(0, 1), nbasis = nbasis)
+
+
+# Преобразование дискретных данных к непрерывным по базису 
+fts_obj <- funts(X = Y_matrix, 
+                 basisobj = basis, 
+                 argval = s, 
+                 method = "data", 
+                 start = 1, 
+                 end = N)
+
+
+L <- 10
+
+# основная функция 
+res_fssa <- fssa(fts_obj, L = L, ntriples = 20, type = "ufssa")
+
+# различные результаты разделения
+plot(res_fssa, type = "values", d = 10, main = "Сингулярные значения FSSA")
+
+plot(res_fssa, type = "vectors", d = 4, main = "Правые сингулярные векторы")
+
+plot(res_fssa, type = "wcor", d = 10, main = "w-корреляция")
+
+# восстановление по группам 
+group_list <- list(
+  1,       
+  2:3,     
+  4:5      
+)
+
+res_rec <- freconstruct(res_fssa, groups = group_list)
+
+plot(res_rec[[1]], main = "Группа 1: Тренд")
+plot(res_rec[[2]], main = "Группа 2: Сезонность")
+plot(res_rec[[3]], main = "Группа 3: Остаточный шум")
+
+
+
+```
+
+#### FSSA на m_t
+
+```{r}
+library(Rfssa)  
+library(fda)    
+library(Rssa)   
+
+
+
+# Параметры моделирования
+N <- 100        # число временных рядов 
+grid_n <- 100  # (значения s)
+s <- seq(0, 1, length.out = grid_n)
+sigma <- (0.1)   # уровень шума (GWN)
+omega <- 0.1   # значение ω 
+
+# Функция для m_t(s)
+m_t <- function(t, s, omega) {
+  exp(s^2) * cos(2 * pi * omega * t) + cos(4 * pi * s) * sin(2 * pi * omega * t)
+}
+
+
+
+# Генерируем истинное значение функции без шума
+true_matrix <- sapply(1:N, function(t) m_t(t, s, omega))
+# true_matrix имеет размер grid_n x N (строки - значения s, столбцы - временные наблюдения)
+
+# Генерируем зашумлённые данные: для каждого t от 1 до N добавляем белый шум
+Y_list <- vector("list", N)
+for (t in 1:N) {
+  noise_t <- rnorm(grid_n, mean = 0, sd = sigma)
+  Y_list[[t]] <- m_t(t, s, omega) + noise_t
+}
+
+# Объединяем список в матрицу наблюдений Y_matrix (размер grid_n x N)
+Y_matrix <- do.call(cbind, Y_list)
+
+# Настоящий Y
+Y_list <- vector("list", N)
+for (t in 1:N) {
+  Y_list[[t]] <- m_t(t, s, omega)
+}
+
+Y_true <- do.call(cbind, Y_list)
+
+# Создаём объект funts с использованием B-сплайнов (nbasis = 15)
+nbasis <- 15
+basis <- create.bspline.basis(rangeval = c(0, 1), nbasis = nbasis)
+fts_obj <- funts(X = Y_matrix,
+                 basisobj = basis,
+                 argval = s,
+                 method = "data",
+                 start = 1,
+                 end = N)
+
+# Функция для преобразования объекта funts в матрицу временных рядов
+# (из funts извлекается произведение базисной матрицы и коэффициентов)
+funts2mat <- function(funts_obj) {
+  if (!inherits(funts_obj, "funts")) {
+    stop("Input must be a funts object.")
+  }
+  nvar <- length(funts_obj$B_mat)
+  result_list <- vector("list", nvar)
+  for (i in seq_len(nvar)) {
+    result_list[[i]] <- funts_obj$B_mat[[i]] %*% funts_obj$coefs[[i]]
+  }
+  if (nvar == 1) {
+    return(result_list[[1]])
+  } else {
+    return(result_list)
+  }
+}
+
+# Функция для реконструкции с помощью FSSA:
+# Здесь мы используем fssa() и freconstruct(), а затем извлекаем матричное представление через funts2mat().
+reconstruct_FSSA <- function(fts_obj, L) {
+  res_fssa <- fssa(fts_obj, L = L)
+  
+  rec_obj <- freconstruct(res_fssa, groups = list(1:2))
+  funts2mat(rec_obj[[1]])
+}
+
+
+
+L <- 30
+
+# Получим реконструированную матрицу через FSSA
+Y_recon <- reconstruct_FSSA(fts_obj, L)
+
+# Вычислим RMSE между реконструкцией и истинным сигналом
+RMSE_FSSA <- mean((Y_true - Y_recon)^2) |> sqrt()
+
+cat("RMSE для FSSA относительно истинного сигнала:", RMSE_FSSA, "\n")
+
+```
+

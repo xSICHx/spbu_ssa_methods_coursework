@@ -1,0 +1,896 @@
+
+```{r}
+library(Rssa)
+library(signal)
+library(gsignal)
+library(xtable)
+source("methods/eossa_new.R")
+source("methods/CiSSA.R")
+source("methods/time_series_functions.R")
+source("SSA_Fourier_CiSSA_comparison.R")
+```
+
+## Выбор длины окна L CiSSA
+
+
+### Без шума. Экспоненциальная модуляция
+```{r}
+n <- 96*2
+L <- c(12, 24, 36, 48, 60, 72, 84, 96, 96*2)
+x <- 0:(n)
+y1 <- exp(x/200)*sin(2*pi/12 * x)
+y2 <- exp(x/100)*cos(2*pi/3 * x)
+y <- y1 + y2
+X <- hankel(y, L = L)
+eps <- 1/(n+1)
+plot(y, type="l")
+
+
+treshold <- (1/12 + 1/3)/2
+
+df<- good_experiment_cissa(L, n, x,
+                list(y1, y2),
+                list(
+                      # sesonal_sin = c(1/12-eps, 1/12+eps),
+                      sin = c(0, 1/12+treshold - eps),
+                      # sesonal_cos = c(1/3-eps, 1/3+eps)
+                      cos = c(1/3-treshold, 1/2)
+                    )
+) 
+
+print(df)
+
+
+
+p <- plot_cissa_combined(df) +
+     # scale_x_continuous(breaks = c(30, 50, 100)) +
+     theme(legend.position = "bottom")
+print(p)
+
+print(p)
+```
+
+
+### С шумом. Косинус плюс синус
+
+```{r}
+set.seed(123)
+
+n_experiment <- 10
+n            <- 96 * 2
+L_vec        <- c(12, 24, 36, 48, 60, 72, 84, 96, 96*2)
+x            <- 0:(n)
+
+
+t_series_template <- list(
+  y1 = NULL,  
+  y2 = NULL
+)
+
+eps <- 1/(n+1)
+mult <- 2
+groups_freqs <- list(
+  sin = c(1/12 - mult*eps,      1/12 + mult*eps),
+  cos = c(1/3 - mult*eps, 1/3 + mult*eps)
+  # sin = c(0,      1/12 + treshold - eps),
+  # cos = c(1/3 - treshold, 1/2)
+)
+
+extend_flags_set <- c(FALSE)
+
+df_avg <- run_cissa_experiments(
+  n_experiment = n_experiment,
+  L_vec        = L_vec,
+  n            = n,
+  x            = x,
+  t_series     = t_series_template,
+  groups_freqs = groups_freqs,
+  extend_flags = extend_flags_set
+)
+
+print(df_avg)
+
+p_avg <- plot_cissa_combined(df_avg)
+print(p_avg)
+
+
+```
+
+
+
+### С шумом. Экспоненциальная модуляция
+ 
+```{r}
+library(dplyr)
+set.seed(123)
+ 
+n_experiment <- 5          
+n            <- 96 * 2
+L_vec        <- c(12, 24, 36, 48, 60, 72, 84, 96, 96*2)
+ 
+eps      <- 1 / (n + 1)
+ 
+mult1 <- 2
+mult2 <- mult1
+ 
+groups_freqs <- list(
+  # sin = c(0,               1/12 + treshold - eps),
+  # cos = c(1/3 - treshold,  1/2)
+  sin = c(1/12 - mult1*eps,      1/12 + mult1*eps),
+  cos = c(1/3 - mult2*eps, 1/3 + mult2*eps)
+)
+ 
+extend_flags_set <- c(TRUE)
+ 
+df_avg <- run_cissa_experiments_exp(
+  n_experiment = n_experiment,
+  L_vec        = L_vec,
+  n            = n,
+  groups_freqs = groups_freqs,
+  # extend_flags = extend_flags_set
+)
+ 
+print(df_avg)
+ 
+p_avg <- plot_cissa_combined(df_avg) +
+  theme(legend.position = "bottom")
+ 
+print(p_avg)
+ 
+# ggsave(
+#   filename = "cissa_errors_plot_expcos_noised_avg.png",
+#   plot     = p_avg,
+#   width    = 10,   # в дюймах
+#   height   = 6,    # в дюймах
+#   dpi      = 600
+# )
+ 
+
+```
+
+
+```{r}
+library(dplyr)
+set.seed(123)
+ 
+n_experiment <- 5          
+n            <- 96 * 2
+L_vec        <- c(12, 24, 36, 48, 60, 72, 84, 96, 96*2)
+ 
+eps      <- 1 / (n + 1)
+ 
+mult1 <- 3
+mult2 <- 5
+ 
+groups_freqs <- list(
+  # sin = c(0,               1/12 + treshold - eps),
+  # cos = c(1/3 - treshold,  1/2)
+  sin = c(1/12 - mult1*eps,      1/12 + mult1*eps),
+  cos = c(1/3 - mult2*eps, 1/3 + mult2*eps)
+)
+ 
+extend_flags_set <- c(TRUE)
+ 
+df_avg <- run_cissa_experiments_exp(
+  n_experiment = n_experiment,
+  L_vec        = L_vec,
+  n            = n,
+  groups_freqs = groups_freqs,
+  # extend_flags = extend_flags_set
+)
+ 
+print(df_avg)
+ 
+p_avg <- plot_cissa_combined(df_avg) +
+  theme(legend.position = "bottom")
+ 
+print(p_avg)
+ 
+# ggsave(
+#   filename = "cissa_errors_plot_expcos_noised_avg.png",
+#   plot     = p_avg,
+#   width    = 10,   # в дюймах
+#   height   = 6,    # в дюймах
+#   dpi      = 600
+# )
+ 
+```
+
+
+
+## Без шума
+### синусы
+
+```{r}
+
+n_full <- 192
+x_full <- 0:(n_full - 1)
+y1 <- sin(2 * pi / 12 * x_full)
+y2 <- cos(2 * pi / 3 * x_full) / 2
+t_series <- list(y1, y2)
+
+set.seed(123)
+noise <- rnorm(n_full, mean = 0, sd = 0.1)
+noisy_y <- y1 + y2 + noise
+
+
+ssa_params <- list(
+  list(L = 96, n = 191),
+  list(L = 96, n = 192)
+)
+
+eessa_params <- list(
+  list(L = 96, n = 191),
+  list(L = 96, n = 192)
+)
+
+fft_params <- list(
+  list(n = 192),
+  list(n = 191)
+)
+
+fft_ext_params <- list(
+  # list(n = 192),
+  # list(n = 191)
+)
+
+cissa_params <- list(
+  list(L = 12, n = 192),
+  list(L = 96, n = 192),
+  list(L = 97, n = 192)
+)
+
+cissa_ext_params <- list(
+  # list(L = 96, n = 192),
+  # list(L = 97, n = 192)
+)
+
+# Определяем группы для каждого метода:
+groups_ssa <- list(
+  c(1, 2),
+  c(3, 4)
+)
+
+eossa_nested_groups <- list(
+  1:4
+)
+
+eps <- 1 / (192 + 1) * 10
+
+groups_ssa_e <- list(
+  sin = c(1/12 - 4* eps, 1/12 + 4* eps),
+  cos = c(1/3 - 4* eps, 1/3 + 4* eps)
+)
+
+groups_fft <- list(
+  sin = c(1/12 - 6* eps, 1/12 + 6* eps),
+  cos = c(1/3 - 6* eps, 1/3 + 6* eps)
+)
+
+groups_fft_ext <- list(
+  sin = c(1/12 - 3* eps, 1/12 + 3* eps),
+  cos = c(1/3 - 3* eps, 1/3 + 3* eps)
+)
+
+# groups_cissa <- list(
+#   sin = c(1/12 - 24* eps, 1/12 + 24* eps),
+#   cos = c(1/3 - 24* eps, 1/3 + 24* eps)
+# )
+groups_cissa <- list(
+  sin = c(1/12 - 6* eps, 1/12 + 6* eps),
+  cos = c(1/3 - 6* eps, 1/3 + 6* eps)
+)
+
+groups_cissa_ext <- list(
+  sin = c(1/12 - 4* eps, 1/12 + 4* eps),
+  cos = c(1/3 - 4* eps, 1/3 + 4* eps)
+)
+
+
+df_result <- good_experiment(
+  t_series            = t_series,
+  # noisy_y             = noisy_y,
+  ssa_params          = ssa_params,
+  eessa_params        = eessa_params,
+  fft_params          = fft_params,
+  fft_ext_params      = fft_ext_params,
+  cissa_params        = cissa_params,
+  cissa_ext_params    = cissa_ext_params,
+  groups_ssa          = groups_ssa,
+  eossa_nested_groups = eossa_nested_groups,
+  groups_ssa_e        = groups_ssa_e,
+  groups_fft          = groups_fft,
+  groups_fft_ext      = groups_fft_ext,
+  groups_cissa        = groups_cissa,
+  groups_cissa_ext    = groups_cissa_ext
+)
+
+print(df_result)
+
+df_to_latex_print(df_result)
+
+```
+
+### Экспоненциальная модуляция без шума
+
+```{r}
+
+n <- 96 * 2
+x <- 0:(n - 1)
+L <- 96
+
+y1 <- exp(x / 200) * sin(2 * pi / 12 * x)
+y2 <- exp(x / 100) * cos(2 * pi / 3 * x)
+y_true <- y1 + y2  # Исходный «идеальный» сигнал
+
+plot(y_true, type = "l", main = "Сигнал y = y1 + y2")
+
+t_series <- list(y1, y2)
+
+
+ssa_params <- list(
+  list(L = 96, n = 191),
+  list(L = 96, n = 192)
+)
+
+eessa_params <- list(
+  list(L = 96, n = 191),
+  list(L = 96, n = 192)
+)
+
+fft_params <- list(
+  list(n = 192),
+  list(n = 191)
+)
+
+fft_ext_params <- list(
+  # list(n = 192),
+  # list(n = 191)
+)
+
+cissa_params <- list(
+  list(L = 12, n = 192),
+  list(L = 96, n = 192),
+  list(L = 97, n = 192)
+)
+
+cissa_ext_params <- list(
+  # list(L = 96, n = 192),
+  # list(L = 97, n = 192)
+)
+
+groups_ssa <- list(
+  c(3, 4),
+  c(1, 2)
+)
+
+eossa_nested_groups <- list(
+  1:4
+)
+
+eps <- 1 / (192 + 1)
+thresh <- (1/12 + 1/3) / 2
+
+groups_ssa_e <- list(
+  sin = c(1/12 - 4* eps, 1/12 + 4* eps),
+  cos = c(1/3 - 4* eps, 1/3 + 4* eps)
+)
+
+groups_fft <- list(
+  sin = c(1/12 - 10* eps, 1/12 + 10* eps),
+  cos = c(1/3 - 10* eps, 1/3 + 10* eps)
+)
+
+groups_fft_ext <- list(
+  sin = c(1/12 - 10* eps, 1/12 + 10* eps),
+  cos = c(1/3 - 10* eps, 1/3 + 10* eps)
+)
+
+groups_cissa <- list(
+  sin = c(1/12 - 10* eps, 1/12 + 10* eps),
+  cos = c(1/3 - 10* eps, 1/3 + 10* eps)
+)
+
+groups_cissa_ext <- list(
+  sin = c(1/12 - 4* eps, 1/12 + 4* eps),
+  cos = c(1/3 - 4* eps, 1/3 + 4* eps)
+)
+
+
+df_result <- good_experiment(
+  t_series            = t_series,
+  ssa_params          = ssa_params,
+  eessa_params        = eessa_params,
+  fft_params          = fft_params,
+  fft_ext_params      = fft_ext_params,
+  cissa_params        = cissa_params,
+  cissa_ext_params    = cissa_ext_params,
+  groups_ssa          = groups_ssa,
+  eossa_nested_groups = eossa_nested_groups,
+  groups_ssa_e        = groups_ssa_e,
+  groups_fft          = groups_fft,
+  groups_fft_ext      = groups_fft_ext,
+  groups_cissa        = groups_cissa,
+  groups_cissa_ext    = groups_cissa_ext,
+  # y                   = y_true  
+)
+
+print(df_result)
+
+df_to_latex_print(df_result)
+
+
+```
+
+### Тренд
+```{r}
+n <- 96 * 2
+x <- 0:(n - 1)
+L <- 96
+
+TS_const <- rep(1, n)
+TS_trend <- exp(x / 100)
+TS_sin   <- sin(2 * pi / 12 * x)
+TS_cos   <- 0.5 * cos(2 * pi / 3 * x)
+
+y_true <- TS_const + TS_trend + TS_sin + TS_cos
+plot(y_true, type = "l", main = "Ряд TS = const + exp + sin + cos")
+
+t_series <- list(TS_const + TS_trend, TS_sin, TS_cos)
+
+
+ssa_params <- list(
+  list(L = L, n = n-1),
+  list(L = L, n = n)
+)
+eessa_params <- list(
+  list(L = L, n = n),
+  list(L = L, n = n-1)
+)
+fft_params <- list(
+  list(n = n),
+  list(n = n-1)
+)
+fft_ext_params <- list(
+  list(n = n),
+  list(n = n-1)
+)
+cissa_params <- list(
+  list(L = 12, n = n),
+  list(L = L, n = n),
+  list(L = L+1, n = n)
+)
+cissa_ext_params <- list(
+  list(L = 12, n = n),
+  list(L = L, n = n),
+  list(L = L+1, n = n)
+)
+
+
+noisy_y <- y_true #+ rnorm(n, mean = 0, sd = 0.1)
+# plot(noisy_y, type = "l", col = "red", main = "Зашумлённый сигнал")
+
+
+eps <- 1 / (n + 1)
+threshold <- (1 / 12 + 1 / 3) / 2
+mult <- 4
+
+groups_ssa <- list(
+  trend      = c(1, 6),
+  periodic1   = c(2, 3),
+  periodic2   = c(4, 5)
+)
+
+eossa_nested_groups <- list(
+  1:6
+)
+groups_ssa_e <- list(
+  trend_low = c(0,         1 / 24),
+  sin_bin   = c(1 / 12 - mult * eps, 1 / 12 + mult * eps),
+  cos_bin   = c(1 / 3  - mult * eps, 1 / 3  + mult * eps)
+)
+
+groups_fft <- list(
+  trend_low = c(0,         1 / 24),
+  sin_bin   = c(1 / 12 - mult * eps, 1 / 12 + mult * eps),
+  cos_bin   = c(1 / 3  - mult * eps, 1 / 3  + mult * eps)
+)
+groups_fft_ext <- list(
+  trend_low = c(0,         1 / 24),
+  sin_bin   = c(1 / 12 - mult * eps, 1 / 12 + mult * eps),
+  cos_bin   = c(1 / 3  - mult * eps, 1 / 3  + mult * eps)
+)
+groups_cissa <- list(
+  trend_low = c(0,         1 / 24),
+  sin_bin   = c(1 / 12 - mult * eps, 1 / 12 + mult * eps),
+  cos_bin   = c(1 / 3  - mult * eps, 1 / 3  + mult * eps)
+)
+groups_cissa_ext <- list(
+  trend_low = c(0,         1 / 24),
+  sin_bin   = c(1 / 12 - mult * eps, 1 / 12 + mult * eps),
+  cos_bin   = c(1 / 3  - mult * eps, 1 / 3  + mult * eps)
+)
+
+
+df_result <- good_experiment(
+  t_series            = t_series,
+  noisy_y             = noisy_y,    
+  ssa_params          = ssa_params,
+  eessa_params        = eessa_params,
+  fft_params          = fft_params,
+  fft_ext_params      = fft_ext_params,
+  cissa_params        = cissa_params,
+  cissa_ext_params    = cissa_ext_params,
+  groups_ssa          = groups_ssa,
+  eossa_nested_groups = eossa_nested_groups,
+  groups_ssa_e        = groups_ssa_e,
+  groups_fft          = groups_fft,
+  groups_fft_ext      = groups_fft_ext,
+  groups_cissa        = groups_cissa,
+  groups_cissa_ext    = groups_cissa_ext
+)
+
+print(df_result)
+
+df_to_latex_print(df_result)
+
+```
+
+
+```{r}
+mult <- 8
+
+list(
+  trend_low = c(0,         1 / 24),
+  sin_bin   = c(1 / 12 - mult * eps, 1 / 12 + mult * eps),
+  cos_bin   = c(1 / 3  - mult * eps, 1 / 3  + mult * eps)
+)
+```
+
+
+
+## С шумом
+
+### Гармоники
+
+```{r}
+n_full <- 192
+x_full <- 0:(n_full - 1)
+y1 <- sin(2 * pi / 12 * x_full)
+y2 <- cos(2 * pi / 3 * x_full) / 2
+t_series <- list(y1, y2)
+
+
+ssa_params <- list(
+  list(L = 96, n = 191),
+  list(L = 96, n = 192)
+)
+
+eessa_params <- list(
+  list(L = 96, n = 191),
+  list(L = 96, n = 192)
+)
+
+fft_params <- list(
+  list(n = 192),
+  list(n = 191)
+)
+
+fft_ext_params <- list(
+
+)
+
+cissa_params <- list(
+  list(L = 12, n = 192),
+  list(L = 96, n = 192),
+  list(L = 97, n = 192)
+)
+
+cissa_ext_params <- list(
+
+)
+
+
+eps <- 1 / (n_full + 1)
+thresh <- (1/12 + 1/3) / 2
+
+groups_ssa <- list(
+  c(1, 2),
+  c(3, 4)
+)
+
+eossa_nested_groups <- list(
+  1:4
+)
+
+groups_ssa_e <- list(
+  sin = c(1/12 - 3 * eps, 1/12 + 3 * eps),
+  cos = c(1/3  - 3 * eps, 1/3  + 3 * eps)
+)
+
+groups_fft <- list(
+  sin = c(1/12 - 3 * eps, 1/12 + 3 * eps),
+  cos = c(1/3  - 3 * eps, 1/3  + 3 * eps)
+)
+
+groups_fft_ext <- list(
+  sin = c(1/12 - 3 * eps, 1/12 + 3 * eps),
+  cos = c(1/3  - 3 * eps, 1/3  + 3 * eps)
+)
+
+groups_cissa <- list(
+  sin = c(1/12 - 3 * eps, 1/12 + 3 * eps),
+  cos = c(1/3  - 3 * eps, 1/3  + 3 * eps)
+)
+
+groups_cissa_ext <- list(
+  sin = c(1/12 - 4 * eps, 1/12 + 4 * eps),
+  cos = c(1/3  - 4 * eps, 1/3  + 4 * eps)
+)
+
+
+n_experiments <- 10
+
+df_avg <- run_good_experiments(
+  n_experiments      = n_experiments,
+  t_series           = t_series,
+  ssa_params         = ssa_params,
+  eessa_params       = eessa_params,
+  fft_params         = fft_params,
+  fft_ext_params     = fft_ext_params,
+  cissa_params       = cissa_params,
+  cissa_ext_params   = cissa_ext_params,
+  groups_ssa         = groups_ssa,
+  eossa_nested_groups= eossa_nested_groups,
+  groups_ssa_e       = groups_ssa_e,
+  groups_fft         = groups_fft,
+  groups_fft_ext     = groups_fft_ext,
+  groups_cissa       = groups_cissa,
+  groups_cissa_ext   = groups_cissa_ext
+)
+
+
+
+print(df_avg)
+
+
+df_to_latex_print(df_avg)  
+
+
+```
+
+
+
+### Экспоненциальная модуляция 
+
+```{r}
+n_full <- 192
+x_full <- 0:(n_full - 1)
+
+y1 <- exp(x_full / 200) * sin(2 * pi / 12 * x_full)
+y2 <- exp(x_full / 100) * cos(2 * pi / 3 * x_full)
+t_series <- list(y1, y2)
+
+# 2) Параметры для методов
+ssa_params <- list(
+  list(L = 96, n = 191),
+  list(L = 96, n = 192)
+)
+
+eessa_params <- list(
+  list(L = 96, n = 191),
+  list(L = 96, n = 192)
+)
+
+fft_params <- list(
+  list(n = 192),
+  list(n = 191)
+)
+
+fft_ext_params <- list(
+)
+
+cissa_params <- list(
+  list(L = 12, n = 192),
+  list(L = 96, n = 192),
+  list(L = 97, n = 192)
+)
+
+cissa_ext_params <- list(
+  
+)
+
+
+eps <- 1 / (192 + 1)
+
+groups_ssa <- list(
+  c(3, 4),
+  c(1, 2)
+)
+
+eossa_nested_groups <- list(
+  1:4
+)
+
+groups_ssa_e <- list(
+  sin = c(1/12 - 4 * eps, 1/12 + 4 * eps),
+  cos = c(1/3  - 4 * eps, 1/3  + 4 * eps)
+)
+
+groups_fft <- list(
+  sin = c(1/12 - 6 * eps, 1/12 + 6 * eps),
+  cos = c(1/3  - 6 * eps, 1/3  + 6 * eps)
+)
+
+groups_fft_ext <- list(
+  sin = c(1/12 - 6 * eps, 1/12 + 6 * eps),
+  cos = c(1/3  - 6 * eps, 1/3  + 6 * eps)
+)
+
+groups_cissa <- list(
+  sin = c(1/12 - 6 * eps, 1/12 + 6 * eps),
+  cos = c(1/3  - 6 * eps, 1/3  + 6 * eps)
+)
+
+groups_cissa_ext <- list(
+  sin = c(1/12 - 4 * eps, 1/12 + 4 * eps),
+  cos = c(1/3  - 4 * eps, 1/3  + 4 * eps)
+)
+
+
+
+
+n_experiments <- 3
+
+df_avg <- run_good_experiments(
+  n_experiments      = n_experiments,
+  t_series           = t_series,
+  ssa_params         = ssa_params,
+  eessa_params       = eessa_params,
+  fft_params         = fft_params,
+  fft_ext_params     = fft_ext_params,
+  cissa_params       = cissa_params,
+  cissa_ext_params   = cissa_ext_params,
+  groups_ssa         = groups_ssa,
+  eossa_nested_groups= eossa_nested_groups,
+  groups_ssa_e       = groups_ssa_e,
+  groups_fft         = groups_fft,
+  groups_fft_ext     = groups_fft_ext,
+  groups_cissa       = groups_cissa,
+  groups_cissa_ext   = groups_cissa_ext
+)
+
+
+print(df_avg)
+
+
+
+df_to_latex_print(df_avg)
+
+```
+
+### Тренд
+
+```{r}
+
+n <- 96 * 2
+x <- 0:(n - 1)
+L <- 96
+
+TS_const <- rep(1, n)
+TS_trend <- exp(x / 100)
+TS_sin   <- sin(2 * pi / 12 * x)
+TS_cos   <- 0.5 * cos(2 * pi / 3 * x)
+
+
+y_true <- TS_const + TS_trend + TS_sin + TS_cos
+
+
+t_series <- list(
+  TS_const + TS_trend,
+  TS_sin,
+  TS_cos
+)
+
+
+
+ssa_params <- list(
+  list(L = L, n = n - 1),
+  list(L = L, n = n)
+)
+eessa_params <- list(
+  list(L = L, n = n),
+  list(L = L, n = n - 1)
+)
+fft_params <- list(
+  list(n = n),
+  list(n = n - 1)
+)
+fft_ext_params <- list(
+  list(n = n),
+  list(n = n - 1)
+)
+cissa_params <- list(
+  list(L = 12,    n = n),
+  list(L = L,     n = n),
+  list(L = L + 1, n = n)
+)
+cissa_ext_params <- list(
+  list(L = 12,    n = n),
+  list(L = L,     n = n),
+  list(L = L + 1, n = n)
+)
+
+
+eps       <- 1 / (n + 1)
+threshold <- (1 / 12 + 1 / 3) / 2
+mult      <- 4
+
+groups_ssa <- list(
+  trend     = c(1, 6),
+  periodic1 = c(2, 3),
+  periodic2 = c(4, 5)
+)
+
+eossa_nested_groups <- list(
+  1:6
+)
+
+groups_ssa_e <- list(
+  trend_low = c(0,         1 / 24),
+  sin_bin   = c(1 / 12 - mult * eps, 1 / 12 + mult * eps),
+  cos_bin   = c(1 / 3  - mult * eps, 1 / 3  + mult * eps)
+)
+
+groups_fft <- list(
+  trend_low = c(0,         1 / 24),
+  sin_bin   = c(1 / 12 - mult * eps, 1 / 12 + mult * eps),
+  cos_bin   = c(1 / 3  - mult * eps, 1 / 3  + mult * eps)
+)
+groups_fft_ext <- list(
+  trend_low = c(0,         1 / 24),
+  sin_bin   = c(1 / 12 - mult * eps, 1 / 12 + mult * eps),
+  cos_bin   = c(1 / 3  - mult * eps, 1 / 3  + mult * eps)
+)
+
+groups_cissa <- list(
+  trend_low = c(0,         1 / 24),
+  sin_bin   = c(1 / 12 - mult * eps, 1 / 12 + mult * eps),
+  cos_bin   = c(1 / 3  - mult * eps, 1 / 3  + mult * eps)
+)
+groups_cissa_ext <- list(
+  trend_low = c(0,         1 / 24),
+  sin_bin   = c(1 / 12 - mult * eps, 1 / 12 + mult * eps),
+  cos_bin   = c(1 / 3  - mult * eps, 1 / 3  + mult * eps)
+)
+
+set.seed(42)
+
+n_experiments <- 3
+
+df_avg <- run_good_experiments(
+  n_experiments      = n_experiments,
+  t_series           = t_series,
+  ssa_params         = ssa_params,
+  eessa_params       = eessa_params,
+  fft_params         = fft_params,
+  fft_ext_params     = fft_ext_params,
+  cissa_params       = cissa_params,
+  cissa_ext_params   = cissa_ext_params,
+  groups_ssa         = groups_ssa,
+  eossa_nested_groups= eossa_nested_groups,
+  groups_ssa_e       = groups_ssa_e,
+  groups_fft         = groups_fft,
+  groups_fft_ext     = groups_fft_ext,
+  groups_cissa       = groups_cissa,
+  groups_cissa_ext   = groups_cissa_ext
+)
+
+
+print(df_avg)
+
+
+df_to_latex_print(df_avg)
+
+```
+
