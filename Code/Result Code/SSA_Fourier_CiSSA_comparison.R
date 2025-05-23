@@ -190,14 +190,13 @@ run_cissa_experiments_exp <- function(
   all_runs <- list()
   
   for (run_id in seq_len(n_experiment)) {
-    set.seed(123 + run_id)
     
     
     x_local <- 0:(n)
     y1 <- exp(x_local / 200) * sin(2 * pi / 12 * x_local)
     y2 <- exp(x_local / 100) * cos(2 * pi / 3 * x_local)
     
-    y_noisy <- y1 + y2 + rnorm(n + 1, mean = 0, sd = 0.1)
+    y_noisy <- y1 + y2 + rnorm(n + 1, mean = 0, sd = 1)
     
     t_series_clean <- list(y1 = y1, y2 = y2)
     
