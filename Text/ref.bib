@@ -4,11 +4,10 @@
 title = {Circulant singular spectrum analysis: A new automated procedure for signal extraction},
 journal = {Signal Processing},
 volume = {179},
-pages = {107824},
+note = {107824},
 year = {2021},
 issn = {0165-1684},
 doi = {https://doi.org/10.1016/j.sigpro.2020.107824},
-url = {https://www.sciencedirect.com/science/article/pii/S0165168420303686},
 author = {Bogalo, J. and Poncela, P. and Senra, E.},
 keywords = {Circulant matrices, Principal components, Signal extraction, Singular spectrum analysis, Singular value decomposition, AM-FM Signals},
 abstract = {Sometimes, it is of interest to single out the fluctuations associated to a given frequency. We propose a new variant of SSA, Circulant SSA (CiSSA), that allows to extract the signal associated to any frequency specified beforehand. This is a novelty when compared with other SSA procedures that need to identify ex-post the frequencies associated to the extracted signals. We prove that CiSSA is asymptotically equivalent to these alternative procedures although with the advantage of avoiding the need of the subsequent frequency identification. We check its good performance and compare it to alternative SSA methods through several simulations for linear and nonlinear time series. We also prove its validity in the nonstationary case. We apply CiSSA in two different fields to show how it works with real data and find that it behaves successfully in both applications. Finally, we compare the performance of CiSSA with other state of the art techniques used for nonlinear and nonstationary signals with amplitude and frequency varying in time.}
@@ -37,24 +36,32 @@ author = {Golyandina, N. and Nekrutkin, V. and Zhigljavsky, A.},
 }
 
 @article{golyandina2023intelligent,
-author = {Golyandina, N. and Dudnik, P. and Shlemov, A.},
+	author = {Golyandina, N. and Dudnik, P. and Shlemov, A.},
 	title     = {Intelligent identification of trend components in singular spectrum analysis},
 	journal   = {Algorithms},
 	volume    = {16},
 	number    = {7},
+	publisher = {Chapman&Hall/CRC},
+	address = {Boca Raton, FL, USA}, 
 	year      = {2023},
-	doi       = {10.3390/a16070353}
+	doi       = {10.3390/a16070353},
+	note = {353}
+
 }
 
 
-
-@misc{spbu_cissa_coursework_github,
-author = {Pogrebnikov, N.},
-	title        = {{SPbSU} {SSA} Coursework: Time Series Analysis},
-	year         = {2024},
-	journal = {GitHub repository},
-	howpublished = {\url{https://github.com/xSICHx/spbu_ssa_methods_coursework/tree/main}}
+@software{spbu_cissa_coursework_github,
+  author       = {Pogrebnikov, Nikolay},
+  title        = {R-scripts for graduation project ``Modifications of
+                   singular spectrum analysis for time series
+                   analysis''
+                  },
+  year         = 2025,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.15498915},
+  url          = {https://doi.org/10.5281/zenodo.15498915},
 }
+
 
 
 @article{gu2024generalized,
@@ -63,11 +70,10 @@ title = {Generalized singular spectrum analysis for the decomposition and analys
 journal = {Journal of the Franklin Institute},
 volume = {361},
 number = {6},
-pages = {106696},
+note = {106696},
 year = {2024},
 issn = {0016-0032},
 doi = {https://doi.org/10.1016/j.jfranklin.2024.106696},
-url = {https://www.sciencedirect.com/science/article/pii/S0016003224001170},
 keywords = {Singular spectrum analysis, Windowing technique, Spectral leakage, Frequency spectrum},
 abstract = {Singular spectrum analysis (SSA) has been verified to be an effective method for decomposing non-stationary signals. The decomposition and reconstruction stages can be interpreted as a zero-phase filtering process where reconstructed components are obtained by inputting a signal through moving average filters. However, mathematical analysis indicates that the use of a default rectangular window in the embedding stage would corrupt the frequency characteristics of the trajectory matrix, resulting in spectral leakage. To attenuate the effect of spectral leakage and to obtain more concentrated SSA components, this study introduces a windowing technique in SSA, called generalized singular spectrum analysis (GSSA). In GSSA, the default rectangular window is replaced with adjustable taper windows, which are widely used for attenuating spectral leakage. Through windowing, GSSA can achieve less spectral leakage, and produce more energy-concentrated reconstructed components compared with conventional SSA. Grouped spectral entropy (GSE) is used as the metric for evaluating the performance of the proposed GSSA algorithm. Results from experiments, which were conducted on a synthetic signal and two real electroencephalogram signals, show that GSSA outperforms the conventional SSA and the baseline in the reduction of spectral leakage. Compared with the baseline, the proposed GSSA achieves a lower averaged GSE, resulting in reduction of 0.4 for eigenfilters and 0.11 for reconstructed components, respectively. Our results reveal the effectiveness of GSSA in the decomposition and analysis of non-stationary signals.}
 }
@@ -76,7 +82,8 @@ abstract = {Singular spectrum analysis (SSA) has been verified to be an effectiv
 	title     = {Singular Spectrum Analysis for Time Series},
 author = {Golyandina, N. and Zhigljavsky, A.},
 	year      = {2020},
-	publisher = {Springer Berlin Heidelberg},
+	publisher = {Springer},
+	address = {Berlin Heidelberg},
 	series    = {SpringerBriefs in Statistics},
 	edition   = {2},
 	doi       = {https://doi.org/10.1007/978-3-662-62436-4}
@@ -97,6 +104,7 @@ author = {Golyandina, N. and Zhornikova, P.},
 @book{weisstein2002crc,
   title={CRC Concise Encyclopedia of Mathematics},
   author = {Weisstein, E.W.},
+  address = {Boca Raton, FL, USA},
   year={2002},
   publisher={CRC Press}
 }
@@ -110,9 +118,8 @@ author = {Golyandina, N. and Zhornikova, P.},
   year      = {2025},
   volume    = {15},
   number    = {1},
-  pages     = {842},
   doi       = {10.1038/s41598-024-84429-6},
-  url       = {https://doi.org/10.1038/s41598-024-84429-6},
+  note = {842}
 }
 
 
@@ -126,7 +133,6 @@ author = {Dey, R. and Thamban, M. and Laluraj, C.M. and Mahalinganathan, K. and 
 @book{ssa_with_R,
 author = {Golyandina, N. and Korobeynikov, A. and Zhigljavsky, A.},
 year = {2018},
-pages = {},
 title = {Singular Spectrum Analysis with R},
 publisher    = {Springer-Verlag},
   address      = {Berlin, Heidelberg},
@@ -142,6 +148,7 @@ title = {Functional singular spectrum analysis},
 journal = {Stat},
 volume = {10},
 number = {1},
+note = {e330},
 keywords = {functional SVD, functional time series, Hilbert space, singular spectrum analysis},
 doi = {https://doi.org/10.1002/sta4.330},
 abstract = {In this paper, we develop a new extension of the singular spectrum analysis (SSA) called functional SSA to analyze functional time series. The new methodology is constructed by integrating ideas from functional data analysis and univariate SSA. Specifically, we introduce a trajectory operator in the functional world, which is equivalent to the trajectory matrix in the regular SSA. In the regular SSA, one needs to obtain the singular value decomposition (SVD) of the trajectory matrix to decompose a given time series. Since there is no procedure to extract the functional SVD (fSVD) of the trajectory operator, we introduce a computationally tractable algorithm to obtain the fSVD components. The effectiveness of the proposed approach is illustrated by an interesting example of remote sensing data. Also, we develop an efficient and user-friendly R package and a shiny web application to allow interactive exploration of the results.},
