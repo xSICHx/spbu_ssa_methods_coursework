@@ -4,8 +4,9 @@ library(Rssa)
 library(signal)
 library(gsignal)
 library(xtable)
-source("eossa_new.R")
-source("CiSSA_all_functions.R")
+source("methods/eossa_new.R")
+source("methods/CiSSA.R")
+source("methods/time_series_functions.R")
 ```
 
 ## Выбор длины окна L CiSSA
