@@ -1,13 +1,20 @@
+
+
 @article{bogalo2020,
-	author    = {Juan Bogalo and Pilar Poncela and Eva Senra},
-	title     = {Circulant singular spectrum analysis: A new automated procedure for signal extraction},
-	journal   = {Signal Processing},
-	volume    = {177},
-	year      = {2020},
-	issn      = {0165-1684},
-	doi       = {10.1016/j.sigpro.2020.107750}
-	
+title = {Circulant singular spectrum analysis: A new automated procedure for signal extraction},
+journal = {Signal Processing},
+volume = {179},
+pages = {107824},
+year = {2021},
+issn = {0165-1684},
+doi = {https://doi.org/10.1016/j.sigpro.2020.107824},
+url = {https://www.sciencedirect.com/science/article/pii/S0165168420303686},
+author = {Bogalo, J. and Poncela, P. and Senra, E.},
+keywords = {Circulant matrices, Principal components, Signal extraction, Singular spectrum analysis, Singular value decomposition, AM-FM Signals},
+abstract = {Sometimes, it is of interest to single out the fluctuations associated to a given frequency. We propose a new variant of SSA, Circulant SSA (CiSSA), that allows to extract the signal associated to any frequency specified beforehand. This is a novelty when compared with other SSA procedures that need to identify ex-post the frequencies associated to the extracted signals. We prove that CiSSA is asymptotically equivalent to these alternative procedures although with the advantage of avoiding the need of the subsequent frequency identification. We check its good performance and compare it to alternative SSA methods through several simulations for linear and nonlinear time series. We also prove its validity in the nonstationary case. We apply CiSSA in two different fields to show how it works with real data and find that it behaves successfully in both applications. Finally, we compare the performance of CiSSA with other state of the art techniques used for nonlinear and nonstationary signals with amplitude and frequency varying in time.}
 }
+
+
 
 @article{Golyandina_2015,
    title={Variations of singular spectrum analysis for separability improvement: non-orthogonal decompositions of time series},
@@ -17,25 +24,24 @@
    number={3},
    journal={Statistics and Its Interface},
    publisher={International Press of Boston},
-   author={Golyandina, Nina and Shlemov, Alex},
+author = {Golyandina, N. and Shlemov, A.},
    year={2015},
    pages={277–294} }
 
 
 @book{golyandina2001analysis,
 	title={Analysis of Time Series Structure: SSA and Related Techniques},
-	author={Golyandina, Nina and Nekrutkin, Vladimir and Zhigljavsky, Anatoly},
+author = {Golyandina, N. and Nekrutkin, V. and Zhigljavsky, A.},
 	year={2001},
 	publisher={Chapman and Hall/CRC}
 }
 
 @article{golyandina2023intelligent,
-	author    = {Golyandina, Nina and Dudnik, Pavel and Shlemov, Alex},
-	title     = {Intelligent Identification of Trend Components in Singular Spectrum Analysis},
+author = {Golyandina, N. and Dudnik, P. and Shlemov, A.},
+	title     = {Intelligent identification of trend components in singular spectrum analysis},
 	journal   = {Algorithms},
 	volume    = {16},
 	number    = {7},
-	pages     = {353},
 	year      = {2023},
 	doi       = {10.3390/a16070353}
 }
@@ -43,7 +49,7 @@
 
 
 @misc{spbu_cissa_coursework_github,
-	author       = {Nikolay Pogrebnikov},
+author = {Pogrebnikov, N.},
 	title        = {{SPbSU} {SSA} Coursework: Time Series Analysis},
 	year         = {2024},
 	journal = {GitHub repository},
@@ -52,30 +58,34 @@
 
 
 @article{gu2024generalized,
-	author    = {Jialiang Gu and Kevin Hung and Bingo Wing-Kuen Ling and Daniel Hung-Kay Chow and Yang Zhou and Yaru Fu and Sio Hang Pun},
-	title     = {Generalized singular spectrum analysis for the decomposition and analysis of non-stationary signals},
-	journal   = {Journal of the Franklin Institute},
-	volume    = {Accepted/In Press},
-	year      = {2024},
-	issn      = {0016-0032},
-	doi       = {10.1016/j.jfranklin.2024.106696}
+author = {Gu, J. and Hung, K. and Ling, B.W.-K. and Chow, D.H.-K. and Zhou, Y. and Fu, Y. and Pun, S.H.},
+title = {Generalized singular spectrum analysis for the decomposition and analysis of non-stationary signals},
+journal = {Journal of the Franklin Institute},
+volume = {361},
+number = {6},
+pages = {106696},
+year = {2024},
+issn = {0016-0032},
+doi = {https://doi.org/10.1016/j.jfranklin.2024.106696},
+url = {https://www.sciencedirect.com/science/article/pii/S0016003224001170},
+keywords = {Singular spectrum analysis, Windowing technique, Spectral leakage, Frequency spectrum},
+abstract = {Singular spectrum analysis (SSA) has been verified to be an effective method for decomposing non-stationary signals. The decomposition and reconstruction stages can be interpreted as a zero-phase filtering process where reconstructed components are obtained by inputting a signal through moving average filters. However, mathematical analysis indicates that the use of a default rectangular window in the embedding stage would corrupt the frequency characteristics of the trajectory matrix, resulting in spectral leakage. To attenuate the effect of spectral leakage and to obtain more concentrated SSA components, this study introduces a windowing technique in SSA, called generalized singular spectrum analysis (GSSA). In GSSA, the default rectangular window is replaced with adjustable taper windows, which are widely used for attenuating spectral leakage. Through windowing, GSSA can achieve less spectral leakage, and produce more energy-concentrated reconstructed components compared with conventional SSA. Grouped spectral entropy (GSE) is used as the metric for evaluating the performance of the proposed GSSA algorithm. Results from experiments, which were conducted on a synthetic signal and two real electroencephalogram signals, show that GSSA outperforms the conventional SSA and the baseline in the reduction of spectral leakage. Compared with the baseline, the proposed GSSA achieves a lower averaged GSE, resulting in reduction of 0.4 for eigenfilters and 0.11 for reconstructed components, respectively. Our results reveal the effectiveness of GSSA in the decomposition and analysis of non-stationary signals.}
 }
 
 @book{golyandina2020singular,
 	title     = {Singular Spectrum Analysis for Time Series},
-	author    = {Nina Golyandina and Anatoly Zhigljavsky},
+author = {Golyandina, N. and Zhigljavsky, A.},
 	year      = {2020},
 	publisher = {Springer Berlin Heidelberg},
 	series    = {SpringerBriefs in Statistics},
 	edition   = {2},
-	isbn      = {978-3-662-62435-7},
 	doi       = {https://doi.org/10.1007/978-3-662-62436-4}
 }
 
 
 @misc{golyandina2023automatedidentificationsingularspectrum,
 	title={On automated identification in singular spectrum analysis for different types of objects}, 
-	author={Nina Golyandina and Polina Zhornikova},
+author = {Golyandina, N. and Zhornikova, P.},
 	year={2023},
 	eprint={https://arxiv.org/abs/2302.08993},
 	archivePrefix={arXiv},
@@ -86,8 +96,7 @@
 
 @book{weisstein2002crc,
   title={CRC Concise Encyclopedia of Mathematics},
-  author={Weisstein, E.W.},
-  isbn={9781420035223},
+  author = {Weisstein, E.W.},
   year={2002},
   publisher={CRC Press}
 }
@@ -95,28 +104,32 @@
 
 
 @article{cognitive,
-author = {Yedukondalu, Jammisetty and Sunkara, Kalyani and Radhika, Vankayalapati and Kondaveeti, Sivakrishna and Anumothu, Murali and Krishna, Yadadavalli},
-year = {2025},
-month = {01},
-pages = {},
-title = {Cognitive load detection through EEG lead wise feature optimization and ensemble classification},
-volume = {15},
-journal = {Scientific Reports},
-doi = {10.1038/s41598-024-84429-6}
+  author    = {Yedukondalu, J. and Sunkara, K. and Radhika, V. and Kondaveeti, S. and Anumothu, M. and Krishna, Y. M.},
+  title     = {Cognitive load detection through EEG lead wise feature optimization and ensemble classification},
+  journal   = {Scientific Reports},
+  year      = {2025},
+  volume    = {15},
+  number    = {1},
+  pages     = {842},
+  doi       = {10.1038/s41598-024-84429-6},
+  url       = {https://doi.org/10.1038/s41598-024-84429-6},
 }
 
 
-@article{Dey_Thamban_Laluraj_Mahalinganathan_Redkar_Kumar_Matsuoka_2023, title={Application of visual stratigraphy from line-scan images to constrain chronology and melt features of a firn core from coastal Antarctica}, volume={69}, DOI={10.1017/jog.2022.59}, number={273}, journal={Journal of Glaciology}, author={Dey, Rahul and Thamban, Meloth and Laluraj, Chavarukonam Madhavanpillai and Mahalinganathan, Kanthanathan and Redkar, Bhikaji Laxman and Kumar, Sudhir and Matsuoka, Kenichi}, year={2023}, pages={179–190}} 
+
+@article{Dey_Thamban_Laluraj_Mahalinganathan_Redkar_Kumar_Matsuoka_2023, title={Application of visual stratigraphy from line-scan images to constrain chronology and melt features of a firn core from coastal Antarctica}, volume={69}, DOI={10.1017/jog.2022.59}, number={273}, journal={Journal of Glaciology}, 
+author = {Dey, R. and Thamban, M. and Laluraj, C.M. and Mahalinganathan, K. and Redkar, B.L. and Kumar, S. and Matsuoka, K.},
+ year={2023}, pages={179–190}} 
 
 
 
 @book{ssa_with_R,
-author = {Golyandina, Nina and Korobeynikov, Anton and Zhigljavsky, Anatoly},
+author = {Golyandina, N. and Korobeynikov, A. and Zhigljavsky, A.},
 year = {2018},
-month = {01},
 pages = {},
 title = {Singular Spectrum Analysis with R},
-isbn = {978-3-662-57378-5},
+publisher    = {Springer-Verlag},
+  address      = {Berlin, Heidelberg},
 doi = {10.1007/978-3-662-57380-8}
 }
 
@@ -124,17 +137,13 @@ doi = {10.1007/978-3-662-57380-8}
 
 
 @article{haghbin2019functionalsingularspectrumanalysis,
-author = {Haghbin, Hossein and Najibi, Seyed Morteza and Mahmoudvand, Rahim and Trinka, Jordan and Maadooliat, Mehdi},
+author = {Haghbin, H. and Najibi, S.M. and Mahmoudvand, R. and Trinka, J. and Maadooliat, M.},
 title = {Functional singular spectrum analysis},
 journal = {Stat},
 volume = {10},
 number = {1},
-pages = {e330},
 keywords = {functional SVD, functional time series, Hilbert space, singular spectrum analysis},
 doi = {https://doi.org/10.1002/sta4.330},
-url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/sta4.330},
-eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/sta4.330},
-note = {e330 sta4.330},
 abstract = {In this paper, we develop a new extension of the singular spectrum analysis (SSA) called functional SSA to analyze functional time series. The new methodology is constructed by integrating ideas from functional data analysis and univariate SSA. Specifically, we introduce a trajectory operator in the functional world, which is equivalent to the trajectory matrix in the regular SSA. In the regular SSA, one needs to obtain the singular value decomposition (SVD) of the trajectory matrix to decompose a given time series. Since there is no procedure to extract the functional SVD (fSVD) of the trajectory operator, we introduce a computationally tractable algorithm to obtain the fSVD components. The effectiveness of the proposed approach is illustrated by an interesting example of remote sensing data. Also, we develop an efficient and user-friendly R package and a shiny web application to allow interactive exploration of the results.},
 year = {2021}
 }
