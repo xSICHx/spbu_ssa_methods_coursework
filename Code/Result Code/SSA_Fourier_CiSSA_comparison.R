@@ -145,7 +145,7 @@ run_cissa_experiments <- function(
     x_local <- 0:(n)
     y1 <- sin(2 * pi / 12 * x_local)
     y2 <- 0.5 * cos(2 * pi / 3 * x_local)
-    y_noisy <- y1 + y2 + rnorm(n + 1, mean = 0, sd = 0.1)
+    y_noisy <- y1 + y2 + rnorm(n + 1, mean = 0, sd = 1)
     
     t_series_clean <- list(y1 = y1, y2 = y2)
     
