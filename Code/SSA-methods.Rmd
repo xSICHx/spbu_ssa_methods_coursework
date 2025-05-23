@@ -266,7 +266,7 @@ n <- 96*2-1
 x <- 0:(n-1)
 L <- 48
 y1 <- sin(2*pi/12 * x)
-y2 <- cos(2*pi/3 * x)/2
+y2 <- cos(2*pi/19 * x)/2
 y <- y1 + y2
 alpha <- 1/2
 filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
@@ -658,17 +658,17 @@ mse_table
 
 ```{r}
 # Load necessary library
-n <- 96*2-1
+n <- 96*2
 x <- 0:(n-1)
 L <- 48
 y1 <- sin(2*pi/12 * x)
 y2 <- cos(2*pi/19 * x)/2
 y <- y1 + y2
-alpha <- 1
+alpha <- 1/2
 filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
 
 # Define parameters
-n_experiment <- 100
+n_experiment <- 10
 sigma <- 0.1
 
 # Initialize vectors to store MSE values
@@ -683,7 +683,7 @@ mse_rw_y <- numeric(n_experiment)
 mse_rgssa_y <- numeric(n_experiment)
 
 # Set seed for reproducibility
-set.seed(123)
+set.seed(12)
 
 # Perform experiments
 for (i in 1:n_experiment) {
@@ -1446,11 +1446,11 @@ library(xtable)
 # Define parameters
 n <- 96 * 2 - 1  # Длина временного ряда = 191
 x <- 0:(n - 1)
-L <- 48*2
+L <- 48
 y1 <- sin(2 * pi / 19 * x)
 y2 <- cos(2 * pi / 12 * x) / 2
 y <- y1 + y2
-alpha <- 1
+alpha <- 0.5
 filt <- sqrt(sin(pi * 1:L / (L + 1))^2)^alpha
 
 # Define parameters for experiments
@@ -1548,9 +1548,9 @@ p <- ggplot(plot_data_y1, aes(x = time, y = mse, color = method)) +
   theme(legend.position = "bottom")
 
 # Сохранение графика с высоким разрешением
-ggsave("mse_y1_time.png", plot = p, 
-       width = 10, height = 6, dpi = 300, 
-       units = "in", bg = "white")
+# ggsave("mse_y1_time.png", plot = p, 
+#        width = 10, height = 6, dpi = 300, 
+#        units = "in", bg = "white")
 
 # Вывод графика
 print(p)
@@ -1786,7 +1786,7 @@ plot(res_rec[[3]], main = "Группа 3: Остаточный шум")
 
 ```
 
-#### FOSSA на m_t
+#### FSSA на m_t
 
 ```{r}
 library(Rfssa)  

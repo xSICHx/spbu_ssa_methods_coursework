@@ -1,0 +1,715 @@
+
+## Веса w при различных alpha
+
+```{r}
+library(ggplot2)
+library(latex2exp)
+source("methods/GSSA.R")
+```
+
+
+```{r}
+# Установим длину L
+L <- 100
+n <- 1:L
+
+# Функция для вычисления весов w
+w_func <- function(alpha, n, L) {
+  (abs(sin(pi * n / (L + 1))))^alpha
+}
+
+# Данные для разных alpha
+w_alpha0 <- w_func(0, n, L)
+w_alpha05 <- w_func(0.5, n, L)
+w_alpha1 <- w_func(1, n, L)
+
+# Один график с тремя линиями
+plot(n, w_alpha0, type = "l", col = "blue", lwd = 2,
+     xlab = TeX("$n$"),  # LaTeX для оси X
+     ylab = TeX("$w$"),  # LaTeX для оси Y
+     ylim = c(0, 1),
+     main = TeX("Веса при различных значениях $\\alpha$"))  # LaTeX в заголовке
+lines(n, w_alpha05, col = "red", lwd = 2)
+lines(n, w_alpha1, col = "green", lwd = 2)
+
+# Легенда с LaTeX
+legend("topright", legend = c(TeX("$\\alpha = 0$"), TeX("$\\alpha = 0.5$"), TeX("$\\alpha = 1$")),
+       col = c("blue", "red", "green"), lwd = 2)
+```
+## Фильтры для синус и различных alpha 
+```{r}
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+y1 <- sin(2*pi/12 * x)
+y <- y1
+
+library(ggplot2)
+
+alphas <- c(0, 1/2, 1, 2)
+freq <- seq(0, pi, 0.001)
+omega <- freq / (2 * pi)
+
+# Определяем цвета (черный для 0, остальные разные)
+colors <- c("black", "blue", "green", "purple", "orange")
+
+# Создаем пустой график
+plot(NULL, xlim = c(0, 0.2), ylim = c(0, 1), xlab = "Частота", 
+     ylab = "АЧХ", main = "Фильтры для различных α")
+
+alpha <- alphas[1]
+filters <- get_middle_point_filters(y1, L, alpha = alpha)
+filt <- filters[[1]] + filters[[2]]
+
+lines(omega, afc(filt, freq), col = colors[1], lwd = 2)
+
+# Рисуем графики для каждого alpha
+for (i in seq_along(alphas)) {
+  alpha <- alphas[i]
+  filters <- get_middle_point_filters(y1, L, alpha = alpha)
+  filt <- filters[[1]] + filters[[2]]
+  
+  lines(omega, afc(filt, freq), col = colors[i], lwd = 2)
+}
+
+# Добавляем вертикальную линию
+abline(v = 1/12, col = "red", lty = 2)
+# Добавляем подпись на оси X
+axis(1, at = 1/12, labels = "1/12")
+
+# Добавляем легенду с LaTeX-обозначением α
+legend("topright", legend = sapply(alphas, function(a) bquote(alpha == .(a))),
+       col = colors, lwd = 2)
+
+abline(v = 2/50, col = "red", lty = 2)
+
+```
+## Фильтр для синуса при X = sin + cos
+
+```{r}
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+w1 <- 1/19
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi*w1 * x)/2
+y <- y1 + y2
+alpha <- 1/2
+filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
+
+  
+s <- ssa(y, L)
+r <- reconstruct(s, groups = list(
+  s1 = 1:2,
+  s2 = 3:4
+))
+
+sw <- ssa(y, L, col.oblique = filt, row.oblique = rep(1, n-L+1))
+rw <- reconstruct(sw, groups = list(
+  s1 = 1:2,
+  s2 = 3:4
+))
+
+mse <- function(f_true, f_reconstructed){
+   mean((f_true - f_reconstructed)^2) 
+}
+
+
+r_gssa <- gssa(y, L, alpha = alpha)
+
+# mse(rw$e, r_gssa$ts[[1]])
+# mse(r$s1, y1)
+# mse(rw$s1, y1)
+# mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)
+
+
+# Create a data frame to store MSE values
+mse_table <- data.frame(
+  Method = c("SSA", "rw", "GSSA"),
+  MSE_y1 = c(mse(r$s1, y1),
+             mse(rw$s1, y1),
+             mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)),
+  MSE_y2 = c(mse(r$s2, y2),
+             mse(rw$s2, y2),
+             mse(r_gssa$ts[[3]] + r_gssa$ts[[4]], y2)),
+  MSE_y = c(mse(r$s1 + r$s2, y1 + y2),
+                     mse(rw$s1 + rw$s2, y1 + y2),
+                     mse(r_gssa$ts[[1]] +
+                           r_gssa$ts[[2]] +
+                           r_gssa$ts[[3]] +
+                           r_gssa$ts[[4]], y1 + y2))
+)
+
+mse_table |> print()
+
+
+#------------------------------------------------------------
+library(xtable)
+df <- mse_table
+df[, sapply(df, is.numeric)] <- lapply(df[, sapply(df, is.numeric)], formatC, format = "e", digits = 2)
+print(xtable(df, scientific = TRUE), type = "latex")
+
+#------------------------------------------------------------
+
+freq <- seq(0, pi, 0.001)
+omega <- freq/2/pi
+
+filters <- get_middle_point_filters(y1+y2, L, alpha = 0)
+filt <- filters[[1]] + filters[[2]]
+
+# print(afc(filt, freq), digits = 1)
+
+plot(afc(filt, freq) ~ omega, type = "l")
+abline(v = 1/12, col = "red")
+
+
+# abline(v = 1/12 + 4.3/(12*12))
+abline(v = 1/18)
+
+filters <- get_middle_point_filters(y1+y2, L, alpha = alpha)
+filt <- filters[[1]] + filters[[2]]
+
+lines(afc(filt, freq) ~ omega, col ="blue")
+
+
+library(ggplot2)
+
+alphas <- c(0, 1/2)
+freq <- seq(0, pi, 0.001)
+omega <- freq / (2 * pi)
+
+# Определяем цвета (черный для 0, остальные разные)
+colors <- c("black", "blue")
+
+# Создаем пустой график
+plot(NULL, xlim = c(0, 0.2), ylim = c(0, 1), xlab = "Частота", 
+     ylab = "АЧХ", main = "АЧХ для первых двух компонент"
+     , xaxt = "n"
+     )
+
+alpha <- alphas[1]
+filters <- get_middle_point_filters(y, L, alpha = alpha)
+filt <- filters[[1]] + filters[[2]]
+
+lines(omega, afc(filt, freq), col = colors[1], lwd = 2)
+
+# Рисуем графики для каждого alpha
+for (i in seq_along(alphas)) {
+  alpha <- alphas[i]
+  filters <- get_middle_point_filters(y, L, alpha = alpha)
+  filt <- filters[[1]] + filters[[2]]
+  
+  lines(omega, afc(filt, freq), col = colors[i], lwd = 2)
+}
+
+# Добавляем вертикальную линию
+abline(v = 1/12, col = "red", lty = 2)
+# Добавляем подпись на оси X
+axis(1, at = 1/12, labels = "1/12")
+
+# Добавляем легенду с LaTeX-обозначением α
+legend("topright", legend = sapply(alphas, function(a) bquote(alpha == .(a))),
+       col = colors, lwd = 2)
+
+abline(v = 1/19, col = "red", lty = 2)
+axis(1, at = 1/19, labels = "1/19")
+axis(1, at = c(0, 0.1, 0.15, 0.2), labels = c("0", "0.1", "0.15", "0.2"))
+```
+
+## АЧХ в зависимости от точки во времени
+
+```{r}
+library(ggplot2)
+
+
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/19 * x)/2
+y <- y1 + y2
+
+
+# # Функция для создания амплитудно-фазовой характеристики (АФЧ)
+# afс <- function(filt, freq) {
+#   abs(fft(filt)) / length(filt)
+# }
+afc <- function(filter, omega) {
+  k <- seq_along(filter) - 1 #значения от 0 до length(filter) - 1
+  h <- function(o) sum(rev(filter) * exp(-k*1i * o))
+  abs(sapply(omega, h))
+}
+
+
+# Получаем фильтры
+filts <- get_all_point_filters(y, L, alpha = 1/2)
+
+filts_ssa <- get_all_point_filters(y, L, alpha = 0)
+
+# Частоты
+freq <- seq(0, pi, 0.001)
+omega <- freq / (2 * pi)
+
+# Список точек
+points_to_plot <- c(1, 10, 20, 50)
+
+# Собираем данные в датафрейм
+plot_data_all <- do.call(rbind, lapply(points_to_plot, function(i) {
+  filt <- (filts[[1]] + filts[[2]])[i, ]
+  filt_ssa <- (filts_ssa[[1]] + filts_ssa[[2]])[i, ]
+  
+  data.frame(
+    omega = omega,
+    value = afc(filt, freq),
+    method = "alpha = 1/2",
+    point = paste0("Точка ", i)
+  ) |> 
+    rbind(data.frame(
+      omega = omega,
+      value = afc(filt_ssa, freq),
+      method = "alpha = 0",
+      point = paste0("Точка ", i)
+    ))
+}))
+
+# Построение графика
+p <- ggplot(plot_data_all, aes(x = omega, y = value, color = method)) +
+   geom_line(size = 0.8) +  # <-- увеличение толщины линий
+  geom_line() +
+  facet_wrap(~ point, ncol = 2) +
+  geom_vline(xintercept = c(1/12, 1/19), color = "red", linetype = "dashed") +
+  scale_x_continuous(
+    limits = c(0, 0.2),
+    breaks = c(0, 1/19, 1/12, 0.1, 0.15, 0.2),
+    labels = c("0", "1/19", "1/12", "0.1", "0.15", "0.2")
+  ) +
+   scale_color_manual(
+    values = c("alpha = 1/2" = "black", "alpha = 0" = "blue")
+  ) +
+  scale_y_continuous(limits = c(0, 1.1)) +
+  labs(x = "Частота", y = "АЧХ", title = "АЧХ для разных точек") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+
+# Сохранение с высоким разрешением
+# ggsave("afc_4_points.png", plot = p, 
+#        width = 10, height = 6, dpi = 300, 
+#        units = "in", bg = "white")
+p
+```
+
+```{r}
+# Load necessary library
+library(Rssa)
+library(xtable)
+
+# Define parameters
+n <- 96 * 2 - 1  # Длина временного ряда = 191
+x <- 0:(n - 1)
+L <- 48
+y1 <- sin(2 * pi / 19 * x)
+y2 <- cos(2 * pi / 12 * x) / 2
+y <- y1 + y2
+alpha <- 0.5
+filt <- sqrt(sin(pi * 1:L / (L + 1))^2)^alpha
+
+# Define parameters for experiments
+n_experiment <- 100
+sigma <- 0.1
+n_t <- 96 * 2 - 1  # Ограничиваем до 100 временных индексов
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Initialize matrices to store squared errors for each t and each experiment
+mse_r_y1_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rw_y1_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rgssa_y1_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_r_y2_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rw_y2_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rgssa_y2_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_r_y_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rw_y_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+mse_rgssa_y_t <- matrix(0, nrow = n_t, ncol = n_experiment)
+
+# Perform experiments
+for (i in 1:n_experiment) {
+  # Add noise to y
+  noisy_y <- y + rnorm(n, mean = 0, sd = sigma)
+  
+  # Perform SSA
+  s <- ssa(noisy_y, L)
+  r <- reconstruct(s, groups = list(s1 = 1:2, s2 = 3:4))
+  
+  # Perform SSA with oblique filtering
+  sw <- ssa(noisy_y, L, col.oblique = filt, row.oblique = rep(1, n - L + 1))
+  rw <- reconstruct(sw, groups = list(s1 = 1:2, s2 = 3:4))
+  
+  # Perform gSSA (предполагается, что gssa - это ваша функция)
+  r_gssa <- gssa(noisy_y, L, alpha = alpha)
+  
+  # Calculate squared errors for each t (только первые 100 элементов)
+  mse_r_y1_t[, i] <- (r$s1[1:n_t] - y1[1:n_t])^2
+  mse_rw_y1_t[, i] <- (rw$s1[1:n_t] - y1[1:n_t])^2
+  mse_rgssa_y1_t[, i] <- (r_gssa$ts[[1]][1:n_t] + r_gssa$ts[[2]][1:n_t] - y1[1:n_t])^2
+  
+  mse_r_y2_t[, i] <- (r$s2[1:n_t] - y2[1:n_t])^2
+  mse_rw_y2_t[, i] <- (rw$s2[1:n_t] - y2[1:n_t])^2
+  mse_rgssa_y2_t[, i] <- (r_gssa$ts[[3]][1:n_t] + r_gssa$ts[[4]][1:n_t] - y2[1:n_t])^2
+  
+  mse_r_y_t[, i] <- (r$s1[1:n_t] + r$s2[1:n_t] - y[1:n_t])^2
+  mse_rw_y_t[, i] <- (rw$s1[1:n_t] + rw$s2[1:n_t] - y[1:n_t])^2
+  mse_rgssa_y_t[, i] <- (r_gssa$ts[[1]][1:n_t] + r_gssa$ts[[2]][1:n_t] + 
+                         r_gssa$ts[[3]][1:n_t] + r_gssa$ts[[4]][1:n_t] - y[1:n_t])^2
+}
+
+# Compute mean MSE for each t across experiments
+mean_mse_r_y1_t <- rowMeans(mse_r_y1_t)
+mean_mse_rw_y1_t <- rowMeans(mse_rw_y1_t)
+mean_mse_rgssa_y1_t <- rowMeans(mse_rgssa_y1_t)
+
+mean_mse_r_y2_t <- rowMeans(mse_r_y2_t)
+mean_mse_rw_y2_t <- rowMeans(mse_rw_y2_t)
+mean_mse_rgssa_y2_t <- rowMeans(mse_rgssa_y2_t)
+
+mean_mse_r_y_t <- rowMeans(mse_r_y_t)
+mean_mse_rw_y_t <- rowMeans(mse_rw_y_t)
+mean_mse_rgssa_y_t <- rowMeans(mse_rgssa_y_t)
+# 
+
+
+# Подготовка данных для графика
+plot_data_y1 <- data.frame(
+  time = rep(1:n_t, 3),
+  mse = c(mean_mse_r_y1_t, mean_mse_rw_y1_t, mean_mse_rgssa_y1_t),
+  method = rep(c("r", "rw", "r_gssa"), each = n_t)
+)
+
+# Построение графика
+p <- ggplot(plot_data_y1, aes(x = time, y = mse, color = method)) +
+  geom_line(size = 0.8) +  # Увеличение толщины линий
+  scale_color_manual(
+    values = c("rw" = "black", "r_gssa" = "blue"),
+    labels = c("r_gssa" = "alpha = 1/2", "rw" = "alpha = 0")
+  ) +
+  scale_x_continuous(
+    breaks = seq(0, n_t, by = 20),
+    labels = seq(0, n_t, by = 20)
+  ) +
+  scale_y_continuous(
+    limits = range(c(mean_mse_r_y1_t, mean_mse_rw_y1_t, mean_mse_rgssa_y1_t)) * c(0.9, 1.1)
+  ) +
+  labs(
+    x = "Время",
+    y = "MSE",
+    title = "Средний MSE по времени для синусоиды"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+# Сохранение графика с высоким разрешением
+# ggsave("mse_y1_time.png", plot = p, 
+#        width = 10, height = 6, dpi = 300, 
+#        units = "in", bg = "white")
+
+# Вывод графика
+print(p)
+```
+
+
+## Влияние на шума. 
+### Пример sin + cos без шума.
+
+```{r}
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/19 * x)/2
+y <- y1 + y2
+alpha <- 1/2
+filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
+
+  
+s <- ssa(y, L)
+r <- reconstruct(s, groups = list(
+  s1 = 1:2,
+  s2 = 3:4
+))
+
+sw <- ssa(y, L, col.oblique = filt, row.oblique = rep(1, n-L+1))
+rw <- reconstruct(sw, groups = list(
+  s1 = 1:2,
+  s2 = 3:4
+))
+
+mse <- function(f_true, f_reconstructed){
+   mean((f_true - f_reconstructed)^2) 
+}
+
+
+r_gssa <- gssa(y, L, alpha = alpha)
+
+# mse(rw$e, r_gssa$ts[[1]])
+# mse(r$s1, y1)
+# mse(rw$s1, y1)
+# mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)
+
+
+# Create a data frame to store MSE values
+mse_table <- data.frame(
+  Method = c("r", "rw", "r_gssa"),
+  MSE_y1 = c(mse(r$s1, y1),
+             mse(rw$s1, y1),
+             mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)),
+  MSE_y2 = c(mse(r$s2, y2),
+             mse(rw$s2, y2),
+             mse(r_gssa$ts[[3]] + r_gssa$ts[[4]], y2)),
+  MSE_y = c(mse(r$s1 + r$s2, y1 + y2),
+                     mse(rw$s1 + rw$s2, y1 + y2),
+                     mse(r_gssa$ts[[1]] +
+                           r_gssa$ts[[2]] +
+                           r_gssa$ts[[3]] +
+                           r_gssa$ts[[4]], y1 + y2))
+)
+
+mse_table |> print()
+
+# freq <- seq(0, pi, 0.001)
+# omega <- freq/2/pi
+# 
+# filters <- get_middle_point_filters(y1, L, alpha = 0)
+# filt <- filters[[1]] + filters[[2]]
+# 
+# plot(afc(filt, freq) ~ omega, type = "l")
+# abline(v = 1/12, col = "red")
+# 
+# filters <- get_middle_point_filters(y1, L, alpha = alpha)
+# filt <- filters[[1]] + filters[[2]]
+# 
+# lines(afc(filt, freq) ~ omega, col ="blue")
+```
+
+### С шумом
+
+```{r}
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/19 * x)/2
+y <- y1 + y2
+alpha <- 1
+filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
+
+# Define parameters
+n_experiment <- 100
+sigma <- 0.1
+
+# Initialize vectors to store MSE values
+mse_r_y1 <- numeric(n_experiment)
+mse_rw_y1 <- numeric(n_experiment)
+mse_rgssa_y1 <- numeric(n_experiment)
+mse_r_y2 <- numeric(n_experiment)
+mse_rw_y2 <- numeric(n_experiment)
+mse_rgssa_y2 <- numeric(n_experiment)
+mse_r_y <- numeric(n_experiment)
+mse_rw_y <- numeric(n_experiment)
+mse_rgssa_y <- numeric(n_experiment)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Perform experiments
+for (i in 1:n_experiment) {
+  # Add noise to y
+  noisy_y <- y + rnorm(n, mean = 0, sd = sigma)
+  
+  # Perform SSA
+  s <- ssa(noisy_y, L)
+  r <- reconstruct(s, groups = list(s1 = 1:2, s2 = 3:4))
+  
+  # Perform SSA with oblique filtering
+  sw <- ssa(noisy_y, L, col.oblique = filt, row.oblique = rep(1, n - L + 1))
+  rw <- reconstruct(sw, groups = list(s1 = 1:2, s2 = 3:4))
+  
+  # Perform gSSA
+  r_gssa <- gssa(noisy_y, L, alpha = alpha)
+  
+  # Calculate MSE for r method
+  mse_r_y1[i] <- mse(r$s1, y1)
+  mse_r_y2[i] <- mse(r$s2, y2)
+  mse_r_y[i] <- mse(r$s1 + r$s2, y1 + y2)
+  
+  # Calculate MSE for rw method
+  mse_rw_y1[i] <- mse(rw$s1, y1)
+  mse_rw_y2[i] <- mse(rw$s2, y2)
+  mse_rw_y[i] <- mse(rw$s1 + rw$s2, y1 + y2)
+  
+  # Calculate MSE for r_gssa method
+  mse_rgssa_y1[i] <- mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)
+  mse_rgssa_y2[i] <- mse(r_gssa$ts[[3]] + r_gssa$ts[[4]], y2)
+  mse_rgssa_y[i] <- mse(r_gssa$ts[[1]] + r_gssa$ts[[2]] + r_gssa$ts[[3]] + r_gssa$ts[[4]], y1 + y2)
+}
+
+# Compute mean and standard deviation of MSE values
+mean_mse_r_y1 <- mean(mse_r_y1)
+sd_mse_r_y1 <- sd(mse_r_y1)
+
+mean_mse_rw_y1 <- mean(mse_rw_y1)
+sd_mse_rw_y1 <- sd(mse_rw_y1)
+
+mean_mse_rgssa_y1 <- mean(mse_rgssa_y1)
+sd_mse_rgssa_y1 <- sd(mse_rgssa_y1)
+
+mean_mse_r_y2 <- mean(mse_r_y2)
+sd_mse_r_y2 <- sd(mse_r_y2)
+
+mean_mse_rw_y2 <- mean(mse_rw_y2)
+sd_mse_rw_y2 <- sd(mse_rw_y2)
+
+mean_mse_rgssa_y2 <- mean(mse_rgssa_y2)
+sd_mse_rgssa_y2 <- sd(mse_rgssa_y2)
+
+mean_mse_r_y <- mean(mse_r_y)
+sd_mse_r_y <- sd(mse_r_y)
+
+mean_mse_rw_y <- mean(mse_rw_y)
+sd_mse_rw_y <- sd(mse_rw_y)
+
+mean_mse_rgssa_y <- mean(mse_rgssa_y)
+sd_mse_rgssa_y <- sd(mse_rgssa_y)
+
+# Create a data frame with mean MSE values
+mse_table <- data.frame(
+  Method = c("r", "rw", "r_gssa"),
+  MSE_y1 = c(mean_mse_r_y1, mean_mse_rw_y1, mean_mse_rgssa_y1),
+  MSE_y2 = c(mean_mse_r_y2, mean_mse_rw_y2, mean_mse_rgssa_y2),
+  MSE_y = c(mean_mse_r_y, mean_mse_rw_y, mean_mse_rgssa_y)
+)
+
+# Optionally, include standard deviations
+mse_table$SD_y1 <- c(sd_mse_r_y1, sd_mse_rw_y1, sd_mse_rgssa_y1)
+mse_table$SD_y2 <- c(sd_mse_r_y2, sd_mse_rw_y2, sd_mse_rgssa_y2)
+mse_table$SD_y <- c(sd_mse_r_y, sd_mse_rw_y, sd_mse_rgssa_y)
+
+# Print the table
+print(mse_table)
+
+library(xtable)
+df <- mse_table
+df[, sapply(df, is.numeric)] <- lapply(df[, sapply(df, is.numeric)], formatC, format = "e", digits = 2)
+print(xtable(df, scientific = TRUE), type = "latex")
+```
+### Вложенный вариант GSSA
+```{r}
+n <- 96*2-1
+x <- 0:(n-1)
+L <- 48
+y1 <- sin(2*pi/12 * x)
+y2 <- cos(2*pi/19 * x)/2
+y <- y1 + y2
+alpha <- 1
+filt <- sqrt(sin(pi * 1:(L) / (L + 1))^2)^alpha
+
+# Define parameters
+n_experiment <- 100
+sigma <- 0.1
+
+# Initialize vectors to store MSE values
+mse_r_y1 <- numeric(n_experiment)
+mse_rw_y1 <- numeric(n_experiment)
+mse_rgssa_y1 <- numeric(n_experiment)
+mse_r_y2 <- numeric(n_experiment)
+mse_rw_y2 <- numeric(n_experiment)
+mse_rgssa_y2 <- numeric(n_experiment)
+mse_r_y <- numeric(n_experiment)
+mse_rw_y <- numeric(n_experiment)
+mse_rgssa_y <- numeric(n_experiment)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Perform experiments
+for (i in 1:n_experiment) {
+  # Add noise to y
+  noisy_y <- y + rnorm(n, mean = 0, sd = sigma)
+  
+  # Perform SSA
+  s <- ssa(noisy_y, L)
+  r <- reconstruct(s, groups = list(s1 = 1:2, s2 = 3:4))
+  
+  # Perform SSA with oblique filtering
+  sw <- ssa(noisy_y, L, col.oblique = filt, row.oblique = rep(1, n - L + 1))
+  rw <- reconstruct(sw, groups = list(s1 = 1:2, s2 = 3:4))
+  
+  # Perform gSSA
+  r_gssa <- gssa(r$s1 + r$s2, L, alpha = alpha)
+  
+  # Calculate MSE for r method
+  mse_r_y1[i] <- mse(r$s1, y1)
+  mse_r_y2[i] <- mse(r$s2, y2)
+  mse_r_y[i] <- mse(r$s1 + r$s2, y1 + y2)
+  
+  # Calculate MSE for rw method
+  mse_rw_y1[i] <- mse(rw$s1, y1)
+  mse_rw_y2[i] <- mse(rw$s2, y2)
+  mse_rw_y[i] <- mse(rw$s1 + rw$s2, y1 + y2)
+  
+  # Calculate MSE for r_gssa method
+  mse_rgssa_y1[i] <- mse(r_gssa$ts[[1]] + r_gssa$ts[[2]], y1)
+  mse_rgssa_y2[i] <- mse(r_gssa$ts[[3]] + r_gssa$ts[[4]], y2)
+  mse_rgssa_y[i] <- mse(r_gssa$ts[[1]] + r_gssa$ts[[2]] + r_gssa$ts[[3]] + r_gssa$ts[[4]], y1 + y2)
+}
+
+# Compute mean and standard deviation of MSE values
+mean_mse_r_y1 <- mean(mse_r_y1)
+sd_mse_r_y1 <- sd(mse_r_y1)
+
+mean_mse_rw_y1 <- mean(mse_rw_y1)
+sd_mse_rw_y1 <- sd(mse_rw_y1)
+
+mean_mse_rgssa_y1 <- mean(mse_rgssa_y1)
+sd_mse_rgssa_y1 <- sd(mse_rgssa_y1)
+
+mean_mse_r_y2 <- mean(mse_r_y2)
+sd_mse_r_y2 <- sd(mse_r_y2)
+
+mean_mse_rw_y2 <- mean(mse_rw_y2)
+sd_mse_rw_y2 <- sd(mse_rw_y2)
+
+mean_mse_rgssa_y2 <- mean(mse_rgssa_y2)
+sd_mse_rgssa_y2 <- sd(mse_rgssa_y2)
+
+mean_mse_r_y <- mean(mse_r_y)
+sd_mse_r_y <- sd(mse_r_y)
+
+mean_mse_rw_y <- mean(mse_rw_y)
+sd_mse_rw_y <- sd(mse_rw_y)
+
+mean_mse_rgssa_y <- mean(mse_rgssa_y)
+sd_mse_rgssa_y <- sd(mse_rgssa_y)
+
+# Create a data frame with mean MSE values
+mse_table <- data.frame(
+  Method = c("r", "rw", "r_gssa"),
+  MSE_y1 = c(mean_mse_r_y1, mean_mse_rw_y1, mean_mse_rgssa_y1),
+  MSE_y2 = c(mean_mse_r_y2, mean_mse_rw_y2, mean_mse_rgssa_y2),
+  MSE_y = c(mean_mse_r_y, mean_mse_rw_y, mean_mse_rgssa_y)
+)
+
+# Optionally, include standard deviations
+mse_table$SD_y1 <- c(sd_mse_r_y1, sd_mse_rw_y1, sd_mse_rgssa_y1)
+mse_table$SD_y2 <- c(sd_mse_r_y2, sd_mse_rw_y2, sd_mse_rgssa_y2)
+mse_table$SD_y <- c(sd_mse_r_y, sd_mse_rw_y, sd_mse_rgssa_y)
+
+# Print the table
+print(mse_table)
+
+library(xtable)
+df <- mse_table
+df[, sapply(df, is.numeric)] <- lapply(df[, sapply(df, is.numeric)], formatC, format = "e", digits = 2)
+print(xtable(df, scientific = TRUE), type = "latex")
+```
+
