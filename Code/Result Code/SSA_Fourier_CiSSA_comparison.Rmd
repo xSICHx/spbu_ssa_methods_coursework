@@ -110,8 +110,8 @@ L_vec        <- c(12, 24, 36, 48, 60, 72, 84, 96, 96*2)
  
 eps      <- 1 / (n + 1)
  
-mult1 <- 3
-mult2 <- 5
+mult1 <- 2
+mult2 <- mult1
  
 groups_freqs <- list(
   # sin = c(0,               1/12 + treshold - eps),
@@ -147,6 +147,55 @@ print(p_avg)
  
 
 ```
+
+
+```{r}
+library(dplyr)
+set.seed(123)
+ 
+n_experiment <- 5          
+n            <- 96 * 2
+L_vec        <- c(12, 24, 36, 48, 60, 72, 84, 96, 96*2)
+ 
+eps      <- 1 / (n + 1)
+ 
+mult1 <- 3
+mult2 <- 5
+ 
+groups_freqs <- list(
+  # sin = c(0,               1/12 + treshold - eps),
+  # cos = c(1/3 - treshold,  1/2)
+  sin = c(1/12 - mult1*eps,      1/12 + mult1*eps),
+  cos = c(1/3 - mult2*eps, 1/3 + mult2*eps)
+)
+ 
+extend_flags_set <- c(TRUE)
+ 
+df_avg <- run_cissa_experiments_exp(
+  n_experiment = n_experiment,
+  L_vec        = L_vec,
+  n            = n,
+  groups_freqs = groups_freqs,
+  # extend_flags = extend_flags_set
+)
+ 
+print(df_avg)
+ 
+p_avg <- plot_cissa_combined(df_avg) +
+  theme(legend.position = "bottom")
+ 
+print(p_avg)
+ 
+# ggsave(
+#   filename = "cissa_errors_plot_expcos_noised_avg.png",
+#   plot     = p_avg,
+#   width    = 10,   # в дюймах
+#   height   = 6,    # в дюймах
+#   dpi      = 600
+# )
+ 
+```
+
 
 
 ## Без шума
@@ -206,7 +255,7 @@ eossa_nested_groups <- list(
   1:4
 )
 
-eps <- 1 / (192 + 1)
+eps <- 1 / (192 + 1) * 10
 
 groups_ssa_e <- list(
   sin = c(1/12 - 4* eps, 1/12 + 4* eps),

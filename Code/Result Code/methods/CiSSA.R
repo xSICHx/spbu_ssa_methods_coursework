@@ -31,8 +31,10 @@ shift_vector <- function (vec)
 }
 
 
-
-extend <- function (x, H) 
+# Процедура расширения временного ряда
+extend <- function (x, # временной ряд
+                    H  # на сколько ряд будет расширен влево и вправо
+                    ) 
 {
   N <- length(x)
   p <- floor(N/3)
@@ -55,7 +57,10 @@ extend <- function (x, H)
 
 
 # Основная функиця для Circular SSA
-circulant_SSA <- function (ts, L = NULL, extend_flag = FALSE) 
+circulant_SSA <- function (ts, # временной ряд
+                           L = NULL, # длина окна 
+                           extend_flag = FALSE # нужно ли расширять ряд или нет
+                           ) 
 {
   time_series <- ts
   N <- length(time_series)
@@ -129,7 +134,9 @@ circulant_SSA <- function (ts, L = NULL, extend_flag = FALSE)
 
 
 # группировка по частотам
-grouping_cissa <- function (cissa_res, groups) 
+grouping_cissa <- function (cissa_res, # результат работы circulant_SSA
+                            groups # диапазоны частот в виде list
+                            ) 
 {
   freq <- cissa_res$freq
   t_series <- cissa_res$t_series
@@ -160,8 +167,11 @@ grouping_cissa <- function (cissa_res, groups)
 }
 
 
-# Разложение Фурье
-reconstruct_fft <- function (x_init, y_init, extend_flag = FALSE) 
+# Разложение Фурье, совместимое с grouping_cissa
+reconstruct_fft <- function (x_init, # временные точки ряда
+                             y_init, # значения временного ряда
+                             extend_flag = FALSE # нужно ли расширять ряд 
+                             ) 
 {
   x <- x_init
   y <- y_init

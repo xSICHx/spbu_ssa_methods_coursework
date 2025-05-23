@@ -1,7 +1,10 @@
-# Основной алгоритм 
 library(Rssa)
 
-gssa <- function(ts, L, alpha = 0){
+# Основной алгоритм gssa
+gssa <- function(ts, # значения временного ряда
+                 L, # длина окна
+                 alpha = 0 # параметр для весов
+                 ){
   N <- length(ts)
   tmp <- 1:(L)
   w <- sqrt(sin(pi*tmp/(L+1))^2)**alpha
@@ -75,7 +78,10 @@ gssa <- function(ts, L, alpha = 0){
 
 
 # Получить фильтр для средней точки 
-get_middle_point_filters <- function(ts, L, alpha = 0){
+get_middle_point_filters <- function(ts, # временной ряд
+                                     L,  # длина окна
+                                     alpha = 0 # параметр для весов 
+                                     ){
   N <- length(ts)
   tmp <- 1:(L)
   w <- sqrt(sin(pi*tmp/(L+1))^2)^alpha
@@ -112,8 +118,12 @@ get_middle_point_filters <- function(ts, L, alpha = 0){
   
 }
 
+
 # Функция фильтра для любой точки
-get_all_point_filters <- function(ts, L, alpha = 0){
+get_all_point_filters <- function(ts, # значения временного ряда
+                                  L,  # длина окна
+                                  alpha = 0 # параметр для весов 
+                                  ){
   N <- length(ts)
   tmp <- 1:(L)
   w <- sqrt(sin(pi*tmp/(L+1))^2)^alpha
@@ -172,6 +182,8 @@ get_all_point_filters <- function(ts, L, alpha = 0){
 
 
 # Вспомогательные функции 
+
+# АЧХ линейного фильтра для каждой точки
 afc <- function(filter, omega) {
   k <- seq_along(filter) - 1 #значения от 0 до length(filter) - 1
   h <- function(o) sum(rev(filter) * exp(-k*1i * o))
