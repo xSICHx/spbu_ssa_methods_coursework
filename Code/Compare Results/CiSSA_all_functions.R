@@ -538,32 +538,37 @@ good_experiment <- function (L, n, x, t_series, groups_ssa, eossa_nested_groups,
 }
 
 
+
 grouping_cissa <- function (cissa_res, groups) 
 {
-    freq <- cissa_res$freq
-    t_series <- cissa_res$t_series
-    residuals <- 0
-    result <- setNames(as.list(rep(0, length(groups))), names(groups))
-    result_freqs <- list()
-    for (i in 1:length(cissa_res$freq)) {
-        flag <- FALSE
-        for (name in names(groups)) {
-            if (groups[[name]][1] <= freq[i] & freq[i] <= groups[[name]][2]) {
-                flag <- TRUE
-                result[[name]] <- result[[name]] + t_series[, 
-                  i]
-                result_freqs[[name]] <- c(result_freqs[[name]], 
-                  freq[i])
-            }
-        }
-        if (flag == FALSE) {
-            residuals <- residuals + t_series[, i]
-        }
+  freq <- cissa_res$freq
+  t_series <- cissa_res$t_series
+  residuals <- 0
+  result <- setNames(as.list(rep(0, length(groups))), names(groups))
+  result_freqs <- list()
+  for (i in 1:length(cissa_res$freq)) {
+    flag <- FALSE
+    for (name in names(groups)) {
+      if (flag == TRUE) {
+        break
+      }
+      if (groups[[name]][1] <= freq[i] & freq[i] <= groups[[name]][2]) {
+        flag <- TRUE
+        result[[name]] <- result[[name]] + t_series[, 
+                                                    i]
+        result_freqs[[name]] <- c(result_freqs[[name]], 
+                                  freq[i])
+      }
     }
-    result[["residuals"]] <- residuals
-    return(list(t_series = result, freqs_by_group = result_freqs))
-    result
+    if (flag == FALSE) {
+      residuals <- residuals + t_series[, i]
+    }
+  }
+  result[["residuals"]] <- residuals
+  return(list(t_series = result, freqs_by_group = result_freqs))
+  result
 }
+
 
 
 interesting_sin <- function (x) 
