@@ -227,7 +227,7 @@ x <- 0:(n-1)
 L <- 48
 y1 <- sin(2*pi/12 * x)
 y2 <- cos(2*pi/19 * x)/2
-y <- y1 + y2
+y <- y1 + y2 
 
 
 # # Функция для создания амплитудно-фазовой характеристики (АФЧ)
@@ -272,9 +272,12 @@ plot_data_all <- do.call(rbind, lapply(points_to_plot, function(i) {
     ))
 }))
 
+library(ggplot2)
+library(latex2exp)
+
 # Построение графика
 p <- ggplot(plot_data_all, aes(x = omega, y = value, color = method)) +
-   geom_line(size = 0.8) +  # <-- увеличение толщины линий
+  geom_line(size = 0.8) +
   geom_line() +
   facet_wrap(~ point, ncol = 2) +
   geom_vline(xintercept = c(1/12, 1/19), color = "red", linetype = "dashed") +
@@ -283,13 +286,20 @@ p <- ggplot(plot_data_all, aes(x = omega, y = value, color = method)) +
     breaks = c(0, 1/19, 1/12, 0.1, 0.15, 0.2),
     labels = c("0", "1/19", "1/12", "0.1", "0.15", "0.2")
   ) +
-   scale_color_manual(
+  scale_color_manual(
     values = c("alpha = 1/2" = "black", "alpha = 0" = "blue")
   ) +
   scale_y_continuous(limits = c(0, 1.1)) +
-  labs(x = "Частота", y = "АЧХ", title = "АЧХ для разных точек") +
+  labs(
+    x = "Частота",
+    y = "АЧХ",
+    title = TeX("Влияние частоты на восстановление ${S}^{(\\sin)}$")
+  ) +
   theme_bw() +
   theme(legend.position = "bottom")
+
+print(p)
+
 
 
 # Сохранение с высоким разрешением

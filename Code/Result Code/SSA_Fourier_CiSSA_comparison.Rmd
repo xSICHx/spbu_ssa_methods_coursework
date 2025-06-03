@@ -563,12 +563,12 @@ t_series <- list(y1, y2)
 
 ssa_params <- list(
   list(L = 96, n = 191),
-  list(L = 96, n = 192)
+  list(L = 97, n = 191)
 )
 
 eessa_params <- list(
   list(L = 96, n = 191),
-  list(L = 96, n = 192)
+  list(L = 97, n = 191)
 )
 
 fft_params <- list(
@@ -582,6 +582,7 @@ fft_ext_params <- list(
 
 cissa_params <- list(
   list(L = 12, n = 192),
+  list(L = 48, n = 192),
   list(L = 96, n = 192),
   list(L = 97, n = 192)
 )
@@ -604,8 +605,8 @@ eossa_nested_groups <- list(
 )
 
 groups_ssa_e <- list(
-  sin = c(1/12 - 3 * eps, 1/12 + 3 * eps),
-  cos = c(1/3  - 3 * eps, 1/3  + 3 * eps)
+  sin = c(1/12 - 5 * eps, 1/12 + 5 * eps),
+  cos = c(1/3  - 5 * eps, 1/3  + 5 * eps)
 )
 
 groups_fft <- list(
@@ -619,8 +620,8 @@ groups_fft_ext <- list(
 )
 
 groups_cissa <- list(
-  sin = c(1/12 - 3 * eps, 1/12 + 3 * eps),
-  cos = c(1/3  - 3 * eps, 1/3  + 3 * eps)
+  sin = c(1/12 - 5 * eps, 1/12 + 5 * eps),
+  cos = c(1/3  - 5 * eps, 1/3  + 5 * eps)
 )
 
 groups_cissa_ext <- list(
@@ -692,6 +693,7 @@ fft_ext_params <- list(
 
 cissa_params <- list(
   list(L = 12, n = 192),
+  list(L = 48, n = 192),
   list(L = 96, n = 192),
   list(L = 97, n = 192)
 )
